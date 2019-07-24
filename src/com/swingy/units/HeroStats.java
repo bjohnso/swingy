@@ -9,7 +9,7 @@ public class HeroStats {
     public HeroStats(){
 
     }
-    
+
     public HeroStats(int attackPoints, int defencePoints, int hitPoints){
         _attackPoints = attackPoints;
         _defencePoints = defencePoints;
