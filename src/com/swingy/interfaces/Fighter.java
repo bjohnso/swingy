@@ -1,4 +1,4 @@
 package com.swingy.interfaces;
 
-public interface Fightable {
+public interface Fighter {
 }
