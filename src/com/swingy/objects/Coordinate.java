@@ -1,4 +1,4 @@
-package com.swingy.units;
+package com.swingy.objects;
 
 public class Coordinate {
 

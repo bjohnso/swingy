@@ -3,7 +3,7 @@ package com.swingy.artifacts;
 import com.swingy.interfaces.Fighter;
 
 public class ArtifactForge {
-    public Fighter newArtifact(String type, String name, int longitude,
+    /*public Fighter newArtifact(String type, String name, int longitude,
                                int latitude, int height){
         if (type.equalsIgnoreCase("jetplane"))
             return (new JetPlane(name, new Coordinates(longitude, latitude, height)));
@@ -13,5 +13,5 @@ public class ArtifactForge {
             return (new Baloon(name, new Coordinates(longitude, latitude, height)));
         else
             return null;
-    }
+    }*/
 }
