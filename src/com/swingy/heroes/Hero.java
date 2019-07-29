@@ -4,17 +4,19 @@ import com.swingy.interfaces.Fighter;
 import com.swingy.objects.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Hero implements Fighter {
 
     //Player Defined Variables
     protected String _name;
-    protected ArrayList<Affinity> _affinities = new ArrayList<>();
+    protected LinkedHashMap<String, Affinity> _affinities = new LinkedHashMap<>();
 
     //System Defined Variables
     protected long _id = 0;
     protected Level _level = new Level();
-    protected int _damage = 0;
+    protected double _damage = 0;
     protected int _idCounter = 0;
 
     public Hero(){
@@ -24,16 +26,16 @@ public class Hero implements Fighter {
     public Hero(String name, String affinity){
         _name = name;
         if (affinity.equalsIgnoreCase("FIRE")) {
-            if (!_affinities.contains(affinity))
-                _affinities.add(new FireAffinity(1));
+            if (!_affinities.containsKey(affinity))
+                _affinities.put("FIRE", new FireAffinity(10));
         }
         else if (affinity.equalsIgnoreCase("WATER")){
-            if (!_affinities.contains(affinity))
-                _affinities.add(new WaterAffinity(1));
+            if (!_affinities.containsKey(affinity))
+                _affinities.put("WATER", new WaterAffinity(10));
         }
         else if (affinity.equalsIgnoreCase("EARTH")){
-            if (!_affinities.contains(affinity))
-                _affinities.add(new EarthAffinity(1));
+            if (!_affinities.containsKey(affinity))
+                _affinities.put("EARTH", new EarthAffinity(10));
         }
     }
 
@@ -41,7 +43,7 @@ public class Hero implements Fighter {
         return _name;
     }
 
-    public ArrayList<Affinity> getAffinities(){
+    public HashMap<String, Affinity> getAffinities(){
         return _affinities;
     }
 
@@ -57,7 +59,7 @@ public class Hero implements Fighter {
         _name = name;
     }
 
-    public void setAffinities(ArrayList<Affinity> affinities){
+    public void setAffinities(LinkedHashMap<String, Affinity> affinities){
         _affinities = affinities;
     }
 
@@ -73,14 +75,20 @@ public class Hero implements Fighter {
 
     @Override
     public boolean defend() {
-        System.out.println(this._name + " : Defended");
-        return false;
+        Double rand = Math.random() * 101;
+        Double defenceChance = this.getHeroStats().getCounterChance();
+        if (rand < defenceChance)
+            return true;
+        else {
+            System.out.println(this._name + " : Took Damage");
+            return false;
+        }
     }
 
     @Override
     public boolean takeDamage(double enemyAttackPoints, double myDefencePoints) {
-        this._damage += enemyAttackPoints - myDefencePoints;
-        if (this.getHeroStats().getHitPoints() == this._damage)
+        this._damage += enemyAttackPoints / myDefencePoints;
+        if (this.getHeroStats().getHitPoints() <= this._damage)
             return true;
         else
             return false;
@@ -88,13 +96,37 @@ public class Hero implements Fighter {
     }
 
     @Override
+    public boolean counter(double enemyAttackPoints, double myDefencePoints) {
+        if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")){
+            this._damage -= enemyAttackPoints / myDefencePoints;
+            System.out.println(this._name + " : Absorbed Attack, and Regenerated");
+        }
+        else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")){
+            FireAffinity fireAffinity = (FireAffinity)this._affinities.entrySet().iterator().next().getValue();
+            fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + enemyAttackPoints / myDefencePoints + (this._damage / 100 * 12));
+            this._affinities.replace("FIRE", fireAffinity);
+            System.out.println(this._name + " : Evaded Attack, and Powered Up");
+        }
+        else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")){
+            System.out.println(this._name + " : Blocked Attack, and Inflicted Damage");
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public Affinity getHeroStats() {
         Affinity affinity = new Affinity();
 
-        for (Affinity a : _affinities){
-            affinity.setAttackPoints(affinity.getAttackPoints() + a.getAttackPoints());
-            affinity.setDefencePoints(affinity.getDefencePoints() + a.getDefencePoints());
-            affinity.setHitPoints(affinity.getHitPoints() + a.getHitPoints());
+        for (HashMap.Entry<String, Affinity> a : _affinities.entrySet()){
+            affinity.setAttackPoints(affinity.getAttackPoints() + a.getValue().getAttackPoints());
+            affinity.setDefencePoints(affinity.getDefencePoints() + a.getValue().getDefencePoints());
+            affinity.setHitPoints(affinity.getHitPoints() + a.getValue().getHitPoints());
+            affinity.setCounterChance(affinity.getCounterChance() + a.getValue().getCounterChance());
+            if (a.getKey().equalsIgnoreCase("FIRE")){
+                FireAffinity fireAffinity = (FireAffinity)a.getValue();
+                affinity.setAttackPoints(affinity.getAttackPoints() + fireAffinity.getBonusDamage());
+            }
         }
 
         return affinity;
