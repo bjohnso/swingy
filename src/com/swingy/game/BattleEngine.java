@@ -26,7 +26,7 @@ public class BattleEngine {
             //Challenger's turn to Attack
             System.out.println("CHALLENGER's TURN");
             challenger.attack();
-            if(!defender.defend()) {
+            if(!defender.defend(challenger, defender)) {
                 if (defender.takeDamage(challenger.getHeroStats().getAttackPoints(),
                         defender.getHeroStats().getDefencePoints())){
                     System.out.println(defender.getName() + " is no more");
@@ -40,7 +40,7 @@ public class BattleEngine {
                     //Successful Counter
                     defender.attack();
                     if (challenger.takeDamage(defender.getHeroStats().getAttackPoints()
-                                    + (defender.getDamage() / 100 * 7),
+                                    + (defender.getHeroStats().getHitPoints() / 100 * 25),
                             challenger.getHeroStats().getDefencePoints())){
                         System.out.println(challenger.getName() + " is no more");
                         break ;
@@ -54,7 +54,7 @@ public class BattleEngine {
             System.out.println("DEFENDER's TURN");
             //Defender's turn to Attack
             defender.attack();
-            if(!challenger.defend()) {
+            if(!challenger.defend(defender, challenger)) {
                 if (challenger.takeDamage(defender.getHeroStats().getAttackPoints(),
                         challenger.getHeroStats().getDefencePoints())){
                     System.out.println(challenger.getName() + " is no more");
@@ -68,7 +68,7 @@ public class BattleEngine {
                     //Successful Counter
                     challenger.attack();
                     if (defender.takeDamage(challenger.getHeroStats().getAttackPoints()
-                                    + (challenger.getDamage() / 100 * 7),
+                                    + (challenger.getHeroStats().getHitPoints() / 100 * 25),
                             defender.getHeroStats().getDefencePoints())){
                         System.out.println(defender.getName() + " is no more");
                         break ;

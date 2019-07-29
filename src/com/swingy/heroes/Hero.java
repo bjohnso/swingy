@@ -74,8 +74,19 @@ public class Hero implements Fighter {
     }
 
     @Override
-    public boolean defend() {
-        Double rand = Math.random() * 101;
+    public boolean defend(Hero attacker, Hero defender) {
+
+        int range = 101;
+
+        if ((attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")
+            && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH"))
+                || (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")
+                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("WATER"))
+                || (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")
+                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")))
+            range -= 50;
+
+        Double rand = Math.random() * range;
         Double defenceChance = this.getHeroStats().getCounterChance();
         if (rand < defenceChance)
             return true;
@@ -98,12 +109,12 @@ public class Hero implements Fighter {
     @Override
     public boolean counter(double enemyAttackPoints, double myDefencePoints) {
         if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")){
-            this._damage -= enemyAttackPoints / myDefencePoints;
+            this._damage -= (enemyAttackPoints / myDefencePoints) + (this._damage / 100 * 25);
             System.out.println(this._name + " : Absorbed Attack, and Regenerated");
         }
         else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")){
             FireAffinity fireAffinity = (FireAffinity)this._affinities.entrySet().iterator().next().getValue();
-            fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + enemyAttackPoints / myDefencePoints + (this._damage / 100 * 12));
+            fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + (enemyAttackPoints / myDefencePoints) + (this._damage / 100 * 50));
             this._affinities.replace("FIRE", fireAffinity);
             System.out.println(this._name + " : Evaded Attack, and Powered Up");
         }
@@ -119,14 +130,15 @@ public class Hero implements Fighter {
         Affinity affinity = new Affinity();
 
         for (HashMap.Entry<String, Affinity> a : _affinities.entrySet()){
-            affinity.setAttackPoints(affinity.getAttackPoints() + a.getValue().getAttackPoints());
-            affinity.setDefencePoints(affinity.getDefencePoints() + a.getValue().getDefencePoints());
-            affinity.setHitPoints(affinity.getHitPoints() + a.getValue().getHitPoints());
-            affinity.setCounterChance(affinity.getCounterChance() + a.getValue().getCounterChance());
             if (a.getKey().equalsIgnoreCase("FIRE")){
                 FireAffinity fireAffinity = (FireAffinity)a.getValue();
                 affinity.setAttackPoints(affinity.getAttackPoints() + fireAffinity.getBonusDamage());
             }
+            else
+                affinity.setAttackPoints(affinity.getAttackPoints() + a.getValue().getAttackPoints());
+            affinity.setDefencePoints(affinity.getDefencePoints() + a.getValue().getDefencePoints());
+            affinity.setHitPoints(affinity.getHitPoints() + a.getValue().getHitPoints());
+            affinity.setCounterChance(affinity.getCounterChance() + a.getValue().getCounterChance());
         }
 
         return affinity;

@@ -7,8 +7,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Hero a = new Hero("Vega", "Water");
-        Hero b = new Hero("Tiger", "Fire");
+        Hero a = new Hero("Asuna", "Water");
+        Hero b = new Hero("Ragos", "Fire");
+        Hero c = new Hero("Titan", "Earth");
         /*System.out.println(a.getName() + " : \n" + a.getHeroStats().getAttackPoints() + "\n" +
         a.getHeroStats().getDefencePoints() + "\n" +
         a.getHeroStats().getHitPoints() + "\n" +
@@ -19,6 +20,6 @@ public class Main {
                 b.getHeroStats().getHitPoints() + "\n" +
                 b.getDamage());*/
         BattleEngine battleEngine = BattleEngine.getBattleEngine();
-        battleEngine.battle(a, b);
+        battleEngine.battle(c,a);
     }
 }
