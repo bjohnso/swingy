@@ -75,18 +75,7 @@ public class Hero implements Fighter {
 
     @Override
     public boolean defend(Hero attacker, Hero defender) {
-
-        int range = 101;
-
-        if ((attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")
-            && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH"))
-                || (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")
-                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("WATER"))
-                || (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")
-                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")))
-            range -= 50;
-
-        Double rand = Math.random() * range;
+        Double rand = Math.random() * 101;
         Double defenceChance = this.getHeroStats().getCounterChance();
         if (rand < defenceChance)
             return true;
@@ -109,12 +98,12 @@ public class Hero implements Fighter {
     @Override
     public boolean counter(double enemyAttackPoints, double myDefencePoints) {
         if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")){
-            this._damage -= (enemyAttackPoints / myDefencePoints) + (this._damage / 100 * 25);
+            this._damage -= (enemyAttackPoints / myDefencePoints) + (enemyAttackPoints / myDefencePoints / 100 * 13);
             System.out.println(this._name + " : Absorbed Attack, and Regenerated");
         }
         else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")){
             FireAffinity fireAffinity = (FireAffinity)this._affinities.entrySet().iterator().next().getValue();
-            fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + (enemyAttackPoints / myDefencePoints) + (this._damage / 100 * 50));
+            fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + (enemyAttackPoints / myDefencePoints) + (this._damage / 100 * 25));
             this._affinities.replace("FIRE", fireAffinity);
             System.out.println(this._name + " : Evaded Attack, and Powered Up");
         }

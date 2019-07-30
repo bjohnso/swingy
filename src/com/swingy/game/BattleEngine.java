@@ -8,6 +8,7 @@ public class BattleEngine {
 
     private Hero _challenger;
     private Hero _defender;
+    private double _handicap;
 
     private BattleEngine(){
 
@@ -20,6 +21,7 @@ public class BattleEngine {
     public void battle(Hero challenger, Hero defender){
         _challenger = challenger;
         _defender = defender;
+        _handicap = 0;
 
         while(challenger.getHeroStats().getHitPoints() > challenger.getDamage()
                 && defender.getHeroStats().getHitPoints() > defender.getDamage()){
@@ -27,7 +29,8 @@ public class BattleEngine {
             System.out.println("CHALLENGER's TURN");
             challenger.attack();
             if(!defender.defend(challenger, defender)) {
-                if (defender.takeDamage(challenger.getHeroStats().getAttackPoints(),
+                if (defender.takeDamage(challenger.getHeroStats().getAttackPoints()
+                                - (challenger.getHeroStats().getAttackPoints() / 100 * handicap(challenger, defender)),
                         defender.getHeroStats().getDefencePoints())){
                     System.out.println(defender.getName() + " is no more");
                     break ;
@@ -40,7 +43,8 @@ public class BattleEngine {
                     //Successful Counter
                     defender.attack();
                     if (challenger.takeDamage(defender.getHeroStats().getAttackPoints()
-                                    + (defender.getHeroStats().getHitPoints() / 100 * 25),
+                                    - (defender.getHeroStats().getAttackPoints() / 100 * handicap(defender, challenger))
+                                    + (defender.getHeroStats().getHitPoints() / 100 * 19),
                             challenger.getHeroStats().getDefencePoints())){
                         System.out.println(challenger.getName() + " is no more");
                         break ;
@@ -55,7 +59,8 @@ public class BattleEngine {
             //Defender's turn to Attack
             defender.attack();
             if(!challenger.defend(defender, challenger)) {
-                if (challenger.takeDamage(defender.getHeroStats().getAttackPoints(),
+                if (challenger.takeDamage(defender.getHeroStats().getAttackPoints()
+                                - (defender.getHeroStats().getAttackPoints() / 100 * handicap(defender, challenger)),
                         challenger.getHeroStats().getDefencePoints())){
                     System.out.println(challenger.getName() + " is no more");
                     break ;
@@ -68,7 +73,8 @@ public class BattleEngine {
                     //Successful Counter
                     challenger.attack();
                     if (defender.takeDamage(challenger.getHeroStats().getAttackPoints()
-                                    + (challenger.getHeroStats().getHitPoints() / 100 * 25),
+                                    - (challenger.getHeroStats().getAttackPoints() / 100 * handicap(challenger, defender))
+                                    + (challenger.getHeroStats().getHitPoints() / 100 * 19),
                             defender.getHeroStats().getDefencePoints())){
                         System.out.println(defender.getName() + " is no more");
                         break ;
@@ -76,9 +82,27 @@ public class BattleEngine {
                 }
             }
             System.out.println(challenger.getName() + " HP : " + (challenger.getHeroStats().getHitPoints() - challenger.getDamage())
-                    + "\nAttack Points : " + challenger.getHeroStats().getAttackPoints());
+                    + "\nAttack Points : " + challenger.getHeroStats().getAttackPoints()
+                    + "\nDefence Points : " + challenger.getHeroStats().getDefencePoints());
             System.out.println(defender.getName() + " HP : " + (defender.getHeroStats().getHitPoints() - defender.getDamage())
-                    + "\nAttack Points : " + defender.getHeroStats().getAttackPoints());
+                    + "\nAttack Points : " + defender.getHeroStats().getAttackPoints()
+                    + "\nDefence Points : " + defender.getHeroStats().getDefencePoints());
         }
+    }
+
+    private Double handicap(Hero attacker, Hero defender){
+        if (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")
+                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")) {
+            return 5.0;
+        }
+        else if (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")
+                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")) {
+            return .9;
+        }
+        else if (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")
+                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")) {
+            return 7.0;
+        }
+        return 0.0;
     }
 }

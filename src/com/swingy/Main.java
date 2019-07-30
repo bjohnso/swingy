@@ -20,6 +20,6 @@ public class Main {
                 b.getHeroStats().getHitPoints() + "\n" +
                 b.getDamage());*/
         BattleEngine battleEngine = BattleEngine.getBattleEngine();
-        battleEngine.battle(c,a);
+        battleEngine.battle(a,c);
     }
 }
