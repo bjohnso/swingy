@@ -63,9 +63,7 @@ public class Hero implements Fighter {
         _affinities = affinities;
     }
 
-    public double getDamage(){
-        return _damage;
-    }
+    public double getDamage(){ return _damage; }
 
     @Override
     public boolean attack() {
