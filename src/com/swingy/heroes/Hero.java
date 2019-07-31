@@ -1,9 +1,8 @@
 package com.swingy.heroes;
 
 import com.swingy.interfaces.Fighter;
-import com.swingy.objects.*;
+import com.swingy.units.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 

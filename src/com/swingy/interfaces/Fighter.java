@@ -1,8 +1,7 @@
 package com.swingy.interfaces;
 
 import com.swingy.heroes.Hero;
-import com.swingy.objects.Affinity;
-import com.swingy.objects.HeroStats;
+import com.swingy.units.Affinity;
 
 public interface Fighter {
     boolean attack();

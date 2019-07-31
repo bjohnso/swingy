@@ -1,17 +1,28 @@
 package com.swingy.view;
 
+import com.swingy.handlers.GameObjectHandler;
+import com.swingy.id.ID;
+import com.swingy.objects.Player;
+import com.swingy.objects.Sprite;
+
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 
 public class BattleGame extends Canvas implements Runnable {
 
-    private static final int DEFAULT_WIDTH = 640;
+    private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_HEIGHT = DEFAULT_WIDTH / 12 * 9;
+
     private Thread gameThread;
     private boolean running;
+    private GameObjectHandler gameObjectHandler;
 
     public BattleGame(){
+        gameObjectHandler = new GameObjectHandler();
         new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT, "Battle", this);
+
+        gameObjectHandler.addObject(new Player(150, 100, ID.Defender));
+        //gameObjectHandler.addObject(new Player(500,  250, ID.Challenger));
     }
 
     public synchronized void start(){
@@ -61,7 +72,7 @@ public class BattleGame extends Canvas implements Runnable {
     }
 
     public void tick(){
-
+        gameObjectHandler.tick();
     }
 
 
@@ -76,6 +87,8 @@ public class BattleGame extends Canvas implements Runnable {
 
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+
+        gameObjectHandler.render(graphics);
 
         graphics.dispose();
         bufferStrategy.show();

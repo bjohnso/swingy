@@ -1,4 +1,4 @@
-package com.swingy.objects;
+package com.swingy.units;
 
 public class WaterAffinity extends Affinity{
     public WaterAffinity(int level){
