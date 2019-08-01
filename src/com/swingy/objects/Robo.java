@@ -4,8 +4,8 @@ import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
 
 public class Robo extends Player implements Renderable {
-    public Robo(int x, int y, ID id, boolean screenLeft) {
-        super(x, y, id, screenLeft);
+    public Robo(int x, int y, ID id, boolean screenLeft, HUD hud) {
+        super(x, y, id, screenLeft, hud);
         imgPath = "res/robo/";
     }
 }

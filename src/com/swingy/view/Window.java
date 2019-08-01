@@ -17,7 +17,6 @@ public class Window extends Canvas {
         frame.setLocationRelativeTo(null);
         frame.add(battleGame);
         frame.setVisible(true);
-        battleGame.start();
     }
 
 }

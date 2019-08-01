@@ -11,12 +11,9 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.Observable;
-import java.util.Observer;
+
 
 public class BattleGame extends Canvas implements Runnable{
 
@@ -48,30 +45,32 @@ public class BattleGame extends Canvas implements Runnable{
         //Listen for Keyboard Input
         this.addKeyListener(new KeyInput(gameObjectHandler));
 
-        challengerHUD = new HUD(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 5, ID.ChallengerHUD, "ChallengerHP");
-        defenderHUD = new HUD(DEFAULT_WIDTH / 100 * 65, DEFAULT_HEIGHT / 100 * 5, ID.DefenderHUD, "DefenderHP");
+        challengerHUD = new HUD(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 5, ID.ChallengerHUD);
+        defenderHUD = new HUD(DEFAULT_WIDTH / 100 * 65, DEFAULT_HEIGHT / 100 * 5, ID.DefenderHUD);
 
-        gameObjectHandler.addObject(new Dino(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40, ID.Challenger, true));
-        gameObjectHandler.addObject(challengerHUD);
-        gameObjectHandler.addObject(new Robo(DEFAULT_WIDTH / 100 * 60,  DEFAULT_HEIGHT / 100 * 40, ID.Defender, false));
-        gameObjectHandler.addObject(defenderHUD);
+        gameObjectHandler.addObject(new Dino(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40
+                , ID.Challenger, true, challengerHUD));
+
+        gameObjectHandler.addObject(new Robo(DEFAULT_WIDTH / 100 * 60,  DEFAULT_HEIGHT / 100 * 40
+                , ID.Defender, false, defenderHUD));
+
 
         new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT, "Battle", this);
 
         //Initialising Battle Engine
         battleEngine = BattleEngine.getBattleEngine();
-        battleEngine.addPropertyChangeListener(challengerHUD);
-        battleEngine.addPropertyChangeListener(defenderHUD);
+        battleEngine.addPropertyChangeListener((Player)gameObjectHandler.getObjects().get(0));
+        battleEngine.addPropertyChangeListener((Player)gameObjectHandler.getObjects().get(1));
 
         battleEngine.setChallenger(b);
         battleEngine.setDefender(c);
     }
 
-    public synchronized void start(){
+    /*public synchronized void start(){
         gameThread = new Thread(this);
         gameThread.start();
         running = true;
-    }
+    }*/
 
     public synchronized void stop(){
         try {
@@ -84,6 +83,7 @@ public class BattleGame extends Canvas implements Runnable{
 
     @Override
     public void run() {
+        running = true;
         this.requestFocus();
         //Game Loop
         long lastTime = System.nanoTime();
@@ -117,7 +117,7 @@ public class BattleGame extends Canvas implements Runnable{
     public void tick(){
         turn *= -1;
         gameObjectHandler.tick();
-        battleEngine.battle(turn);
+        /*battleEngine.battle(turn);*/
     }
 
 
@@ -139,6 +139,11 @@ public class BattleGame extends Canvas implements Runnable{
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         graphics.drawImage(img, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT,  null);
+
+        graphics.setColor(Color.BLUE);
+        graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 6, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
+        graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 13, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
+
         gameObjectHandler.render(graphics);
 
         graphics.dispose();
