@@ -6,5 +6,6 @@ public enum ID {
 
     Sprite(),
     Challenger(),
-    Defender();
+    Defender(),
+    HUD();
 }

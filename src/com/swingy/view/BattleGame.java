@@ -2,27 +2,43 @@ package com.swingy.view;
 
 import com.swingy.handlers.GameObjectHandler;
 import com.swingy.id.ID;
-import com.swingy.objects.Player;
-import com.swingy.objects.Sprite;
+import com.swingy.input.KeyInput;
+import com.swingy.objects.*;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class BattleGame extends Canvas implements Runnable {
 
-    private static final int DEFAULT_WIDTH = 800;
+    private static final int DEFAULT_WIDTH = 1200;
     private static final int DEFAULT_HEIGHT = DEFAULT_WIDTH / 12 * 9;
+
+    private String imgPath = "res/background/background(";
 
     private Thread gameThread;
     private boolean running;
     private GameObjectHandler gameObjectHandler;
+    private BufferedImage img;
+
+    private HUD hud;
 
     public BattleGame(){
+
         gameObjectHandler = new GameObjectHandler();
+
+        //Listen for Keyboard Input
+        this.addKeyListener(new KeyInput(gameObjectHandler));
+
+        gameObjectHandler.addObject(new Dino(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40, ID.Challenger, true));
+        gameObjectHandler.addObject(new HUD(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 5, ID.HUD));
+        gameObjectHandler.addObject(new Robo(DEFAULT_WIDTH / 100 * 60,  DEFAULT_HEIGHT / 100 * 40, ID.Defender, false));
+        gameObjectHandler.addObject(new HUD(DEFAULT_WIDTH / 100 * 65, DEFAULT_HEIGHT / 100 * 5, ID.HUD));
         new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT, "Battle", this);
 
-        gameObjectHandler.addObject(new Player(150, 100, ID.Defender));
-        //gameObjectHandler.addObject(new Player(500,  250, ID.Challenger));
     }
 
     public synchronized void start(){
@@ -42,6 +58,7 @@ public class BattleGame extends Canvas implements Runnable {
 
     @Override
     public void run() {
+        this.requestFocus();
         //Game Loop
         long lastTime = System.nanoTime();
         double amountOfTicks = 60.0;
@@ -64,7 +81,7 @@ public class BattleGame extends Canvas implements Runnable {
 
             if (System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                System.out.println("FPS: " + frames);
+                //System.out.println("FPS: " + frames);
                 frames = 0;
             }
         }
@@ -85,9 +102,15 @@ public class BattleGame extends Canvas implements Runnable {
 
         Graphics graphics = bufferStrategy.getDrawGraphics();
 
+        try {
+            img = ImageIO.read(new File(imgPath + (4) + ").png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-
+        graphics.drawImage(img, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT,  null);
         gameObjectHandler.render(graphics);
 
         graphics.dispose();

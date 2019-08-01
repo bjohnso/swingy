@@ -6,9 +6,8 @@ public class BattleEngine {
 
     private static BattleEngine battleEngine = new BattleEngine();
 
-    private Hero _challenger;
-    private Hero _defender;
-    private double _handicap;
+    private Hero challenger;
+    private Hero defender;
 
     private BattleEngine(){
 
@@ -18,10 +17,17 @@ public class BattleEngine {
         return BattleEngine.battleEngine;
     }
 
-    public void battle(Hero challenger, Hero defender){
-        _challenger = challenger;
-        _defender = defender;
-        _handicap = 0;
+    public double getChallengerHP(){
+        return challenger.getHeroStats().getHitPoints() - challenger.getDamage();
+    }
+
+    public double getDefenderHP(){
+        return defender.getHeroStats().getHitPoints() - defender.getDamage();
+    }
+
+    public void battle(Hero chall, Hero def){
+        challenger = chall;
+        defender = def;
 
         while(challenger.getHeroStats().getHitPoints() > challenger.getDamage()
                 && defender.getHeroStats().getHitPoints() > defender.getDamage()){

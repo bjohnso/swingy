@@ -5,7 +5,7 @@ import com.swingy.interfaces.Renderable;
 
 import java.awt.*;
 
-public class GameObject implements Renderable {
+public abstract class GameObject implements Renderable {
 
     protected int x, y;
     protected ID id;
@@ -57,13 +57,4 @@ public class GameObject implements Renderable {
         return velY;
     }
 
-    @Override
-    public void tick() {
-
-    }
-
-    @Override
-    public void render(Graphics graphics) {
-
-    }
 }

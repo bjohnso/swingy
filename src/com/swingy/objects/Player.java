@@ -1,22 +1,35 @@
 package com.swingy.objects;
 
+import com.swingy.helpers.ImageTransformer;
 import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
 
 public class Player extends GameObject implements Renderable {
 
-    private BufferedImage img = null;
-    private int idle = 1;
+    protected String imgPath;
+    protected BufferedImage img = null;
+    protected boolean attack = false;
 
-    public Player(int x, int y, ID id) {
+    private int idle = 10;
+    private int counter = 1;
+    private boolean screenLeft = true;
+
+
+    public Player(int x, int y, ID id, boolean screenLeft) {
         super(x, y, id);
+        this.screenLeft = screenLeft;
+    }
+
+    public void attack(){
+        attack = true;
+        idle = 1;
+        counter = 1;
     }
 
     @Override
@@ -26,30 +39,39 @@ public class Player extends GameObject implements Renderable {
     @Override
     public void render(Graphics graphics) {
 
-        //graphics.setColor(Color.WHITE);
+        if (!attack) {
+            if (idle == 1)
+                counter = 1;
+            else if (idle == 10)
+                counter = -1;
 
-        if (idle > 400)
+                try {
+                    if (screenLeft)
+                        img = ImageIO.read(new File(imgPath + "idle/" + (idle) + ".png"));
+                    else
+                        img = ImageTransformer.horImage(ImageIO.read(new File(imgPath + "idle/" + (idle) + ".png")));
+                } catch (IOException exc) {
+
+                }
+        }
+        else {
+            if (idle == 12)
+                counter = -1;
+
+                try {
+                    if (screenLeft)
+                        img = ImageIO.read(new File(imgPath + "attack/" + (idle) + ".png"));
+                    else
+                        img = ImageTransformer.horImage(ImageIO.read(new File(imgPath + "attack/" + (idle) + ".png")));
+                } catch (IOException exc) {
+
+                }
+        }
+        graphics.drawImage(img, x, y, 500, 500,  null);
+        idle+=counter;
+        if (counter == -1 && idle == 0) {
+            attack = false;
             idle = 1;
-
-        if (idle == 1){
-            try {
-                img = ImageIO.read(new File("res/Idle(" + idle + ").png"));
-            } catch (IOException exc) {
-
-            }
         }
-
-        if (idle % 100 == 0 && idle > 99) {
-            try {
-                img = ImageIO.read(new File("res/Idle(" + (idle/100) + ").png"));
-            } catch (IOException exc) {
-
-            }
-        }
-
-
-        graphics.drawImage(img, 100, 100, 500, 500,  null);
-            idle++;
-        //graphics.fillRect(x, y, 150, (170 / 12 * 9 * 2));
     }
 }

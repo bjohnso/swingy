@@ -28,6 +28,10 @@ public class GameObjectHandler implements Renderable {
         }
     }
 
+    public LinkedList<GameObject> getObjects() {
+        return objects;
+    }
+
     public void addObject(GameObject gameObject){
         this.objects.add(gameObject);
     }
