@@ -15,8 +15,9 @@ public class Player extends GameObject implements Renderable {
     protected String imgPath;
     protected BufferedImage img = null;
     protected boolean attack = false;
+    protected boolean dead = false;
 
-    private int idle = 10;
+    private int frame = 10;
     private int counter = 1;
     private boolean screenLeft = true;
 
@@ -28,7 +29,13 @@ public class Player extends GameObject implements Renderable {
 
     public void attack(){
         attack = true;
-        idle = 1;
+        frame = 1;
+        counter = 1;
+    }
+
+    public void dead(){
+        dead = true;
+        frame = 1;
         counter = 1;
     }
 
@@ -39,39 +46,55 @@ public class Player extends GameObject implements Renderable {
     @Override
     public void render(Graphics graphics) {
 
-        if (!attack) {
-            if (idle == 1)
+        if (dead){
+            if (frame == 1)
                 counter = 1;
-            else if (idle == 10)
+            else if (frame == 10)
+                frame = 10;
+
+            try {
+                if (screenLeft)
+                    img = ImageIO.read(new File(imgPath + "dead/" + (frame) + ".png"));
+                else
+                    img = ImageTransformer.horImage(ImageIO.read(new File(imgPath + "dead/" + (frame) + ".png")));
+            } catch (IOException exc) {
+
+            }
+        }
+
+        else if (!attack) {
+            if (frame == 1)
+                counter = 1;
+            else if (frame == 10)
                 counter = -1;
 
                 try {
                     if (screenLeft)
-                        img = ImageIO.read(new File(imgPath + "idle/" + (idle) + ".png"));
+                        img = ImageIO.read(new File(imgPath + "idle/" + (frame) + ".png"));
                     else
-                        img = ImageTransformer.horImage(ImageIO.read(new File(imgPath + "idle/" + (idle) + ".png")));
+                        img = ImageTransformer.horImage(ImageIO.read(new File(imgPath + "idle/" + (frame) + ".png")));
                 } catch (IOException exc) {
 
                 }
         }
-        else {
-            if (idle == 12)
+        else if (attack){
+            if (frame == 12)
                 counter = -1;
 
                 try {
                     if (screenLeft)
-                        img = ImageIO.read(new File(imgPath + "attack/" + (idle) + ".png"));
+                        img = ImageIO.read(new File(imgPath + "attack/" + (frame) + ".png"));
                     else
-                        img = ImageTransformer.horImage(ImageIO.read(new File(imgPath + "attack/" + (idle) + ".png")));
+                        img = ImageTransformer.horImage(ImageIO.read(new File(imgPath + "attack/" + (frame) + ".png")));
                 } catch (IOException exc) {
 
                 }
         }
         graphics.drawImage(img, x, y, 500, 500,  null);
-        idle+=counter;
-        if (counter == -1 && idle == 0) {
+        frame+=counter;
+        if (counter == -1 && frame == 0) {
             attack = false;
-            idle = 1;
+            frame = 1;
         }
     }
 }

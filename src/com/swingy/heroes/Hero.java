@@ -66,7 +66,7 @@ public class Hero implements Fighter {
 
     @Override
     public boolean attack() {
-        System.out.println(this._name + " : Attacked");
+        //System.out.println(this._name + " : Attacked");
         return true;
     }
 
@@ -77,7 +77,7 @@ public class Hero implements Fighter {
         if (rand < defenceChance)
             return true;
         else {
-            System.out.println(this._name + " : Took Damage");
+            //System.out.println(this._name + " : Took Damage");
             return false;
         }
     }
@@ -96,16 +96,16 @@ public class Hero implements Fighter {
     public boolean counter(double enemyAttackPoints, double myDefencePoints) {
         if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")){
             this._damage -= (enemyAttackPoints / myDefencePoints) + (enemyAttackPoints / myDefencePoints / 100 * 13);
-            System.out.println(this._name + " : Absorbed Attack, and Regenerated");
+            //System.out.println(this._name + " : Absorbed Attack, and Regenerated");
         }
         else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")){
             FireAffinity fireAffinity = (FireAffinity)this._affinities.entrySet().iterator().next().getValue();
             fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + (enemyAttackPoints / myDefencePoints) + (this._damage / 100 * 25));
             this._affinities.replace("FIRE", fireAffinity);
-            System.out.println(this._name + " : Evaded Attack, and Powered Up");
+            //System.out.println(this._name + " : Evaded Attack, and Powered Up");
         }
         else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")){
-            System.out.println(this._name + " : Blocked Attack, and Inflicted Damage");
+            //System.out.println(this._name + " : Blocked Attack, and Inflicted Damage");
             return true;
         }
         return false;
