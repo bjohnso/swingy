@@ -31,7 +31,7 @@ public class Swingy extends Canvas implements Runnable{
     private Sprite sprite;
 
     private void tick(){
-
+        //TODO add Input Parameters
     }
 
     private void render(){
