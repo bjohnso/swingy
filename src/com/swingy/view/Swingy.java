@@ -5,10 +5,11 @@ import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
+import com.swingy.states.MenuState;
+import com.swingy.states.StateManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -21,7 +22,7 @@ public class Swingy extends Canvas implements Runnable{
 
     private double sX = 350, sY = 300;
 
-    private Menu menu;
+    private StateManager stateManager;
 
     private JFrame frame;
 
@@ -34,7 +35,7 @@ public class Swingy extends Canvas implements Runnable{
 
     private void tick(){
         //Input Logic
-        menu.tick();
+        stateManager.tick();
     }
 
     private void render(){
@@ -50,8 +51,8 @@ public class Swingy extends Canvas implements Runnable{
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, WIDTH, HEIGHT);
 
-        //Menu
-        menu.render(graphics);
+        //MenuState
+        stateManager.render(graphics);
 
         //Clean graphics and display from Buffer Strategy
         graphics.dispose();
@@ -150,7 +151,8 @@ public class Swingy extends Canvas implements Runnable{
         addMouseListener(mouseInput);
         addMouseMotionListener(mouseInput);
 
-        menu = new Menu(this);
+        stateManager = new StateManager();
+        stateManager.addState(new MenuState(this));
 
         start();
     }

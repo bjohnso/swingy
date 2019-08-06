@@ -1,7 +1,6 @@
 package com.swingy.objects;
 
-import com.swingy.handlers.GameObjectHandler;
-import com.swingy.helpers.ImageTransformer;
+import com.swingy.util.helpers.ImageTransformer;
 import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
 

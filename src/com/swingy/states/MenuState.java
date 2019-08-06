@@ -1,7 +1,9 @@
-package com.swingy.view;
+package com.swingy.states;
 
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
+import com.swingy.states.State;
+import com.swingy.states.StateManager;
 import com.swingy.util.Fonts;
 
 import java.awt.*;
@@ -9,17 +11,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import com.swingy.rendering.ui.Button;
+import com.swingy.view.Swingy;
 
-public class Menu {
+public class MenuState implements State {
 
     private Swingy swingy;
 
-    private final Button[] options;
+    private Button[] options;
     private int currentSelection;
 
-    public Menu(Swingy swingy){
-        this.swingy = swingy;
-
+    @Override
+    public void init() {
         options = new Button[4];
         options[0] = new Button("New Game", (200 + 0 * 80),
                 new Font("Arial", Font.PLAIN, 32),
@@ -43,7 +45,17 @@ public class Menu {
                 Color.YELLOW);
     }
 
-    public void tick() {
+    @Override
+    public void enterState() {
+
+    }
+
+    public MenuState(Swingy swingy){
+        this.swingy = swingy;
+    }
+
+    @Override
+    public void tick(StateManager stateManager) {
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentSelection--;
             if (currentSelection < 0){
@@ -68,10 +80,10 @@ public class Menu {
         }
 
         if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
-            select();
+            select(stateManager);
     }
 
-    private void select(){
+    private void select(StateManager stateManager){
         switch (currentSelection){
             case 0 :
                 System.out.println("new game");
@@ -87,6 +99,16 @@ public class Menu {
                 swingy.stop();
                 break ;
         }
+    }
+
+    @Override
+    public void exitState() {
+
+    }
+
+    @Override
+    public String getName() {
+        return "menu";
     }
 
     public void render (Graphics graphics){
