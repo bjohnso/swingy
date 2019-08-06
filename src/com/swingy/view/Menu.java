@@ -1,9 +1,11 @@
 package com.swingy.view;
 
+import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.util.Fonts;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import com.swingy.rendering.ui.Button;
@@ -41,17 +43,31 @@ public class Menu {
                 Color.YELLOW);
     }
 
-    public void tick(){
+    public void tick() {
+        if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
+            currentSelection--;
+            if (currentSelection < 0){
+                currentSelection = options.length - 1;
+            }
+        }
+
+        if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)){
+            currentSelection++;
+            if (currentSelection > options.length - 1){
+                currentSelection = 0;
+            }
+        }
+
         boolean clicked = false;
 
-        for (int i = 0; i < options.length; i++){
+        for (int i = 0; i < options.length; i++) {
             if (options[i].intersects(new Rectangle(MouseInput.getX(), MouseInput.getY(), 1, 1))) {
                 currentSelection = i;
                 clicked = MouseInput.wasPressed(MouseEvent.BUTTON1);
             }
         }
 
-        if (clicked)
+        if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
             select();
     }
 
