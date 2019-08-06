@@ -16,10 +16,12 @@ import java.awt.image.BufferStrategy;
 public class Swingy extends Canvas implements Runnable{
 
     public static final String TITLE = "Swingy";
-    public static final int WIDTH = 640;
+    public static final int WIDTH = 1080;
     public static final int HEIGHT = WIDTH / 16 * 9;
 
     private double sX = 350, sY = 300;
+
+    private Menu menu;
 
     private JFrame frame;
 
@@ -31,7 +33,8 @@ public class Swingy extends Canvas implements Runnable{
     private Sprite sprite;
 
     private void tick(){
-        //TODO add Input Parameters
+        //Input Logic
+        menu.tick();
     }
 
     private void render(){
@@ -46,8 +49,9 @@ public class Swingy extends Canvas implements Runnable{
         //Background
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, WIDTH, HEIGHT);
-        texture.render(graphics, 100, 100);
-        sprite.render(graphics, 350, 300);
+
+        //Menu
+        menu.render(graphics);
 
         //Clean graphics and display from Buffer Strategy
         graphics.dispose();
@@ -116,18 +120,13 @@ public class Swingy extends Canvas implements Runnable{
         new Thread(this, "SwingyMain-Thread").start();
     }
 
-    private void stop(){
+    public void stop(){
         if (!running)
             return;
         running = false;
     }
 
     public Swingy(){
-        texture = new Texture("test");
-
-        sheet = new SpriteSheet(new Texture("test_sheet"), 64);
-        sprite = new Sprite(sheet, 3, 1);
-
         //Initialise Window
         frame = new JFrame(TITLE);
         frame.add(this);
@@ -150,6 +149,8 @@ public class Swingy extends Canvas implements Runnable{
         MouseInput mouseInput = new MouseInput();
         addMouseListener(mouseInput);
         addMouseMotionListener(mouseInput);
+
+        menu = new Menu(this);
 
         start();
     }
