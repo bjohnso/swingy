@@ -15,6 +15,7 @@ public class Texture {
     private final static Map<String, TextureManager> textureMap = new HashMap<>();
     private TextureManager manager;
     private String fileName;
+    private BufferedImage image;
 
     public Texture(String fileName) {
         this.fileName = fileName;
@@ -25,8 +26,9 @@ public class Texture {
         } else {
             try {
                 System.out.println("loading texture : " + fileName);
-                manager = new TextureManager(ImageIO.read(new File("resources/textures/" + fileName + ".png")));
+                manager = new TextureManager(ImageIO.read(new File("./res/textures/" + fileName + ".png")));
                 textureMap.put(fileName, manager);
+                image = manager.getImage();
             } catch (IOException e){
                 e.printStackTrace();
             }
@@ -43,10 +45,10 @@ public class Texture {
     }
 
     public void render (Graphics graphics, double x, double y){
-        graphics.drawImage(manager.getImage(), (int)x, (int)y, null);
+        graphics.drawImage(image, (int)x, (int)y, null);
     }
 
     public BufferedImage getImage(){
-        return this.manager.getImage();
+        return image;
     }
 }

@@ -13,6 +13,11 @@ public class Sprite {
                 spriteSheet.getWidth(), spriteSheet.getHeight());
     }
 
+    public Sprite(String textureName){
+        Texture texture = new Texture(textureName);
+        this.image = texture.getImage();
+    }
+
     public void render(Graphics graphics, double x, double y){
         graphics.drawImage(image, (int)x, (int)y, null);
     }

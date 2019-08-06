@@ -1,7 +1,10 @@
 package com.swingy.states;
 
+import com.swingy.entities.Player;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
+import com.swingy.rendering.textures.Sprite;
+import com.swingy.rendering.textures.Texture;
 import com.swingy.states.State;
 import com.swingy.states.StateManager;
 import com.swingy.util.Fonts;
@@ -86,7 +89,7 @@ public class MenuState implements State {
     private void select(StateManager stateManager){
         switch (currentSelection){
             case 0 :
-                System.out.println("new game");
+                stateManager.setState("level1");
                 break ;
             case 1 :
                 System.out.println("load game");

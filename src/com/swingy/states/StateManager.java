@@ -15,7 +15,6 @@ public class StateManager {
 
     public void addState(State state){
         map.put(state.getName().toUpperCase(), state);
-        state.init();
         if (currentState == null){
             state.enterState();
             currentState = state;
@@ -28,9 +27,10 @@ public class StateManager {
             System.err.println("State <" + name + "> does not exist");
             return;
         }
-        currentState.exitState();
-        state.exitState();
+        if (currentState != null)
+            currentState.exitState();
         currentState = state;
+        state.init();
     }
 
     public void tick(){

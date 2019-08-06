@@ -5,6 +5,7 @@ import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
+import com.swingy.states.GameState;
 import com.swingy.states.MenuState;
 import com.swingy.states.StateManager;
 
@@ -115,6 +116,7 @@ public class Swingy extends Canvas implements Runnable{
     }
 
     private void start(){
+        stateManager.setState("menu");
         if (running)
             return;
         running = true;
@@ -153,6 +155,7 @@ public class Swingy extends Canvas implements Runnable{
 
         stateManager = new StateManager();
         stateManager.addState(new MenuState(this));
+        stateManager.addState(new GameState());
 
         start();
     }
