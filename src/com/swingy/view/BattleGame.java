@@ -4,7 +4,7 @@ import com.swingy.game.BattleEngine;
 import com.swingy.handlers.GameObjectHandler;
 import com.swingy.heroes.Hero;
 import com.swingy.id.ID;
-import com.swingy.input.KeyInput;
+import com.swingy.input.KeyInputDeprecated;
 import com.swingy.objects.*;
 
 import javax.imageio.ImageIO;
@@ -43,7 +43,7 @@ public class BattleGame extends Canvas implements Runnable{
         gameObjectHandler = new GameObjectHandler();
 
         //Listen for Keyboard Input
-        this.addKeyListener(new KeyInput(gameObjectHandler));
+        this.addKeyListener(new KeyInputDeprecated(gameObjectHandler));
 
         challengerHUD = new HUD(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 5, ID.ChallengerHUD);
         defenderHUD = new HUD(DEFAULT_WIDTH / 100 * 65, DEFAULT_HEIGHT / 100 * 5, ID.DefenderHUD);

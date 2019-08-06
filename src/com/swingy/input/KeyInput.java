@@ -1,41 +1,40 @@
 package com.swingy.input;
 
-import com.swingy.handlers.GameObjectHandler;
-import com.swingy.id.ID;
-import com.swingy.objects.GameObject;
-import com.swingy.objects.Player;
-
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class KeyInput extends KeyAdapter {
 
-    private GameObjectHandler gameObjectHandler;
+    private static final int NUM_KEYS = 256;
 
-    public KeyInput(GameObjectHandler gameObjectHandler){
-        this.gameObjectHandler = gameObjectHandler;
+    private static final boolean keys[] = new boolean[NUM_KEYS];
+    private static final boolean lastKeys[] = new boolean[NUM_KEYS];
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        keys[e.getKeyCode()] = true;
     }
 
-    public void keyPressed(KeyEvent event){
-        int key = event.getKeyCode();
+    @Override
+    public void keyReleased(KeyEvent e) {
+        keys[e.getKeyCode()] = false;
+    }
 
-        for (int i = 0; i < gameObjectHandler.getObjects().size(); i++){
-            if (!gameObjectHandler.getObjects().get(i).getClass().getName().equalsIgnoreCase("com.swingy.objects.HUD")){
-                Player tempObject = (Player) gameObjectHandler.getObjects().get(i);
-
-                if (tempObject.getId() == ID.Challenger) {
-                    if (key == KeyEvent.VK_A)
-                        tempObject.attack();
-                } else if (tempObject.getId() == ID.Defender) {
-                    if (key == KeyEvent.VK_D)
-                        tempObject.attack();
-                }
-            }
+    public static void update(){
+        for (int i = 0; i < NUM_KEYS; i++){
+            lastKeys[i] = keys[i];
         }
     }
 
-    public void KeyReleased(KeyEvent event){
-        int key = event.getKeyCode();
+    public static boolean isDown(int keyCode){
+        return keys[keyCode];
     }
 
+    public static boolean wasPressed(int keyCode){
+        return isDown(keyCode) && !lastKeys[keyCode];
+    }
+
+    public static boolean wasReleased(int keyCode){
+        return !isDown(keyCode) && lastKeys[keyCode];
+    }
 }
