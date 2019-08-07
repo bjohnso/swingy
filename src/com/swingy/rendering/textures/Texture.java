@@ -28,11 +28,11 @@ public class Texture {
                 System.out.println("loading texture : " + fileName);
                 manager = new TextureManager(ImageIO.read(new File("./res/textures/" + fileName + ".png")));
                 textureMap.put(fileName, manager);
-                image = manager.getImage();
             } catch (IOException e){
                 e.printStackTrace();
             }
         }
+        image = manager.getImage();
     }
 
     @Override

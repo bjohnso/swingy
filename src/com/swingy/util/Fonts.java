@@ -7,6 +7,12 @@ import java.awt.*;
 public class Fonts {
 
     public static void drawString(Graphics graphics, Font font, Color color, String text, int x, int y){
+
+        if (x < 0) {
+            drawString(graphics, font, color, text, y, false);
+            return ;
+        }
+
         graphics.setColor(color);
         graphics.setFont(font);
         graphics.drawString(text, x, y);
@@ -35,4 +41,5 @@ public class Fonts {
         }
         drawString(graphics, font, color, text, x, y);
     }
+
 }

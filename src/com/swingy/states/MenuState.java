@@ -1,5 +1,6 @@
 package com.swingy.states;
 
+import com.swingy.entities.Entity;
 import com.swingy.entities.Player;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
@@ -22,6 +23,8 @@ public class MenuState implements State {
 
     private Button[] options;
     private int currentSelection;
+
+    private boolean isResume = false;
 
     @Override
     public void init() {
@@ -50,7 +53,8 @@ public class MenuState implements State {
 
     @Override
     public void enterState() {
-
+        if (!isResume)
+            init();
     }
 
     public MenuState(Swingy swingy){
@@ -89,7 +93,7 @@ public class MenuState implements State {
     private void select(StateManager stateManager){
         switch (currentSelection){
             case 0 :
-                stateManager.setState("level1");
+                stateManager.setState("character");
                 break ;
             case 1 :
                 System.out.println("load game");
@@ -106,7 +110,7 @@ public class MenuState implements State {
 
     @Override
     public void exitState() {
-
+        isResume = true;
     }
 
     @Override
@@ -126,5 +130,10 @@ public class MenuState implements State {
                 options[i].setSelected(false);
             options[i].render(graphics);
         }
+    }
+
+    @Override
+    public void addEntity(Entity entity) {
+
     }
 }

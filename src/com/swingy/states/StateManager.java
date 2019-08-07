@@ -30,7 +30,7 @@ public class StateManager {
         if (currentState != null)
             currentState.exitState();
         currentState = state;
-        state.init();
+        state.enterState();
     }
 
     public void tick(){

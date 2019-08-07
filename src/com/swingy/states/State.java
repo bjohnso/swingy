@@ -1,5 +1,7 @@
 package com.swingy.states;
 
+import com.swingy.entities.Entity;
+
 import java.awt.*;
 
 public interface State {
@@ -9,4 +11,5 @@ public interface State {
     public String getName();
     public void tick(StateManager stateManager);
     public void render(Graphics graphics);
+    public void addEntity(Entity entity);
 }
