@@ -23,14 +23,9 @@ public class GameState implements State {
 
     @Override
     public void init() {
-        mapGenerator = new MapGenerator();
+        mapGenerator = new MapGenerator(5);
         entities = new ArrayList<Entity>();
         tiles = mapGenerator.generate();
-        /*for (int i = 0; i < 17; i++) {
-            tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain_test"), 64), 1, 1)));
-            x += 65;
-        }*/
-
     }
 
     @Override
@@ -58,6 +53,10 @@ public class GameState implements State {
 
     @Override
     public void render(Graphics graphics) {
+
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+
         for (Entity e : entities)
             e.render(graphics);
 

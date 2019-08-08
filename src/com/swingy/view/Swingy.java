@@ -19,7 +19,7 @@ import java.awt.image.BufferStrategy;
 public class Swingy extends Canvas implements Runnable{
 
     public static final String TITLE = "Swingy";
-    public static final int WIDTH = 1080;
+    public static final int WIDTH = 1920;
     public static final int HEIGHT = WIDTH / 16 * 9;
 
     private double sX = 350, sY = 300;
