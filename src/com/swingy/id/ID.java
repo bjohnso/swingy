@@ -8,5 +8,13 @@ public enum ID {
     Challenger(),
     Defender(),
     ChallengerHUD(),
-    DefenderHUD();
+    DefenderHUD(),
+    DINO(),
+    NINJA(),
+    ROBO(),
+    ZOMBO(),
+    GROUND(),
+    ITEM(),
+    LAVA(),
+    PIT()
 }

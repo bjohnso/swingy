@@ -1,8 +1,12 @@
 package com.swingy.map;
 
+import com.swingy.entities.Player;
+import com.swingy.id.ID;
+import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
+import com.swingy.states.GameState;
 import com.swingy.view.Swingy;
 import com.swingy.view.Window;
 
@@ -22,7 +26,10 @@ public class MapGenerator {
             "LAVA",
             "PIT",
             "MUSHROOM",
-            "ENEMY",
+            "DINO",
+            "ROBO",
+            "ZOMBO",
+            "NINJA",
             "GROUND"
     };
 
@@ -61,6 +68,7 @@ public class MapGenerator {
                                 tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 3, 2)));
                             else {
                                 int padding = 32;
+                                Tile tile;
                                 switch (calculateEntity()) {
                                     case "LAVA":
                                         if (i + 2 < MAP_SIZE - 1 && j + 2 < MAP_SIZE - 1 && !checkNineByNine("!", j, i)) {
@@ -86,6 +94,26 @@ public class MapGenerator {
                                         break;
                                     case "MUSHROOM":
                                         tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/mushroom"), 32), 1, 1)));
+                                        break;
+                                    case "DINO":
+                                        tile = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/dino/1"), 32), 1, 1));
+                                        tile.setID(ID.DINO);
+                                        tiles.add(tile);
+                                        break;
+                                    case "ROBO":
+                                        tile = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/robo/1"), 32), 1, 1));
+                                        tile.setID(ID.ROBO);
+                                        tiles.add(tile);
+                                        break;
+                                    case "ZOMBO":
+                                        tile = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/zombo/1"), 32), 1, 1));
+                                        tile.setID(ID.ZOMBO);
+                                        tiles.add(tile);
+                                        break;
+                                    case "NINJA":
+                                        tile = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ninja/1"), 32), 1, 1));
+                                        tile.setID(ID.NINJA);
+                                        tiles.add(tile);
                                         break;
                                     default:
                                         tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 2)));
@@ -119,13 +147,25 @@ public class MapGenerator {
             item++;
             return entities[2];
         }
-        else if (seed < 8.0 / 20.0) {
+        else if (seed < .4 / 20.0) {
             enemy++;
             return entities[3];
         }
+        else if (seed < .5 / 20.0) {
+            enemy++;
+            return entities[4];
+        }
+        else if (seed < .6 / 20.0) {
+            enemy++;
+            return entities[5];
+        }
+        else if (seed < .7 / 20.0) {
+            enemy++;
+            return entities[6];
+        }
         else {
             path++;
-            return entities[4];
+            return entities[7];
         }
 
     }

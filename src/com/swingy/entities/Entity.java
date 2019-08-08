@@ -5,6 +5,7 @@ import com.swingy.states.GameState;
 import com.swingy.states.State;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public abstract class Entity {
 

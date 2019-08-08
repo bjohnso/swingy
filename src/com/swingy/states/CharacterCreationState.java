@@ -48,9 +48,23 @@ public class CharacterCreationState implements State {
                 Color.WHITE,
                 Color.YELLOW);
 
-        characters = new Player[3];
-        characters[0] = new Player(new Sprite("dino/idle/1"),
-                (Swingy.WIDTH / 2), 100, this, new Animation(30,
+        characters = new Player[4];
+
+        characters[0] = new Player(new Sprite("ninja/idle/1"),
+                (Swingy.WIDTH / 2), 100, this, new Animation(20,
+                new Texture("ninja/idle/1"),
+                new Texture("ninja/idle/2"),
+                new Texture("ninja/idle/3"),
+                new Texture("ninja/idle/4"),
+                new Texture("ninja/idle/5"),
+                new Texture("ninja/idle/6"),
+                new Texture("ninja/idle/7"),
+                new Texture("ninja/idle/8"),
+                new Texture("ninja/idle/9"),
+                new Texture("ninja/idle/10")));
+
+        characters[1] = new Player(new Sprite("dino/idle/1"),
+                (Swingy.WIDTH / 2), 100, this, new Animation(20,
                 new Texture("dino/idle/1"),
                 new Texture("dino/idle/2"),
                 new Texture("dino/idle/3"),
@@ -62,8 +76,8 @@ public class CharacterCreationState implements State {
                 new Texture("dino/idle/9"),
                 new Texture("dino/idle/10")));
 
-        characters[1] = new Player(new Sprite("robo/idle/1"),
-                (Swingy.WIDTH / 2), 50, this, new Animation(30,
+        characters[2] = new Player(new Sprite("robo/idle/1"),
+                (Swingy.WIDTH / 2), 50, this, new Animation(20,
                 new Texture("robo/idle/1"),
                 new Texture("robo/idle/2"),
                 new Texture("robo/idle/3"),
@@ -75,8 +89,8 @@ public class CharacterCreationState implements State {
                 new Texture("robo/idle/9"),
                 new Texture("robo/idle/10")));
 
-        characters[2] = new Player(new Sprite("zombo/idle/1"),
-                (Swingy.WIDTH / 2), 50, this, new Animation(30,
+        characters[3] = new Player(new Sprite("zombo/idle/1"),
+                (Swingy.WIDTH / 2), 50, this, new Animation(20,
                 new Texture("zombo/idle/1"),
                 new Texture("zombo/idle/2"),
                 new Texture("zombo/idle/3"),
@@ -148,7 +162,7 @@ public class CharacterCreationState implements State {
         switch (currentButtonSelection){
             case 0 :
                 currentCharacterSelection++;
-                if (currentCharacterSelection > 2)
+                if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
                 break ;
             case 1 :
