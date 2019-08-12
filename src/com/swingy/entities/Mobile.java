@@ -37,5 +37,7 @@ public abstract class Mobile extends Entity {
     public void move(){
         x += dx;
         y += dy;
+        dx = 0;
+        dy = 0;
     }
 }

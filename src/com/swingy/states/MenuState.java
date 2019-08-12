@@ -1,13 +1,8 @@
 package com.swingy.states;
 
 import com.swingy.entities.Entity;
-import com.swingy.entities.Player;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
-import com.swingy.rendering.textures.Sprite;
-import com.swingy.rendering.textures.Texture;
-import com.swingy.states.State;
-import com.swingy.states.StateManager;
 import com.swingy.util.Fonts;
 
 import java.awt.*;
@@ -52,9 +47,10 @@ public class MenuState implements State {
     }
 
     @Override
-    public void enterState() {
+    public State enterState() {
         if (!isResume)
             init();
+        return this;
     }
 
     public MenuState(Swingy swingy){

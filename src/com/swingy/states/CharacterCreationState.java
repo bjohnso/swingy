@@ -2,6 +2,7 @@ package com.swingy.states;
 
 import com.swingy.entities.Entity;
 import com.swingy.entities.Player;
+import com.swingy.id.ID;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Animation;
@@ -27,6 +28,8 @@ public class CharacterCreationState implements State {
     private Player[] characters;
     private int currentCharacterSelection = 0;
     private boolean stateResume = false;
+
+    protected static Player currentPlayer;
 
     @Override
     public void init() {
@@ -107,12 +110,28 @@ public class CharacterCreationState implements State {
                 new Texture("zombo/idle/14"),
                 new Texture("zombo/idle/15")));
 
+        characters[0].setPlayerClass(ID.NINJA);
+        characters[1].setPlayerClass(ID.DINO);
+        characters[2].setPlayerClass(ID.ROBO);
+        characters[3].setPlayerClass(ID.ZOMBO);
+
+        characters[0].setPlayerClassName("ninja");
+        characters[1].setPlayerClassName("dino");
+        characters[2].setPlayerClassName("robo");
+        characters[3].setPlayerClassName("zombo");
+
+        characters[0].setLevel(5);
+        characters[1].setLevel(5);
+        characters[2].setLevel(5);
+        characters[3].setLevel(5);
+
     }
 
     @Override
-    public void enterState() {
+    public State enterState() {
         if (!stateResume)
             init();
+        return this;
     }
 
     @Override
@@ -166,7 +185,8 @@ public class CharacterCreationState implements State {
                     currentCharacterSelection = 0;
                 break ;
             case 1 :
-                stateManager.setState("map");
+                currentPlayer = characters[currentCharacterSelection];
+                GameState gameState = (GameState) stateManager.setState("map");
                 break ;
             case 2 :
                 stateManager.setState("menu");

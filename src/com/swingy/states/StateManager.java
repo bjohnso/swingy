@@ -21,16 +21,16 @@ public class StateManager {
         }
     }
 
-    public void setState(String name){
+    public State setState(String name){
         State state = map.get(name.toUpperCase());
         if (state == null){
             System.err.println("State <" + name + "> does not exist");
-            return;
+            return null;
         }
         if (currentState != null)
             currentState.exitState();
         currentState = state;
-        state.enterState();
+        return state.enterState();
     }
 
     public void tick(){

@@ -18,9 +18,12 @@ public class MapGenerator {
 
     private int path = 0, enemy = 0, block = 0, item = 0, lava = 0, pit = 0;
     private String map[][];
+    private Tile tileMap[][];
 
     private ArrayList<Tile> tiles;
     private static int MAP_SIZE;
+
+    private Player player;
 
     private String[] entities = {
             "LAVA",
@@ -33,10 +36,13 @@ public class MapGenerator {
             "GROUND"
     };
 
-    public MapGenerator(int level){
+    public MapGenerator(Player player){
+        this.player = player;
+
         tiles = new ArrayList<>();
-        MAP_SIZE = (level - 1) * 5 + 10 - (level % 2);
+        MAP_SIZE = (player.getLevel() - 1) * 5 + 10 - (player.getLevel() % 2);
         map = new String[MAP_SIZE][MAP_SIZE];
+        tileMap = new Tile[MAP_SIZE][MAP_SIZE];
     }
 
     public ArrayList<Tile> generate(){
@@ -46,26 +52,33 @@ public class MapGenerator {
         for (int i = 0; i < map.length; i++){
             for (int j = 0; j < map[i].length; j++) {
 
-                if (map[i][j] != "!"){
+                if (i == map.length / 2 && j == map.length / 2) {
+                    map[i][j] = "P";
+                    tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/" + player.getPlayerClassName() + "/1"), 32), 1, 1), true);
+                    tileMap[i][j].setID(player.getPlayerClass());
+                    tiles.add(tileMap[i][j]);
+                }
+
+                else if (map[i][j] != "!"){
                         if (i == 0) {
                             if (j == 0)
-                                tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 1, 1)));
+                                tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 1, 1), ID.BORDER);
                             else if (j == MAP_SIZE - 1)
-                                tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 3, 1)));
+                                tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 3, 1), ID.BORDER);
                             else
-                                tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 1)));
+                                tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 1), ID.BORDER);
                         } else if (i == MAP_SIZE - 1) {
                             if (j == 0)
-                                tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 1, 3)));
+                                tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 1, 3), ID.BORDER);
                             else if (j == MAP_SIZE - 1)
-                                tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 3, 3)));
+                                tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 3, 3), ID.BORDER);
                             else
-                                tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 3)));
+                                tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 3), ID.BORDER);
                         } else {
                             if (j == 0)
-                                tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 1, 2)));
+                                tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 1, 2), ID.BORDER);
                             else if (j == MAP_SIZE - 1)
-                                tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 3, 2)));
+                                tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 3, 2), ID.BORDER);
                             else {
                                 int padding = 32;
                                 Tile tile;
@@ -75,52 +88,54 @@ public class MapGenerator {
                                             for (int k = 0; k < 3; k++) {
                                                 for (int l = 0; l < 3; l++) {
                                                     map[i + k][j + l] = "!";
-                                                    tiles.add(new Tile(x + (padding * l), y + (padding * k), new Sprite(new SpriteSheet(new Texture("terrain/lava"), 32), l + 1, k + 1)));
+                                                    tileMap[i + k][j + l] = new Tile(x + (padding * l), y + (padding * k), new Sprite(new SpriteSheet(new Texture("terrain/lava"), 32), l + 1, k + 1));
+                                                    if (k > 0 || l > 0)
+                                                        tiles.add(tileMap[i + k][j + l]);
                                                 }
                                             }
                                         } else
-                                            tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 2)));
+                                            tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 2), ID.GROUND);
                                         break;
                                     case "PIT":
                                         if (i + 2 < MAP_SIZE - 1 && j + 2 < MAP_SIZE - 1 && !checkNineByNine("!", j, i)) {
                                             for (int k = 0; k < 3; k++) {
                                                 for (int l = 0; l < 3; l++) {
                                                     map[i + k][j + l] = "!";
-                                                    tiles.add(new Tile(x + (padding * l), y + (padding * k), new Sprite(new SpriteSheet(new Texture("terrain/pit"), 32), l + 1, k + 1)));
+                                                    tileMap[i + k][j + l] = new Tile(x + (padding * l), y + (padding * k), new Sprite(new SpriteSheet(new Texture("terrain/pit"), 32), l + 1, k + 1));
+                                                    tiles.add(tileMap[i + k][j + l]);
+                                                    if (k > 0 || l > 0)
+                                                        tiles.add(tileMap[i + k][j + l]);
                                                 }
                                             }
                                         } else
-                                            tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 2)));
+                                            tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 2), ID.GROUND);
                                         break;
                                     case "MUSHROOM":
-                                        tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/mushroom"), 32), 1, 1)));
+                                        tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/mushroom"), 32), 1, 1));
                                         break;
                                     case "DINO":
-                                        tile = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/dino/1"), 32), 1, 1));
-                                        tile.setID(ID.DINO);
-                                        tiles.add(tile);
+                                        tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/dino/1"), 32), 1, 1));
+                                        tileMap[i][j].setID(ID.DINO);
                                         break;
                                     case "ROBO":
-                                        tile = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/robo/1"), 32), 1, 1));
-                                        tile.setID(ID.ROBO);
-                                        tiles.add(tile);
+                                        tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/robo/1"), 32), 1, 1));
+                                        tileMap[i][j].setID(ID.ROBO);
                                         break;
                                     case "ZOMBO":
-                                        tile = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/zombo/1"), 32), 1, 1));
-                                        tile.setID(ID.ZOMBO);
-                                        tiles.add(tile);
+                                        tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/zombo/1"), 32), 1, 1));
+                                        tileMap[i][j].setID(ID.ZOMBO);
                                         break;
                                     case "NINJA":
-                                        tile = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ninja/1"), 32), 1, 1));
-                                        tile.setID(ID.NINJA);
-                                        tiles.add(tile);
+                                        tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ninja/1"), 32), 1, 1));
+                                        tileMap[i][j].setID(ID.NINJA);
                                         break;
                                     default:
-                                        tiles.add(new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 2)));
+                                        tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground"), 32), 2, 2), ID.GROUND);
                                         break;
                                 }
                             }
                         }
+                    tiles.add(tileMap[i][j]);
                 }
                 x += 32;
             }
@@ -173,14 +188,14 @@ public class MapGenerator {
     private boolean checkNineByNine(String c, int x, int y){
         for (int i = y; i < y + 3; i++){
             for (int j = x; j < x + 3; j++){
-                if (map[i][j] == c)
+                if (map[i][j] == c || map[i][j] == "P")
                     return true;
             }
         }
         return false;
     }
 
-    public String[][] getMap() {
-        return map;
+    public Tile[][] getTileMap() {
+        return tileMap;
     }
 }

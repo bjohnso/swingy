@@ -11,12 +11,29 @@ public class Tile {
     protected Sprite sprite;
     protected boolean solid;
     protected ID id;
+    protected boolean isPlayer = false;
 
     public Tile(float x, float y, Sprite sprite){
         this.x = x;
         this.y = y;
         this.sprite = sprite;
         this.solid = true;
+    }
+
+    public Tile(float x, float y, Sprite sprite, boolean isPlayer){
+        this.x = x;
+        this.y = y;
+        this.sprite = sprite;
+        this.solid = true;
+        this.isPlayer = isPlayer;
+    }
+
+    public Tile(float x, float y, Sprite sprite, ID id){
+        this.x = x;
+        this.y = y;
+        this.sprite = sprite;
+        this.solid = true;
+        this.id = id;
     }
 
     public float getX() {
@@ -27,12 +44,24 @@ public class Tile {
         return y;
     }
 
+    public void moveX(float x) {
+        this.x += x;
+    }
+
+    public void moveY(float y) {
+        this.y += y;
+    }
+
     public void setID(ID id) {
         this.id = id;
     }
 
     public ID getID(){
         return this.id;
+    }
+
+    public boolean isPlayer() {
+        return isPlayer;
     }
 
     public void render(Graphics graphics){

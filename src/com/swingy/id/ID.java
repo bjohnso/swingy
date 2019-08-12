@@ -13,6 +13,7 @@ public enum ID {
     NINJA(),
     ROBO(),
     ZOMBO(),
+    BORDER(),
     GROUND(),
     ITEM(),
     LAVA(),
