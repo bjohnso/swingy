@@ -88,7 +88,7 @@ public class MapGenerator {
                                             for (int k = 0; k < 3; k++) {
                                                 for (int l = 0; l < 3; l++) {
                                                     map[i + k][j + l] = "!";
-                                                    tileMap[i + k][j + l] = new Tile(x + (padding * l), y + (padding * k), new Sprite(new SpriteSheet(new Texture("terrain/lava"), 32), l + 1, k + 1));
+                                                    tileMap[i + k][j + l] = new Tile(x + (padding * l), y + (padding * k), new Sprite(new SpriteSheet(new Texture("terrain/lava"), 32), l + 1, k + 1), ID.LAVA);
                                                     if (k > 0 || l > 0)
                                                         tiles.add(tileMap[i + k][j + l]);
                                                 }
@@ -101,7 +101,7 @@ public class MapGenerator {
                                             for (int k = 0; k < 3; k++) {
                                                 for (int l = 0; l < 3; l++) {
                                                     map[i + k][j + l] = "!";
-                                                    tileMap[i + k][j + l] = new Tile(x + (padding * l), y + (padding * k), new Sprite(new SpriteSheet(new Texture("terrain/pit"), 32), l + 1, k + 1));
+                                                    tileMap[i + k][j + l] = new Tile(x + (padding * l), y + (padding * k), new Sprite(new SpriteSheet(new Texture("terrain/pit"), 32), l + 1, k + 1), ID.PIT);
                                                     tiles.add(tileMap[i + k][j + l]);
                                                     if (k > 0 || l > 0)
                                                         tiles.add(tileMap[i + k][j + l]);

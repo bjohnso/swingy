@@ -1,14 +1,11 @@
 package com.swingy.objects;
 
-import com.swingy.handlers.GameObjectHandler;
 import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
 
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
-public class HUD extends GameObject implements Renderable{
+public class HUD extends BattleObject implements Renderable{
 
     private static final int DEFAULT_WIDTH = 1200;
     private static final int DEFAULT_HEIGHT = DEFAULT_WIDTH / 12 * 9;

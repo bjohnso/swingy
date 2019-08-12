@@ -12,7 +12,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
-public class Player extends GameObject implements Renderable, PropertyChangeListener {
+public class Player extends BattleObject implements Renderable, PropertyChangeListener {
 
     protected String imgPath;
     protected BufferedImage img = null;

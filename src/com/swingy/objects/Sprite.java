@@ -5,7 +5,7 @@ import com.swingy.interfaces.Renderable;
 
 import java.awt.*;
 
-public class Sprite extends GameObject implements Renderable {
+public class Sprite extends BattleObject implements Renderable {
     public Sprite(int x, int y, ID id) {
         super(x, y, id);
     }

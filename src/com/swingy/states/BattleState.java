@@ -1,11 +1,15 @@
-package com.swingy.view;
+package com.swingy.states;
 
+import com.swingy.entities.Entity;
 import com.swingy.game.BattleEngine;
 import com.swingy.handlers.GameObjectHandler;
 import com.swingy.heroes.Hero;
 import com.swingy.id.ID;
-import com.swingy.input.KeyInputDeprecated;
 import com.swingy.objects.*;
+import com.swingy.states.State;
+import com.swingy.states.StateManager;
+import com.swingy.view.Swingy;
+import com.swingy.view.Window;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -15,35 +19,29 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class BattleGame extends Canvas implements Runnable{
+public class BattleState extends Canvas implements State {
 
-    private static final int DEFAULT_WIDTH = 1200;
-    private static final int DEFAULT_HEIGHT = DEFAULT_WIDTH / 12 * 9;
+    private static final int DEFAULT_WIDTH = Swingy.WIDTH;
+    private static final int DEFAULT_HEIGHT = Swingy.HEIGHT;
 
-    private String imgPath = "res/background/background(";
+    private String imgPath = "res/background/";
 
-    private Thread gameThread;
-    private boolean running;
     private GameObjectHandler gameObjectHandler;
     private BufferedImage img;
+
+    private boolean stateResume = false;
 
     private HUD challengerHUD;
     private HUD defenderHUD;
 
     private Hero a = new Hero("Asuna", "Water");
     private Hero b = new Hero("Ragos", "Fire");
-    private Hero c = new Hero("Titan", "Earth");
-
-    private int turn = 1;
 
     private BattleEngine battleEngine;
 
-    public BattleGame(){
-
+    @Override
+    public void init() {
         gameObjectHandler = new GameObjectHandler();
-
-        //Listen for Keyboard Input
-        this.addKeyListener(new KeyInputDeprecated(gameObjectHandler));
 
         challengerHUD = new HUD(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 5, ID.ChallengerHUD);
         defenderHUD = new HUD(DEFAULT_WIDTH / 100 * 65, DEFAULT_HEIGHT / 100 * 5, ID.DefenderHUD);
@@ -55,83 +53,49 @@ public class BattleGame extends Canvas implements Runnable{
                 , ID.Defender, false, defenderHUD));
 
 
-        new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT, "Battle", this);
-
         //Initialising Battle Engine
         battleEngine = BattleEngine.getBattleEngine();
         battleEngine.addPropertyChangeListener((Player)gameObjectHandler.getObjects().get(0));
         battleEngine.addPropertyChangeListener((Player)gameObjectHandler.getObjects().get(1));
 
-        battleEngine.setChallenger(b);
-        battleEngine.setDefender(c);
-    }
-
-    /*public synchronized void start(){
-        gameThread = new Thread(this);
-        gameThread.start();
-        running = true;
-    }*/
-
-    public synchronized void stop(){
-        try {
-            gameThread.join();
-            running = false;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        battleEngine.setChallenger(a);
+        battleEngine.setDefender(b);
     }
 
     @Override
-    public void run() {
-        running = true;
-        this.requestFocus();
-        //Game Loop
-        long lastTime = System.nanoTime();
-        double amountOfTicks = 60.0;
-        double ns = 1000000000 / amountOfTicks;
-        double delta = 0;
-        long timer = System.currentTimeMillis();
-        int frames = 0;
-        while(running){
-            long now = System.nanoTime();
-            delta += (now - lastTime) / ns;
-            lastTime = now;
-            while (delta >= 1){
-                tick();
-                delta--;
-            }
-            if (running){
-                render();
-            }
-            frames++;
-
-            if (System.currentTimeMillis() - timer > 1000){
-                timer += 1000;
-                //System.out.println("FPS: " + frames);
-                frames = 0;
-            }
-        }
-        stop();
+    public String getName() {
+        return "battle";
     }
 
-    public void tick(){
-        turn *= -1;
+    @Override
+    public State enterState() {
+        if (!stateResume)
+            init();
+        return this;
+    }
+
+    @Override
+    public void exitState() {
+        stateResume = true;
+    }
+
+    @Override
+    public void tick(StateManager stateManager) {
         gameObjectHandler.tick();
-        /*battleEngine.battle(turn);*/
     }
 
-
-    public void render(){
+    @Override
+    public void render(Graphics graphics) {
         BufferStrategy bufferStrategy = this.getBufferStrategy();
         if (bufferStrategy == null){
             this.createBufferStrategy(3);
             return ;
         }
 
-        Graphics graphics = bufferStrategy.getDrawGraphics();
+        graphics = bufferStrategy.getDrawGraphics();
 
         try {
-            img = ImageIO.read(new File(imgPath + (4) + ").png"));
+            img = ImageIO.read(new File(imgPath + (4) + ".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -150,4 +114,8 @@ public class BattleGame extends Canvas implements Runnable{
         bufferStrategy.show();
     }
 
+    @Override
+    public void addEntity(Entity entity) {
+
+    }
 }

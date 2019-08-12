@@ -1,19 +1,19 @@
 package com.swingy.handlers;
 
 import com.swingy.interfaces.Renderable;
-import com.swingy.objects.GameObject;
+import com.swingy.objects.BattleObject;
 
 import java.awt.*;
 import java.util.LinkedList;
 
 public class GameObjectHandler implements Renderable {
 
-    LinkedList<GameObject> objects= new LinkedList<>();
+    LinkedList<BattleObject> objects= new LinkedList<>();
 
     @Override
     public void tick(){
         for (int i = 0; i < objects.size(); i++){
-            GameObject tempObject = objects.get(i);
+            BattleObject tempObject = objects.get(i);
 
             tempObject.tick();
         }
@@ -22,22 +22,22 @@ public class GameObjectHandler implements Renderable {
     @Override
     public void render(Graphics graphics) {
         for (int i = 0; i < objects.size(); i++){
-            GameObject tempObject = objects.get(i);
+            BattleObject tempObject = objects.get(i);
 
             tempObject.render(graphics);
         }
     }
 
-    public LinkedList<GameObject> getObjects() {
+    public LinkedList<BattleObject> getObjects() {
         return objects;
     }
 
-    public void addObject(GameObject gameObject){
-        this.objects.add(gameObject);
+    public void addObject(BattleObject battleObject){
+        this.objects.add(battleObject);
     }
 
-    public void removeObject(GameObject gameObject){
-        this.objects.remove(gameObject);
+    public void removeObject(BattleObject battleObject){
+        this.objects.remove(battleObject);
     }
 
 }
