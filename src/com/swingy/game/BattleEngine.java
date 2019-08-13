@@ -1,12 +1,14 @@
 package com.swingy.game;
 
 import com.swingy.heroes.Hero;
+import com.swingy.input.KeyInput;
+import com.swingy.input.MouseInput;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class BattleEngine implements Runnable{
 
-    private static BattleEngine battleEngine = new BattleEngine();
     private PropertyChangeSupport support;
 
     private Hero challenger;
@@ -16,9 +18,9 @@ public class BattleEngine implements Runnable{
     private int counter = 0;
     private boolean battleEnd = false;
 
-    private Thread gameThread;
     private boolean running;
     private int turn = 1;
+    private int tickLag = 0;
 
     public void setChallenger(Hero challenger){
         this.challenger = challenger;
@@ -28,7 +30,8 @@ public class BattleEngine implements Runnable{
         this.defender = defender;
     }
 
-    private BattleEngine(){
+    public BattleEngine(){
+        start();
         support = new PropertyChangeSupport(this);
     }
 
@@ -40,9 +43,6 @@ public class BattleEngine implements Runnable{
         support.removePropertyChangeListener(pcl);
     }
 
-    public static BattleEngine getBattleEngine(){
-        return BattleEngine.battleEngine;
-    }
 
     public double calcChallengerHP(){
         return challenger.getHeroStats().getHitPoints() - challenger.getDamage();
@@ -69,6 +69,7 @@ public class BattleEngine implements Runnable{
     private void battleEnd(String defeated){
         support.firePropertyChange(defeated, this.battleEnd, true);
         this.battleEnd = true;
+        stop();
     }
 
     private void attack(String attacker){
@@ -162,22 +163,76 @@ public class BattleEngine implements Runnable{
         return 0.0;
     }
 
+
     @Override
     public void run() {
-        running = true;
-        while(running) {
-            turn *= -1;
-            battle(turn);
+        //Game Loop
+        double targetTicks = 60.0;
+        double nanoSecondsPT = 100000000.0 / targetTicks;
+        double unprocessed = 0.0;
+        long lastTime = System.nanoTime();
+        long timer = System.currentTimeMillis();
+        int fps = 0;
+        int tps = 0;
+        boolean canRender = false;
+
+        while (running){
+            long now = System.nanoTime();
+            unprocessed += (now - lastTime) / nanoSecondsPT;
+            lastTime = now;
+
+            if (unprocessed >= 1){
+                tick();
+
+                //Update Input References
+                KeyInput.update();
+                MouseInput.update();
+
+                unprocessed--;
+                tps++;
+                canRender = true;
+            } else {
+                canRender = false;
+            }
+
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (canRender){
+                fps++;
+            }
+
+            if (System.currentTimeMillis() - 1000 > timer){
+                timer += 1000;
+                fps = 0;
+                tps = 0;
+            }
         }
         stop();
     }
 
-    public synchronized void stop(){
-        try {
-            gameThread.join();
-            running = false;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public void tick() {
+        running = true;
+        if (tickLag++ > 30){
+            turn*=-1;
+            battle(turn);
+            tickLag = 0;
         }
+    }
+
+    private void start(){
+        if (running)
+            return;
+        running = true;
+        new Thread(this, "BattleEngine-Thread").start();
+    }
+
+    public void stop(){
+        if (!running)
+            return;
+        running = false;
     }
 }

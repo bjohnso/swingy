@@ -1,9 +1,7 @@
-package com.swingy.objects;
+package com.swingy.battle.objects;
 
 import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
-
-import java.awt.*;
 
 public abstract class BattleObject implements Renderable {
 

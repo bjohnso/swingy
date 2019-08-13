@@ -1,7 +1,7 @@
 package com.swingy.handlers;
 
 import com.swingy.interfaces.Renderable;
-import com.swingy.objects.BattleObject;
+import com.swingy.battle.objects.BattleObject;
 
 import java.awt.*;
 import java.util.LinkedList;

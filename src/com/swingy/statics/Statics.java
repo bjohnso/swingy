@@ -8,7 +8,7 @@ public class Statics {
     private static int animationSpeedFast = 10;
     private static int animationSpeedSlow = 30;
 
-    public static Animation ninjaTerrain = new Animation(animationSpeedSlow,
+    public static Animation ninjaTerrain = new Animation(animationSpeedSlow, true,
             new Texture("terrain/ninja/1", false),
             new Texture("terrain/ninja/2", false),
             new Texture("terrain/ninja/3", false),
@@ -20,7 +20,7 @@ public class Statics {
             new Texture("terrain/ninja/9", false),
             new Texture("terrain/ninja/10", false));
 
-    public static Animation dinoTerrain = new Animation(animationSpeedSlow,
+    public static Animation dinoTerrain = new Animation(animationSpeedSlow, true,
             new Texture("terrain/dino/1", false),
             new Texture("terrain/dino/2", false),
             new Texture("terrain/dino/3", false),
@@ -30,7 +30,7 @@ public class Statics {
             new Texture("terrain/dino/7", false),
             new Texture("terrain/dino/8", false));
 
-    public static Animation roboTerrain = new Animation(animationSpeedSlow,
+    public static Animation roboTerrain = new Animation(animationSpeedSlow, true,
             new Texture("terrain/robo/1", false),
             new Texture("terrain/robo/2", false),
             new Texture("terrain/robo/3", false),
@@ -40,7 +40,7 @@ public class Statics {
             new Texture("terrain/robo/7", false),
             new Texture("terrain/robo/8", false));
 
-    public static Animation zomboTerrain = new Animation(animationSpeedSlow,
+    public static Animation zomboTerrain = new Animation(animationSpeedSlow, true,
             new Texture("terrain/zombo/1", false),
             new Texture("terrain/zombo/2", false),
             new Texture("terrain/zombo/3", false),
@@ -52,7 +52,7 @@ public class Statics {
             new Texture("terrain/zombo/9", false),
             new Texture("terrain/zombo/10", false));
 
-    public static Animation ninjaLarge = new Animation(animationSpeedFast,
+    public static Animation ninjaLarge = new Animation(animationSpeedFast, true,
             new Texture("ninja/idle/1", false),
             new Texture("ninja/idle/2", false),
             new Texture("ninja/idle/3", false),
@@ -64,7 +64,7 @@ public class Statics {
             new Texture("ninja/idle/9", false),
             new Texture("ninja/idle/10", false));
 
-    public static Animation dinoLarge = new Animation(animationSpeedFast,
+    public static Animation dinoLarge = new Animation(animationSpeedFast, true,
             new Texture("dino/idle/1",false),
             new Texture("dino/idle/2",false),
             new Texture("dino/idle/3",false),
@@ -76,7 +76,7 @@ public class Statics {
             new Texture("dino/idle/9",false),
             new Texture("dino/idle/10",false));
 
-    public static Animation roboLarge = new Animation(animationSpeedFast,
+    public static Animation roboLarge = new Animation(animationSpeedFast, true,
             new Texture("robo/idle/1",false),
             new Texture("robo/idle/2",false),
             new Texture("robo/idle/3",false),
@@ -88,7 +88,7 @@ public class Statics {
             new Texture("robo/idle/9",false),
             new Texture("robo/idle/10",false));
 
-    public static Animation zomboLarge = new Animation(animationSpeedFast,
+    public static Animation zomboLarge = new Animation(animationSpeedFast, true,
             new Texture("zombo/idle/1",false),
             new Texture("zombo/idle/2",false),
             new Texture("zombo/idle/3",false),
@@ -105,7 +105,7 @@ public class Statics {
             new Texture("zombo/idle/14",false),
             new Texture("zombo/idle/15",false));
 
-    public static Animation ninjaLargeRef = new Animation(animationSpeedFast,
+    public static Animation ninjaLargeRef = new Animation(animationSpeedFast, true,
             new Texture("ninja/idle/1", true),
             new Texture("ninja/idle/2", true),
             new Texture("ninja/idle/3", true),
@@ -117,7 +117,7 @@ public class Statics {
             new Texture("ninja/idle/9", true),
             new Texture("ninja/idle/10", true));
 
-    public static Animation dinoLargeRef = new Animation(animationSpeedFast,
+    public static Animation dinoLargeRef = new Animation(animationSpeedFast, true,
             new Texture("dino/idle/1", true),
             new Texture("dino/idle/2", true),
             new Texture("dino/idle/3", true),
@@ -129,7 +129,7 @@ public class Statics {
             new Texture("dino/idle/9", true),
             new Texture("dino/idle/10", true));
 
-    public static Animation roboLargeRef = new Animation(animationSpeedFast,
+    public static Animation roboLargeRef = new Animation(animationSpeedFast, true,
             new Texture("robo/idle/1", true),
             new Texture("robo/idle/2", true),
             new Texture("robo/idle/3", true),
@@ -141,7 +141,7 @@ public class Statics {
             new Texture("robo/idle/9", true),
             new Texture("robo/idle/10", true));
 
-    public static Animation zomboLargeRef = new Animation(animationSpeedFast,
+    public static Animation zomboLargeRef = new Animation(animationSpeedFast, true,
             new Texture("zombo/idle/1", true),
             new Texture("zombo/idle/2", true),
             new Texture("zombo/idle/3", true),
@@ -158,4 +158,99 @@ public class Statics {
             new Texture("zombo/idle/14", true),
             new Texture("zombo/idle/15", true));
 
+    public static Animation ninjaDeath = new Animation(animationSpeedFast, false,
+            new Texture("ninja/dead/1", false),
+            new Texture("ninja/dead/2", false),
+            new Texture("ninja/dead/3", false),
+            new Texture("ninja/dead/4", false),
+            new Texture("ninja/dead/5", false),
+            new Texture("ninja/dead/6", false),
+            new Texture("ninja/dead/7", false),
+            new Texture("ninja/dead/8", false),
+            new Texture("ninja/dead/9", false),
+            new Texture("ninja/dead/10", false));
+
+    public static Animation dinoDeath = new Animation(animationSpeedFast, false,
+            new Texture("dino/dead/1", false),
+            new Texture("dino/dead/2", false),
+            new Texture("dino/dead/3", false),
+            new Texture("dino/dead/4", false),
+            new Texture("dino/dead/5", false),
+            new Texture("dino/dead/6", false),
+            new Texture("dino/dead/7", false),
+            new Texture("dino/dead/8", false));
+
+    public static Animation roboDeath = new Animation(animationSpeedFast, false,
+            new Texture("robo/dead/1", false),
+            new Texture("robo/dead/2", false),
+            new Texture("robo/dead/3", false),
+            new Texture("robo/dead/4", false),
+            new Texture("robo/dead/5", false),
+            new Texture("robo/dead/6", false),
+            new Texture("robo/dead/7", false),
+            new Texture("robo/dead/8", false),
+            new Texture("robo/dead/9", false),
+            new Texture("robo/dead/10", false));
+
+    public static Animation zomboDeath = new Animation(animationSpeedFast, false,
+            new Texture("zombo/dead/1", false),
+            new Texture("zombo/dead/2", false),
+            new Texture("zombo/dead/3", false),
+            new Texture("zombo/dead/4", false),
+            new Texture("zombo/dead/5", false),
+            new Texture("zombo/dead/6", false),
+            new Texture("zombo/dead/7", false),
+            new Texture("zombo/dead/8", false),
+            new Texture("zombo/dead/9", false),
+            new Texture("zombo/dead/10", false),
+            new Texture("zombo/dead/11", false),
+            new Texture("zombo/dead/12", false));
+
+    public static Animation ninjaDeathRef = new Animation(animationSpeedFast, false,
+            new Texture("ninja/dead/1", true),
+            new Texture("ninja/dead/2", true),
+            new Texture("ninja/dead/3", true),
+            new Texture("ninja/dead/4", true),
+            new Texture("ninja/dead/5", true),
+            new Texture("ninja/dead/6", true),
+            new Texture("ninja/dead/7", true),
+            new Texture("ninja/dead/8", true),
+            new Texture("ninja/dead/9", true),
+            new Texture("ninja/dead/10", true));
+
+    public static Animation dinoDeathRef = new Animation(animationSpeedFast, false,
+            new Texture("dino/dead/1", true),
+            new Texture("dino/dead/2", true),
+            new Texture("dino/dead/3", true),
+            new Texture("dino/dead/4", true),
+            new Texture("dino/dead/5", true),
+            new Texture("dino/dead/6", true),
+            new Texture("dino/dead/7", true),
+            new Texture("dino/dead/8", true));
+
+    public static Animation roboDeathRef = new Animation(animationSpeedFast, false,
+            new Texture("robo/dead/1", true),
+            new Texture("robo/dead/2", true),
+            new Texture("robo/dead/3", true),
+            new Texture("robo/dead/4", true),
+            new Texture("robo/dead/5", true),
+            new Texture("robo/dead/6", true),
+            new Texture("robo/dead/7", true),
+            new Texture("robo/dead/8", true),
+            new Texture("robo/dead/9", true),
+            new Texture("robo/dead/10", true));
+
+    public static Animation zomboDeathRef = new Animation(animationSpeedFast, false,
+            new Texture("zombo/dead/1", true),
+            new Texture("zombo/dead/2", true),
+            new Texture("zombo/dead/3", true),
+            new Texture("zombo/dead/4", true),
+            new Texture("zombo/dead/5", true),
+            new Texture("zombo/dead/6", true),
+            new Texture("zombo/dead/7", true),
+            new Texture("zombo/dead/8", true),
+            new Texture("zombo/dead/9", true),
+            new Texture("zombo/dead/10", true),
+            new Texture("zombo/dead/11", true),
+            new Texture("zombo/dead/12", true));
 }

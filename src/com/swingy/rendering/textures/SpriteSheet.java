@@ -1,7 +1,5 @@
 package com.swingy.rendering.textures;
 
-import com.swingy.objects.Sprite;
-
 public class SpriteSheet {
 
     private Texture texture;

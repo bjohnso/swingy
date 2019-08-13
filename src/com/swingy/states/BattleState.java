@@ -1,15 +1,15 @@
 package com.swingy.states;
 
+import com.swingy.Main;
+import com.swingy.battle.objects.FighterManager;
 import com.swingy.rendering.entities.Entity;
-import com.swingy.rendering.entities.Fighter;
 import com.swingy.game.BattleEngine;
 import com.swingy.handlers.GameObjectHandler;
 import com.swingy.heroes.Hero;
 import com.swingy.id.ID;
-import com.swingy.objects.*;
 
-import com.swingy.rendering.objects.HUD;
-import com.swingy.rendering.textures.Animation;
+import com.swingy.battle.objects.HUD;
+import com.swingy.rendering.entities.Fighter;
 import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
@@ -71,7 +71,7 @@ public class BattleState extends Canvas implements State {
         switch (defender.getPlayerClass()){
             case NINJA:
                 defender.setAnimation(Statics.ninjaLargeRef);
-                defender.setX(DEFAULT_WIDTH / 100 * 60);
+                defender.setX(DEFAULT_WIDTH / 100 * 70);
                 defender.setY(DEFAULT_HEIGHT / 100 * 50);
                 break;
             case DINO:
@@ -96,20 +96,22 @@ public class BattleState extends Canvas implements State {
         challengerHUD = new HUD(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 5, ID.ChallengerHUD);
         defenderHUD = new HUD(DEFAULT_WIDTH / 100 * 75, DEFAULT_HEIGHT / 100 * 5, ID.DefenderHUD);
 
-        gameObjectHandler.addObject(new Dino(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40
-                , ID.Challenger, true, challengerHUD));
+        gameObjectHandler.addObject(new FighterManager(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40
+                , ID.Challenger, true, challengerHUD, player));
 
-        gameObjectHandler.addObject(new Robo(DEFAULT_WIDTH / 100 * 75,  DEFAULT_HEIGHT / 100 * 40
-                , ID.Defender, false, defenderHUD));
+        gameObjectHandler.addObject(new FighterManager(DEFAULT_WIDTH / 100 * 75,  DEFAULT_HEIGHT / 100 * 40
+                , ID.Defender, false, defenderHUD, defender));
 
 
         //Initialising Battle Engine
-        battleEngine = BattleEngine.getBattleEngine();
-        battleEngine.addPropertyChangeListener((Player)gameObjectHandler.getObjects().get(0));
-        battleEngine.addPropertyChangeListener((Player)gameObjectHandler.getObjects().get(1));
+        battleEngine = new BattleEngine();
+        battleEngine.addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(0));
+        battleEngine.addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(1));
 
         battleEngine.setChallenger(a);
         battleEngine.setDefender(b);
+
+        Main.pool.runTask(battleEngine);
     }
 
     @Override

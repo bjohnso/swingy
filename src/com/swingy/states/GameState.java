@@ -57,21 +57,25 @@ public class GameState implements State {
                 tempFighter = new Fighter(new Sprite("terrain/dino/1"),
                         t.getX(), t.getY(), this, Statics.dinoTerrain);
                 tempFighter.setPlayerClass(ID.DINO);
+                tempFighter.setPlayerClassName("dino");
             }
             else if (t.getTileClass() == ID.ROBO){
                 tempFighter = new Fighter(new Sprite("terrain/robo/1"),
                         t.getX(), t.getY(), this, Statics.roboTerrain);
                 tempFighter.setPlayerClass(ID.ROBO);
+                tempFighter.setPlayerClassName("robo");
             }
             else if (t.getTileClass() == ID.ZOMBO){
                 tempFighter = new Fighter(new Sprite("terrain/zombo/1"),
                         t.getX(), t.getY(), this, Statics.zomboTerrain);
                 tempFighter.setPlayerClass(ID.ZOMBO);
+                tempFighter.setPlayerClassName("zombo");
             }
             else if (t.getTileClass() == ID.NINJA){
                 tempFighter = new Fighter(new Sprite("terrain/ninja/1"),
                         t.getX(), t.getY(), this, Statics.ninjaTerrain);
                 tempFighter.setPlayerClass(ID.NINJA);
+                tempFighter.setPlayerClassName("ninja");
             }
 
             if (tempFighter != null) {

@@ -19,18 +19,11 @@ public class Swingy extends Canvas implements Runnable{
     public static final int WIDTH = 1920;
     public static final int HEIGHT = WIDTH / 16 * 9;
 
-    private double sX = 350, sY = 300;
-
     private StateManager stateManager;
 
     private JFrame frame;
 
     private boolean running;
-
-    private Texture texture;
-
-    private SpriteSheet sheet;
-    private Sprite sprite;
 
     private void tick(){
         //Input Logic

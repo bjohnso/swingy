@@ -159,7 +159,7 @@ public class CharacterCreationState implements State {
         Sprite background = new Sprite(new SpriteSheet(new Texture("background/2", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
         background.render(graphics, 0, 0);
 
-        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Choose Your Fighter", 72, false);
+        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Choose Your FighterManager", 72, false);
 
         for (int i = 0; i < options.length; i++){
             if (i == currentButtonSelection)
