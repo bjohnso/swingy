@@ -1,8 +1,11 @@
 package com.swingy.battle.objects;
 
+import com.swingy.game.BattleEngine;
 import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
 import com.swingy.rendering.entities.Fighter;
+import com.swingy.states.BattleState;
+import com.swingy.states.GameState;
 import com.swingy.statics.Statics;
 
 import java.awt.*;
@@ -15,11 +18,14 @@ public class FighterManager extends BattleObject implements Renderable, Property
     private HUD hud;
     private Fighter fighter;
 
-    public FighterManager(int x, int y, ID id, boolean screenLeft, HUD hud, Fighter fighter) {
+    private BattleState battleState;
+
+    public FighterManager(int x, int y, ID id, boolean screenLeft, HUD hud, Fighter fighter, BattleState battleState) {
         super(x, y, id);
         this.screenLeft = screenLeft;
         this.hud = hud;
         this.fighter = fighter;
+        this.battleState = battleState;
     }
 
     @Override
@@ -57,6 +63,8 @@ public class FighterManager extends BattleObject implements Renderable, Property
                     fighter.setAnimation(Statics.zomboDeath);
                     break;
             }
+            battleState.setBattleText("DEFEAT");
+            battleState.setBattleEnd(true);
         }
         else if (evt.getPropertyName().equalsIgnoreCase("DefenderDEATH") && this.getId() == ID.Defender) {
             switch (fighter.getPlayerClass()) {
@@ -73,6 +81,8 @@ public class FighterManager extends BattleObject implements Renderable, Property
                     fighter.setAnimation(Statics.zomboDeathRef);
                     break;
             }
+            battleState.setBattleText("VICTORY");
+            battleState.setBattleEnd(true);
         }
     }
 }

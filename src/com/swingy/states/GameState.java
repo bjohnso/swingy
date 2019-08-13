@@ -93,7 +93,7 @@ public class GameState implements State {
     public void enemyMove(){
 
         for (Fighter p: fighters) {
-            if (p != player) {
+            if (p != player && p.isAlive()) {
                 ArrayList<String> directions = new ArrayList<>();
                 int originX = (Swingy.WIDTH - (tileMap.length * 32)) / 2;
                 int originY = (Swingy.HEIGHT - (tileMap.length * 32)) / 2;
@@ -106,9 +106,9 @@ public class GameState implements State {
                     indexY /= 32;
 
                 if (indexX + 1 < tileMap.length && indexX + 1 > -1 && indexY < tileMap.length && indexY > -1) {
-                    System.out.println(indexX);
                     if (tileMap[indexY][indexX + 1].getTileClass() == ID.GROUND)
                         directions.add("right");
+
                 }
                 if (indexX - 1 < tileMap.length && indexX - 1 > -1 && indexY < tileMap.length && indexY > -1) {
                     if (tileMap[indexY][indexX - 1].getTileClass() == ID.GROUND)
@@ -131,6 +131,7 @@ public class GameState implements State {
                     if (seed < probability) {
                         Tile tempTile;
                         if (d == "left") {
+                            System.out.println("LEFT");
                             tempTile = tileMap[indexY][indexX - 1];
                             tileMap[indexY][indexX - 1] = tileMap[indexY][indexX];
                             tileMap[indexY][indexX] = tempTile;
@@ -140,6 +141,7 @@ public class GameState implements State {
 
                             p.moveX(-32);
                         }  else if (d == "up") {
+                            System.out.println("UP");
                             tempTile = tileMap[indexY - 1][indexX];
                             tileMap[indexY - 1][indexX] = tileMap[indexY][indexX];
                             tileMap[indexY][indexX] = tempTile;
@@ -150,6 +152,7 @@ public class GameState implements State {
                             p.moveY(-32);
                         }
                         else if (d == "right") {
+                            System.out.println("RIGHT");
                             tempTile = tileMap[indexY][indexX + 1];
                             tileMap[indexY][indexX + 1] = tileMap[indexY][indexX];
                             tileMap[indexY][indexX] = tempTile;
@@ -160,6 +163,7 @@ public class GameState implements State {
                             p.moveX(32);
                         }
                         else {
+                            System.out.println("DOWN");
                             tempTile = tileMap[indexY + 1][indexX];
                             tileMap[indexY + 1][indexX] = tileMap[indexY][indexX];
                             tileMap[indexY][indexX] = tempTile;
@@ -177,7 +181,7 @@ public class GameState implements State {
     }
 
     @Override
-    public State enterState() {
+    public State enterState(State callingState) {
         if (!isResume)
             init();
         return this;
@@ -355,12 +359,12 @@ public class GameState implements State {
         switch (currentSelection){
             case 0 :
                 options = null;
-                stateManager.setState("battle");
+                stateManager.setState("battle", this);
                 break ;
             case 1 :
                 options = null;
                 if (!flee());
-                    stateManager.setState("battle");
+                    stateManager.setState("battle", this);
                 break ;
         }
     }
@@ -530,5 +534,27 @@ public class GameState implements State {
             }
         }
         return false;
+    }
+
+    protected void removeFighter(Fighter fighter){
+
+        fighter.setAlive(false);
+
+        for (int i = 0; i < tileMap.length ;i++){
+            for (int j = 0; j < tileMap.length; j++){
+                if (tileMap[i][j].getMobileID() == fighter.getID()) {
+                    tiles.remove(tileMap[i][j]);
+
+                    Tile tile = new Tile(tileMap[i][j].getX(), tileMap[i][j].getY(), new Sprite(new SpriteSheet(new Texture("terrain/ground", false), 32), 2, 2), ID.GROUND);
+                    tileMap[i][j] = tile;
+
+                    fighters.remove(fighter);
+                    entities.remove(fighter);
+
+                    i = tileMap.length;
+                    j = tileMap.length;
+                }
+            }
+        }
     }
 }

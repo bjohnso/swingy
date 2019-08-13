@@ -85,7 +85,7 @@ public class CharacterCreationState implements State {
     }
 
     @Override
-    public State enterState() {
+    public State enterState(State callingState) {
         if (!stateResume)
             init();
         return this;
@@ -143,10 +143,10 @@ public class CharacterCreationState implements State {
                 break ;
             case 1 :
                 currentFighter = characters[currentCharacterSelection];
-                GameState gameState = (GameState) stateManager.setState("map");
+                GameState gameState = (GameState) stateManager.setState("map", this);
                 break ;
             case 2 :
-                stateManager.setState("menu");
+                stateManager.setState("menu", this);
                 break ;
         }
     }

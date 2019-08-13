@@ -13,6 +13,7 @@ public class Fighter extends Mobile{
     private String playerClassName;
     private int level;
     private boolean isPlayer = false;
+    private boolean alive = true;
 
     public Fighter(Sprite sprite, double x, double y, State state, Animation animation) {
         super(sprite, x, y, state, animation);
@@ -54,5 +55,13 @@ public class Fighter extends Mobile{
 
     public void setPlayer(boolean player) {
         isPlayer = player;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    public boolean isAlive(){
+        return this.alive;
     }
 }

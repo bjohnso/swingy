@@ -13,15 +13,15 @@ public class StateManager {
         map = new HashMap<String, State>();
     }
 
-    public void addState(State state){
+    public void addState(State state, State callingState){
         map.put(state.getName().toUpperCase(), state);
         if (currentState == null){
-            state.enterState();
+            state.enterState(callingState);
             currentState = state;
         }
     }
 
-    public State setState(String name){
+    public State setState(String name, State callingState){
         State state = map.get(name.toUpperCase());
         if (state == null){
             System.err.println("State <" + name + "> does not exist");
@@ -30,7 +30,7 @@ public class StateManager {
         if (currentState != null)
             currentState.exitState();
         currentState = state;
-        return state.enterState();
+        return state.enterState(callingState);
     }
 
     public void tick(){

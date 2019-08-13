@@ -107,7 +107,7 @@ public class Swingy extends Canvas implements Runnable{
     }
 
     private void start(){
-        stateManager.setState("menu");
+        stateManager.setState("menu", null);
         if (running)
             return;
         running = true;
@@ -145,10 +145,10 @@ public class Swingy extends Canvas implements Runnable{
         addMouseMotionListener(mouseInput);
 
         stateManager = new StateManager();
-        stateManager.addState(new MenuState(this));
-        stateManager.addState(new CharacterCreationState());
-        stateManager.addState(new GameState());
-        stateManager.addState(new BattleState());
+        stateManager.addState(new MenuState(this), null);
+        stateManager.addState(new CharacterCreationState(), null);
+        stateManager.addState(new GameState(), null);
+        stateManager.addState(new BattleState(), null);
 
         start();
     }

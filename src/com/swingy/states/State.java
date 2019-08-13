@@ -6,7 +6,7 @@ import java.awt.*;
 
 public interface State {
     public void init();
-    public State enterState();
+    public State enterState(State callingState);
     public void exitState();
     public String getName();
     public void tick(StateManager stateManager);

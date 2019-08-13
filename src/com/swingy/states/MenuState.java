@@ -50,7 +50,7 @@ public class MenuState implements State {
     }
 
     @Override
-    public State enterState() {
+    public State enterState(State callingState) {
         if (!isResume)
             init();
         return this;
@@ -92,7 +92,7 @@ public class MenuState implements State {
     private void select(StateManager stateManager){
         switch (currentSelection){
             case 0 :
-                stateManager.setState("character");
+                stateManager.setState("character", this);
                 break ;
             case 1 :
                 System.out.println("load game");

@@ -14,6 +14,7 @@ import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.statics.Statics;
+import com.swingy.util.Fonts;
 import com.swingy.view.Swingy;
 
 import java.awt.*;
@@ -38,6 +39,12 @@ public class BattleState extends Canvas implements State {
     protected Fighter defender;
 
     private BattleEngine battleEngine;
+
+    private String battleText;
+
+    private boolean battleEnd = false;
+
+    private GameState gameState;
 
     @Override
     public void init() {
@@ -97,10 +104,10 @@ public class BattleState extends Canvas implements State {
         defenderHUD = new HUD(DEFAULT_WIDTH / 100 * 75, DEFAULT_HEIGHT / 100 * 5, ID.DefenderHUD);
 
         gameObjectHandler.addObject(new FighterManager(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40
-                , ID.Challenger, true, challengerHUD, player));
+                , ID.Challenger, true, challengerHUD, player, this));
 
         gameObjectHandler.addObject(new FighterManager(DEFAULT_WIDTH / 100 * 75,  DEFAULT_HEIGHT / 100 * 40
-                , ID.Defender, false, defenderHUD, defender));
+                , ID.Defender, false, defenderHUD, defender, this));
 
 
         //Initialising Battle Engine
@@ -111,6 +118,8 @@ public class BattleState extends Canvas implements State {
         battleEngine.setChallenger(a);
         battleEngine.setDefender(b);
 
+        battleText = "FIGHT";
+
         Main.pool.runTask(battleEngine);
     }
 
@@ -120,15 +129,15 @@ public class BattleState extends Canvas implements State {
     }
 
     @Override
-    public State enterState() {
-        if (!stateResume)
-            init();
+    public State enterState(State callingState) {
+        init();
+        gameState = (GameState)callingState;
         return this;
     }
 
     @Override
     public void exitState() {
-        stateResume = true;
+
     }
 
     @Override
@@ -136,17 +145,27 @@ public class BattleState extends Canvas implements State {
         gameObjectHandler.tick();
         player.tick();
         defender.tick();
+        if (battleEnd) {
+            if (battleText.equalsIgnoreCase("VICTORY")) {
+                gameState.removeFighter(defender);
+                stateManager.setState("map", this);
+            }
+            else
+                stateManager.setState("menu", this);
+        }
     }
 
     @Override
     public void render(Graphics graphics) {
+
+        Font font = new Font("Arial", Font.BOLD, 72);
+        FontMetrics fontMetrics = graphics.getFontMetrics(font);
 
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
         Sprite background = new Sprite(new SpriteSheet(new Texture("background/4", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
         background.render(graphics, 0, 0);
-
         //graphics.setColor(Color.BLUE);
         //graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 6, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
         //graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 14, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
@@ -155,11 +174,21 @@ public class BattleState extends Canvas implements State {
         player.render(graphics);
         defender.render(graphics);
 
+        Fonts.drawString(graphics, font, Color.GREEN, battleText, (Swingy.WIDTH - fontMetrics.stringWidth(battleText)) / 2, Swingy.HEIGHT / 2);
+
         graphics.dispose();
     }
 
     @Override
     public void addEntity(Entity entity) {
 
+    }
+
+    public void setBattleText(String text){
+        this.battleText = text;
+    }
+
+    public void setBattleEnd(boolean battleEnd) {
+        this.battleEnd = battleEnd;
     }
 }
