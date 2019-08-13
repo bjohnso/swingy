@@ -14,7 +14,7 @@ public class Sprite {
     }
 
     public Sprite(String textureName){
-        Texture texture = new Texture(textureName);
+        Texture texture = new Texture(textureName, false);
         this.image = texture.getImage();
     }
 

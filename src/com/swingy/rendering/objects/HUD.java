@@ -1,7 +1,8 @@
-package com.swingy.objects;
+package com.swingy.rendering.objects;
 
 import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
+import com.swingy.objects.BattleObject;
 
 import java.awt.*;
 

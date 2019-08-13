@@ -1,11 +1,9 @@
-package com.swingy.entities;
+package com.swingy.rendering.entities;
 
 import com.swingy.rendering.textures.Sprite;
-import com.swingy.states.GameState;
 import com.swingy.states.State;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public abstract class Entity {
 

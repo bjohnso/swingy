@@ -1,26 +1,20 @@
-package com.swingy.entities;
+package com.swingy.rendering.entities;
 
 import com.swingy.id.ID;
-import com.swingy.input.KeyInput;
 import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Sprite;
-import com.swingy.states.GameState;
 import com.swingy.states.State;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 
-public class Player extends Mobile{
+public class Fighter extends Mobile{
 
     private ID playerClass;
     private String playerClassName;
     private int level;
     private boolean isPlayer = false;
 
-    public Player(Sprite sprite, double x, double y, State state, Animation animation) {
+    public Fighter(Sprite sprite, double x, double y, State state, Animation animation) {
         super(sprite, x, y, state, animation);
     }
 
@@ -58,23 +52,7 @@ public class Player extends Mobile{
         return playerClassName;
     }
 
-    public void moveX(double x){
-        this.dx += x;
-    }
-
-    public void moveY(double y){
-        this.dy += y;
-    }
-
     public void setPlayer(boolean player) {
         isPlayer = player;
-    }
-
-    public double getX(){
-        return this.x;
-    }
-
-    public double getY(){
-        return this.y;
     }
 }

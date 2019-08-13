@@ -1,11 +1,9 @@
-package com.swingy.entities;
+package com.swingy.rendering.entities;
 
 import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Sprite;
-import com.swingy.states.GameState;
 import com.swingy.states.State;
 
-import javax.swing.*;
 import java.awt.*;
 
 public abstract class Mobile extends Entity {
@@ -13,6 +11,7 @@ public abstract class Mobile extends Entity {
     protected double dx, dy;
     protected Animation animation;
     protected boolean moving = false;
+    private int id;
 
     public Mobile(Sprite sprite, double x, double y, State state, Animation animation) {
         super(sprite, x, y, state);
@@ -34,10 +33,46 @@ public abstract class Mobile extends Entity {
         super.render(graphics);
     }
 
-    public void move(){
+    protected void move(){
         x += dx;
         y += dy;
         dx = 0;
         dy = 0;
+    }
+
+    public void setID(int id) {
+        this.id = id;
+    }
+
+    public int getID() {
+        return id;
+    }
+
+    public double getX(){
+        return this.x;
+    }
+
+    public double getY(){
+        return this.y;
+    }
+
+    public void setX(double x){
+        this.x = x;
+    }
+
+    public void setY(double y){
+        this.y = y;
+    }
+
+    public void moveX(double x){
+        this.dx += x;
+    }
+
+    public void moveY(double y){
+        this.dy += y;
+    }
+
+    public void setAnimation(Animation animation) {
+        this.animation = animation;
     }
 }

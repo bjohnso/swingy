@@ -1,4 +1,4 @@
-package com.swingy.util.helpers;
+package com.swingy.util;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;

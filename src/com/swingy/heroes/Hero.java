@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 
 public class Hero implements Fighter {
 
-    //Player Defined Variables
+    //Fighter Defined Variables
     protected String _name;
     protected LinkedHashMap<String, Affinity> _affinities = new LinkedHashMap<>();
 

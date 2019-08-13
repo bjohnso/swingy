@@ -1,22 +1,22 @@
 package com.swingy.states;
 
-import com.swingy.entities.Entity;
+import com.swingy.rendering.entities.Entity;
+import com.swingy.rendering.entities.Fighter;
 import com.swingy.game.BattleEngine;
 import com.swingy.handlers.GameObjectHandler;
 import com.swingy.heroes.Hero;
 import com.swingy.id.ID;
 import com.swingy.objects.*;
-import com.swingy.states.State;
-import com.swingy.states.StateManager;
-import com.swingy.view.Swingy;
-import com.swingy.view.Window;
 
-import javax.imageio.ImageIO;
+import com.swingy.rendering.objects.HUD;
+import com.swingy.rendering.textures.Animation;
+import com.swingy.rendering.textures.Sprite;
+import com.swingy.rendering.textures.SpriteSheet;
+import com.swingy.rendering.textures.Texture;
+import com.swingy.statics.Statics;
+import com.swingy.view.Swingy;
+
 import java.awt.*;
-import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 
 public class BattleState extends Canvas implements State {
@@ -24,10 +24,7 @@ public class BattleState extends Canvas implements State {
     private static final int DEFAULT_WIDTH = Swingy.WIDTH;
     private static final int DEFAULT_HEIGHT = Swingy.HEIGHT;
 
-    private String imgPath = "res/background/";
-
     private GameObjectHandler gameObjectHandler;
-    private BufferedImage img;
 
     private boolean stateResume = false;
 
@@ -37,19 +34,72 @@ public class BattleState extends Canvas implements State {
     private Hero a = new Hero("Asuna", "Water");
     private Hero b = new Hero("Ragos", "Fire");
 
+    protected Fighter player;
+    protected Fighter defender;
+
     private BattleEngine battleEngine;
 
     @Override
     public void init() {
+
+        player = GameState.player;
+        defender = GameState.defender;
+
+        switch (player.getPlayerClass()){
+            case NINJA:
+                player.setAnimation(Statics.ninjaLarge);
+                player.setX(DEFAULT_WIDTH / 100 * 5);
+                player.setY(DEFAULT_HEIGHT / 100 * 50);
+                break;
+            case DINO:
+                player.setAnimation(Statics.dinoLarge);
+                player.setX(DEFAULT_WIDTH / 100 * 5);
+                player.setY(DEFAULT_HEIGHT / 100 * 60);
+                break;
+            case ROBO:
+                player.setAnimation(Statics.roboLarge);
+                player.setX(DEFAULT_WIDTH / 100 * 5);
+                player.setY(DEFAULT_HEIGHT / 100 * 50);
+                break;
+            case ZOMBO:
+                player.setAnimation(Statics.zomboLarge);
+                player.setX(DEFAULT_WIDTH / 100 * 5);
+                player.setY(DEFAULT_HEIGHT / 100 * 50);
+                break;
+        }
+
+        switch (defender.getPlayerClass()){
+            case NINJA:
+                defender.setAnimation(Statics.ninjaLargeRef);
+                defender.setX(DEFAULT_WIDTH / 100 * 60);
+                defender.setY(DEFAULT_HEIGHT / 100 * 50);
+                break;
+            case DINO:
+                defender.setAnimation(Statics.dinoLargeRef);
+                defender.setX(DEFAULT_WIDTH / 100 * 60);
+                defender.setY(DEFAULT_HEIGHT / 100 * 60);
+                break;
+            case ROBO:
+                defender.setAnimation(Statics.roboLargeRef);
+                defender.setX(DEFAULT_WIDTH / 100 * 70);
+                defender.setY(DEFAULT_HEIGHT / 100 * 50);
+                break;
+            case ZOMBO:
+                defender.setAnimation(Statics.zomboLargeRef);
+                defender.setX(DEFAULT_WIDTH / 100 * 70);
+                defender.setY(DEFAULT_HEIGHT / 100 * 50);
+                break;
+        }
+
         gameObjectHandler = new GameObjectHandler();
 
         challengerHUD = new HUD(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 5, ID.ChallengerHUD);
-        defenderHUD = new HUD(DEFAULT_WIDTH / 100 * 65, DEFAULT_HEIGHT / 100 * 5, ID.DefenderHUD);
+        defenderHUD = new HUD(DEFAULT_WIDTH / 100 * 75, DEFAULT_HEIGHT / 100 * 5, ID.DefenderHUD);
 
         gameObjectHandler.addObject(new Dino(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40
                 , ID.Challenger, true, challengerHUD));
 
-        gameObjectHandler.addObject(new Robo(DEFAULT_WIDTH / 100 * 60,  DEFAULT_HEIGHT / 100 * 40
+        gameObjectHandler.addObject(new Robo(DEFAULT_WIDTH / 100 * 75,  DEFAULT_HEIGHT / 100 * 40
                 , ID.Defender, false, defenderHUD));
 
 
@@ -82,36 +132,28 @@ public class BattleState extends Canvas implements State {
     @Override
     public void tick(StateManager stateManager) {
         gameObjectHandler.tick();
+        player.tick();
+        defender.tick();
     }
 
     @Override
     public void render(Graphics graphics) {
-        BufferStrategy bufferStrategy = this.getBufferStrategy();
-        if (bufferStrategy == null){
-            this.createBufferStrategy(3);
-            return ;
-        }
-
-        graphics = bufferStrategy.getDrawGraphics();
-
-        try {
-            img = ImageIO.read(new File(imgPath + (4) + ".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        graphics.drawImage(img, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT,  null);
 
-        graphics.setColor(Color.BLUE);
-        graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 6, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
-        graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 13, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
+        Sprite background = new Sprite(new SpriteSheet(new Texture("background/4", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        background.render(graphics, 0, 0);
+
+        //graphics.setColor(Color.BLUE);
+        //graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 6, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
+        //graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 14, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
 
         gameObjectHandler.render(graphics);
+        player.render(graphics);
+        defender.render(graphics);
 
         graphics.dispose();
-        bufferStrategy.show();
     }
 
     @Override

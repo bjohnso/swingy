@@ -1,8 +1,11 @@
 package com.swingy.states;
 
-import com.swingy.entities.Entity;
+import com.swingy.rendering.entities.Entity;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
+import com.swingy.rendering.textures.Sprite;
+import com.swingy.rendering.textures.SpriteSheet;
+import com.swingy.rendering.textures.Texture;
 import com.swingy.util.Fonts;
 
 import java.awt.*;
@@ -117,6 +120,10 @@ public class MenuState implements State {
     public void render (Graphics graphics){
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+
+        Sprite background = new Sprite(new SpriteSheet(new Texture("background/1", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        background.render(graphics, 0, 0);
+
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, Swingy.TITLE, 80, false);
 
         for (int i = 0; i < options.length; i++){

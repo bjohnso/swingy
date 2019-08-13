@@ -1,13 +1,15 @@
 package com.swingy.states;
 
-import com.swingy.entities.Entity;
-import com.swingy.entities.Player;
+import com.swingy.rendering.entities.Entity;
+import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Sprite;
+import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
+import com.swingy.statics.Statics;
 import com.swingy.util.Fonts;
 import com.swingy.view.Swingy;
 
@@ -25,11 +27,11 @@ public class CharacterCreationState implements State {
     private Button[] options;
     private  int currentButtonSelection;
 
-    private Player[] characters;
+    private Fighter[] characters;
     private int currentCharacterSelection = 0;
     private boolean stateResume = false;
 
-    protected static Player currentPlayer;
+    protected static Fighter currentFighter;
 
     @Override
     public void init() {
@@ -51,64 +53,19 @@ public class CharacterCreationState implements State {
                 Color.WHITE,
                 Color.YELLOW);
 
-        characters = new Player[4];
+        characters = new Fighter[4];
 
-        characters[0] = new Player(new Sprite("ninja/idle/1"),
-                (Swingy.WIDTH / 2), 100, this, new Animation(20,
-                new Texture("ninja/idle/1"),
-                new Texture("ninja/idle/2"),
-                new Texture("ninja/idle/3"),
-                new Texture("ninja/idle/4"),
-                new Texture("ninja/idle/5"),
-                new Texture("ninja/idle/6"),
-                new Texture("ninja/idle/7"),
-                new Texture("ninja/idle/8"),
-                new Texture("ninja/idle/9"),
-                new Texture("ninja/idle/10")));
+        characters[0] = new Fighter(new Sprite("ninja/idle/1"),
+                (Swingy.WIDTH / 2), 100, this, Statics.ninjaLarge);
 
-        characters[1] = new Player(new Sprite("dino/idle/1"),
-                (Swingy.WIDTH / 2), 100, this, new Animation(20,
-                new Texture("dino/idle/1"),
-                new Texture("dino/idle/2"),
-                new Texture("dino/idle/3"),
-                new Texture("dino/idle/4"),
-                new Texture("dino/idle/5"),
-                new Texture("dino/idle/6"),
-                new Texture("dino/idle/7"),
-                new Texture("dino/idle/8"),
-                new Texture("dino/idle/9"),
-                new Texture("dino/idle/10")));
+        characters[1] = new Fighter(new Sprite("dino/idle/1"),
+                (Swingy.WIDTH / 2), 100, this, Statics.dinoLarge);
 
-        characters[2] = new Player(new Sprite("robo/idle/1"),
-                (Swingy.WIDTH / 2), 50, this, new Animation(20,
-                new Texture("robo/idle/1"),
-                new Texture("robo/idle/2"),
-                new Texture("robo/idle/3"),
-                new Texture("robo/idle/4"),
-                new Texture("robo/idle/5"),
-                new Texture("robo/idle/6"),
-                new Texture("robo/idle/7"),
-                new Texture("robo/idle/8"),
-                new Texture("robo/idle/9"),
-                new Texture("robo/idle/10")));
+        characters[2] = new Fighter(new Sprite("robo/idle/1"),
+                (Swingy.WIDTH / 2), 50, this, Statics.roboLarge);
 
-        characters[3] = new Player(new Sprite("zombo/idle/1"),
-                (Swingy.WIDTH / 2), 50, this, new Animation(20,
-                new Texture("zombo/idle/1"),
-                new Texture("zombo/idle/2"),
-                new Texture("zombo/idle/3"),
-                new Texture("zombo/idle/4"),
-                new Texture("zombo/idle/5"),
-                new Texture("zombo/idle/6"),
-                new Texture("zombo/idle/7"),
-                new Texture("zombo/idle/8"),
-                new Texture("zombo/idle/9"),
-                new Texture("zombo/idle/10"),
-                new Texture("zombo/idle/11"),
-                new Texture("zombo/idle/12"),
-                new Texture("zombo/idle/13"),
-                new Texture("zombo/idle/14"),
-                new Texture("zombo/idle/15")));
+        characters[3] = new Fighter(new Sprite("zombo/idle/1"),
+                (Swingy.WIDTH / 2), 50, this, Statics.zomboLarge);
 
         characters[0].setPlayerClass(ID.NINJA);
         characters[1].setPlayerClass(ID.DINO);
@@ -185,7 +142,7 @@ public class CharacterCreationState implements State {
                     currentCharacterSelection = 0;
                 break ;
             case 1 :
-                currentPlayer = characters[currentCharacterSelection];
+                currentFighter = characters[currentCharacterSelection];
                 GameState gameState = (GameState) stateManager.setState("map");
                 break ;
             case 2 :
@@ -198,6 +155,10 @@ public class CharacterCreationState implements State {
     public void render(Graphics graphics) {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+
+        Sprite background = new Sprite(new SpriteSheet(new Texture("background/2", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        background.render(graphics, 0, 0);
+
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Choose Your Fighter", 72, false);
 
         for (int i = 0; i < options.length; i++){

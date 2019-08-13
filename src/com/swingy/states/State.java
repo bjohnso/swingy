@@ -1,6 +1,6 @@
 package com.swingy.states;
 
-import com.swingy.entities.Entity;
+import com.swingy.rendering.entities.Entity;
 
 import java.awt.*;
 

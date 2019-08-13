@@ -1,16 +1,18 @@
 package com.swingy.states;
 
-import com.swingy.entities.Entity;
-import com.swingy.entities.Player;
+import com.swingy.rendering.entities.Entity;
+import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
+import com.swingy.id.IDAssigner;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.map.MapGenerator;
 import com.swingy.map.Tile;
-import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Sprite;
+import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
+import com.swingy.statics.Statics;
 import com.swingy.view.Swingy;
 
 import java.awt.*;
@@ -21,88 +23,64 @@ import java.util.ArrayList;
 public class GameState implements State {
 
     private ArrayList<Entity> entities;
-    private ArrayList<Player> players;
+    private ArrayList<Fighter> fighters;
     private ArrayList<Tile> tiles;
     private Tile[][] tileMap;
 
     private MapGenerator mapGenerator;
-    private Player player;
     private int playerIndex;
     private Button[] options = null;
     private int currentSelection;
 
+    private IDAssigner idAssigner;
+
     private boolean isResume = false;
+
+    protected static Fighter player;
+    protected static Fighter defender;
 
     @Override
     public void init() {
-        player = CharacterCreationState.currentPlayer;
+        player = CharacterCreationState.currentFighter;
         mapGenerator = new MapGenerator(player);
         tileMap = mapGenerator.getTileMap();
         entities = new ArrayList<Entity>();
-        players = new ArrayList<>();
+        fighters = new ArrayList<>();
         tiles = mapGenerator.generate();
 
+        idAssigner = new IDAssigner(1);
+
         for (Tile t: tiles){
-            Player tempPlayer = null;
+            Fighter tempFighter = null;
 
-            if (t.getID() == ID.DINO){
-                tempPlayer = new Player(new Sprite("terrain/dino/1"),
-                        t.getX(), t.getY(), this, new Animation(30,
-                        new Texture("terrain/dino/1"),
-                        new Texture("terrain/dino/2"),
-                        new Texture("terrain/dino/3"),
-                        new Texture("terrain/dino/4"),
-                        new Texture("terrain/dino/5"),
-                        new Texture("terrain/dino/6"),
-                        new Texture("terrain/dino/7"),
-                        new Texture("terrain/dino/8")));
+            if (t.getTileClass() == ID.DINO){
+                tempFighter = new Fighter(new Sprite("terrain/dino/1"),
+                        t.getX(), t.getY(), this, Statics.dinoTerrain);
+                tempFighter.setPlayerClass(ID.DINO);
             }
-            else if (t.getID() == ID.ROBO){
-                tempPlayer = new Player(new Sprite("terrain/robo/1"),
-                        t.getX(), t.getY(), this, new Animation(30,
-                        new Texture("terrain/robo/1"),
-                        new Texture("terrain/robo/2"),
-                        new Texture("terrain/robo/3"),
-                        new Texture("terrain/robo/4"),
-                        new Texture("terrain/robo/5"),
-                        new Texture("terrain/robo/6"),
-                        new Texture("terrain/robo/7"),
-                        new Texture("terrain/robo/8")));
+            else if (t.getTileClass() == ID.ROBO){
+                tempFighter = new Fighter(new Sprite("terrain/robo/1"),
+                        t.getX(), t.getY(), this, Statics.roboTerrain);
+                tempFighter.setPlayerClass(ID.ROBO);
             }
-            else if (t.getID() == ID.ZOMBO){
-                tempPlayer = new Player(new Sprite("terrain/zombo/1"),
-                        t.getX(), t.getY(), this, new Animation(30,
-                        new Texture("terrain/zombo/1"),
-                        new Texture("terrain/zombo/2"),
-                        new Texture("terrain/zombo/3"),
-                        new Texture("terrain/zombo/4"),
-                        new Texture("terrain/zombo/5"),
-                        new Texture("terrain/zombo/6"),
-                        new Texture("terrain/zombo/7"),
-                        new Texture("terrain/zombo/8"),
-                        new Texture("terrain/zombo/9"),
-                        new Texture("terrain/zombo/10")));
+            else if (t.getTileClass() == ID.ZOMBO){
+                tempFighter = new Fighter(new Sprite("terrain/zombo/1"),
+                        t.getX(), t.getY(), this, Statics.zomboTerrain);
+                tempFighter.setPlayerClass(ID.ZOMBO);
             }
-            else if (t.getID() == ID.NINJA){
-                tempPlayer = new Player(new Sprite("terrain/ninja/1"),
-                        t.getX(), t.getY(), this, new Animation(30,
-                        new Texture("terrain/ninja/1"),
-                        new Texture("terrain/ninja/2"),
-                        new Texture("terrain/ninja/3"),
-                        new Texture("terrain/ninja/4"),
-                        new Texture("terrain/ninja/5"),
-                        new Texture("terrain/ninja/6"),
-                        new Texture("terrain/ninja/7"),
-                        new Texture("terrain/ninja/8"),
-                        new Texture("terrain/ninja/9"),
-                        new Texture("terrain/ninja/10")));
+            else if (t.getTileClass() == ID.NINJA){
+                tempFighter = new Fighter(new Sprite("terrain/ninja/1"),
+                        t.getX(), t.getY(), this, Statics.ninjaTerrain);
+                tempFighter.setPlayerClass(ID.NINJA);
             }
 
-            if (tempPlayer != null) {
-                players.add(tempPlayer);
+            if (tempFighter != null) {
+                tempFighter.setID(idAssigner.next());
+                t.setMobileID(tempFighter.getID());
+                fighters.add(tempFighter);
                 if (t.isPlayer()){
                     playerIndex = tiles.indexOf(t);
-                    player = tempPlayer;
+                    player = tempFighter;
                 }
             }
         }
@@ -110,7 +88,7 @@ public class GameState implements State {
 
     public void enemyMove(){
 
-        for (Player p: players) {
+        for (Fighter p: fighters) {
             if (p != player) {
                 ArrayList<String> directions = new ArrayList<>();
                 int originX = (Swingy.WIDTH - (tileMap.length * 32)) / 2;
@@ -125,19 +103,19 @@ public class GameState implements State {
 
                 if (indexX + 1 < tileMap.length && indexX + 1 > -1 && indexY < tileMap.length && indexY > -1) {
                     System.out.println(indexX);
-                    if (tileMap[indexY][indexX + 1].getID() == ID.GROUND)
+                    if (tileMap[indexY][indexX + 1].getTileClass() == ID.GROUND)
                         directions.add("right");
                 }
                 if (indexX - 1 < tileMap.length && indexX - 1 > -1 && indexY < tileMap.length && indexY > -1) {
-                    if (tileMap[indexY][indexX - 1].getID() == ID.GROUND)
+                    if (tileMap[indexY][indexX - 1].getTileClass() == ID.GROUND)
                         directions.add("left");
                 }
                 if (indexX < tileMap.length && indexX > -1 && indexY + 1 < tileMap.length && indexY + 1 > -1) {
-                    if (tileMap[indexY + 1][indexX].getID() == ID.GROUND)
+                    if (tileMap[indexY + 1][indexX].getTileClass() == ID.GROUND)
                         directions.add("down");
                 }
                 if (indexX < tileMap.length && indexX > -1 && indexY - 1 < tileMap.length && indexY - 1 > -1) {
-                    if (tileMap[indexY - 1][indexX].getID() == ID.GROUND)
+                    if (tileMap[indexY - 1][indexX].getTileClass() == ID.GROUND)
                         directions.add("up");
                 }
 
@@ -221,7 +199,7 @@ public class GameState implements State {
                     for (int j = 0; j < tileMap.length; j++) {
                         if (tileMap[i][j].isPlayer()) {
                             if (i - 1 > -1) {
-                                if (tileMap[i - 1][j].getID() == ID.GROUND) {
+                                if (tileMap[i - 1][j].getTileClass() == ID.GROUND) {
                                     Tile tempTile = tileMap[i - 1][j];
                                     tileMap[i - 1][j] = tileMap[i][j];
                                     tileMap[i][j] = tempTile;
@@ -255,7 +233,7 @@ public class GameState implements State {
                     for (int j = 0; j < tileMap.length; j++) {
                         if (tileMap[i][j].isPlayer()) {
                             if (i + 1 < tileMap.length) {
-                                if (tileMap[i + 1][j].getID() == ID.GROUND) {
+                                if (tileMap[i + 1][j].getTileClass() == ID.GROUND) {
                                     Tile tempTile = tileMap[i + 1][j];
                                     tileMap[i + 1][j] = tileMap[i][j];
                                     tileMap[i][j] = tempTile;
@@ -289,7 +267,7 @@ public class GameState implements State {
                     for (int j = 0; j < tileMap.length; j++) {
                         if (tileMap[i][j].isPlayer()) {
                             if (j - 1 > -1) {
-                                if (tileMap[i][j - 1].getID() == ID.GROUND) {
+                                if (tileMap[i][j - 1].getTileClass() == ID.GROUND) {
                                     Tile tempTile = tileMap[i][j - 1];
                                     tileMap[i][j - 1] = tileMap[i][j];
                                     tileMap[i][j] = tempTile;
@@ -323,7 +301,7 @@ public class GameState implements State {
                     for (int j = 0; j < tileMap.length; j++) {
                         if (tileMap[i][j].isPlayer()) {
                             if (j + 1 < tileMap.length) {
-                                if (tileMap[i][j + 1].getID() == ID.GROUND) {
+                                if (tileMap[i][j + 1].getTileClass() == ID.GROUND) {
                                     Tile tempTile = tileMap[i][j + 1];
                                     tileMap[i][j + 1] = tileMap[i][j];
                                     tileMap[i][j] = tempTile;
@@ -389,6 +367,9 @@ public class GameState implements State {
         graphics.setColor(Color.WHITE);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
+        Sprite background = new Sprite(new SpriteSheet(new Texture("background/3", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        background.render(graphics, 0, 0);
+
         for (Entity e : entities)
             e.render(graphics);
 
@@ -417,7 +398,18 @@ public class GameState implements State {
     public boolean flee(){
         int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
         boolean possible[] = {false, true, false, false};
+
+        if (possible[random] == true)
+            defender = null;
+
         return possible[random];
+    }
+
+    public void setDefender(int id){
+        for (Fighter f : fighters) {
+            if (f.getID() == id)
+                defender = f;
+        }
     }
 
     public boolean collision(){
@@ -425,10 +417,12 @@ public class GameState implements State {
             for (int j = 0; j < tileMap.length; j++){
                 if (tileMap[i][j].isPlayer()){
                     if (j + 1 < tileMap.length){
-                        if (tileMap[i][j + 1].getID() == ID.NINJA
-                                || tileMap[i][j + 1].getID() == ID.DINO
-                                || tileMap[i][j + 1].getID() == ID.ROBO
-                                || tileMap[i][j + 1].getID() == ID.ZOMBO){
+                        if (tileMap[i][j + 1].getTileClass() == ID.NINJA
+                                || tileMap[i][j + 1].getTileClass() == ID.DINO
+                                || tileMap[i][j + 1].getTileClass() == ID.ROBO
+                                || tileMap[i][j + 1].getTileClass() == ID.ZOMBO){
+
+                            setDefender(tileMap[i][j + 1].getMobileID());
 
                             options = new Button[2];
                             options[0] = new Button("Fight", (500 + 0 * 80),
@@ -444,16 +438,18 @@ public class GameState implements State {
 
                             return true;
                         }
-                        else if (tileMap[i][j + 1].getID() == ID.LAVA
-                                || tileMap[i][j + 1].getID() == ID.PIT){
+                        else if (tileMap[i][j + 1].getTileClass() == ID.LAVA
+                                || tileMap[i][j + 1].getTileClass() == ID.PIT){
                             System.out.println("WENT OFF THE DEEP END!!!");
                         }
                     }
                     if (j - 1 > -1){
-                        if (tileMap[i][j - 1].getID() == ID.NINJA
-                                || tileMap[i][j - 1].getID() == ID.DINO
-                                || tileMap[i][j - 1].getID() == ID.ROBO
-                                || tileMap[i][j - 1].getID() == ID.ZOMBO){
+                        if (tileMap[i][j - 1].getTileClass() == ID.NINJA
+                                || tileMap[i][j - 1].getTileClass() == ID.DINO
+                                || tileMap[i][j - 1].getTileClass() == ID.ROBO
+                                || tileMap[i][j - 1].getTileClass() == ID.ZOMBO){
+
+                            setDefender(tileMap[i][j - 1].getMobileID());
 
                             options = new Button[2];
                             options[0] = new Button("Fight", (500 + 0 * 80),
@@ -469,16 +465,18 @@ public class GameState implements State {
 
                             return true;
                         }
-                        else if (tileMap[i][j - 1].getID() == ID.LAVA
-                                || tileMap[i][j - 1].getID() == ID.PIT){
+                        else if (tileMap[i][j - 1].getTileClass() == ID.LAVA
+                                || tileMap[i][j - 1].getTileClass() == ID.PIT){
                             System.out.println("WENT OFF THE DEEP END!!!");
                         }
                     }
                     if (i + 1 < tileMap.length){
-                        if (tileMap[i + 1][j].getID() == ID.NINJA
-                                || tileMap[i + 1][j].getID() == ID.DINO
-                                || tileMap[i + 1][j].getID() == ID.ROBO
-                                || tileMap[i + 1][j].getID() == ID.ZOMBO){
+                        if (tileMap[i + 1][j].getTileClass() == ID.NINJA
+                                || tileMap[i + 1][j].getTileClass() == ID.DINO
+                                || tileMap[i + 1][j].getTileClass() == ID.ROBO
+                                || tileMap[i + 1][j].getTileClass() == ID.ZOMBO){
+
+                            setDefender(tileMap[i + 1][j].getMobileID());
 
                             options = new Button[2];
                             options[0] = new Button("Fight", (500 + 0 * 80),
@@ -493,16 +491,18 @@ public class GameState implements State {
                                     Color.YELLOW);
                             return true;
                         }
-                        else if (tileMap[i + 1][j].getID() == ID.LAVA
-                                || tileMap[i + 1][j].getID() == ID.PIT){
+                        else if (tileMap[i + 1][j].getTileClass() == ID.LAVA
+                                || tileMap[i + 1][j].getTileClass() == ID.PIT){
                             System.out.println("WENT OFF THE DEEP END!!!");
                         }
                     }
                     if (i - 1 > -1){
-                        if (tileMap[i - 1][j].getID() == ID.NINJA
-                                || tileMap[i - 1][j].getID() == ID.DINO
-                                || tileMap[i - 1][j].getID() == ID.ROBO
-                                || tileMap[i - 1][j].getID() == ID.ZOMBO){
+                        if (tileMap[i - 1][j].getTileClass() == ID.NINJA
+                                || tileMap[i - 1][j].getTileClass() == ID.DINO
+                                || tileMap[i - 1][j].getTileClass() == ID.ROBO
+                                || tileMap[i - 1][j].getTileClass() == ID.ZOMBO){
+
+                            setDefender(tileMap[i - 1][j].getMobileID());
 
                             options = new Button[2];
                             options[0] = new Button("Fight", (500 + 0 * 80),
@@ -517,8 +517,8 @@ public class GameState implements State {
                                     Color.YELLOW);
                             return true;
                         }
-                        else if (tileMap[i - 1][j].getID() == ID.LAVA
-                                || tileMap[i - 1][j].getID() == ID.PIT){
+                        else if (tileMap[i - 1][j].getTileClass() == ID.LAVA
+                                || tileMap[i - 1][j].getTileClass() == ID.PIT){
                             System.out.println("WENT OFF THE DEEP END!!!");
                         }
                     }

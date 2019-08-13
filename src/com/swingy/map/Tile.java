@@ -10,7 +10,8 @@ public class Tile {
     protected float x, y;
     protected Sprite sprite;
     protected boolean solid;
-    protected ID id;
+    protected ID tileClass;
+    protected int MobileID;
     protected boolean isPlayer = false;
 
     public Tile(float x, float y, Sprite sprite){
@@ -28,12 +29,12 @@ public class Tile {
         this.isPlayer = isPlayer;
     }
 
-    public Tile(float x, float y, Sprite sprite, ID id){
+    public Tile(float x, float y, Sprite sprite, ID tileClass){
         this.x = x;
         this.y = y;
         this.sprite = sprite;
         this.solid = true;
-        this.id = id;
+        this.tileClass = tileClass;
     }
 
     public float getX() {
@@ -52,12 +53,12 @@ public class Tile {
         this.y += y;
     }
 
-    public void setID(ID id) {
-        this.id = id;
+    public void setTileClass(ID tileClass) {
+        this.tileClass = tileClass;
     }
 
-    public ID getID(){
-        return this.id;
+    public ID getTileClass(){
+        return this.tileClass;
     }
 
     public boolean isPlayer() {
@@ -66,5 +67,13 @@ public class Tile {
 
     public void render(Graphics graphics){
         sprite.render(graphics, x, y);
+    }
+
+    public void setMobileID(int mobileID) {
+        MobileID = mobileID;
+    }
+
+    public int getMobileID() {
+        return MobileID;
     }
 }
