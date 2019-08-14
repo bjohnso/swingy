@@ -1,5 +1,6 @@
 package com.swingy.states;
 
+import com.swingy.heroes.FighterMetrics;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
@@ -25,7 +26,7 @@ public class GameState implements State {
     private ArrayList<Entity> entities;
     private ArrayList<Fighter> fighters;
     private ArrayList<Tile> tiles;
-    private Tile[][] tileMap;
+    private Tile[][] tileMap = null;
 
     private MapGenerator mapGenerator;
     private int playerIndex;
@@ -35,9 +36,18 @@ public class GameState implements State {
     private IDAssigner idAssigner;
 
     private boolean isResume = false;
+    private boolean gameOver = false;
 
     protected static Fighter player;
     protected static Fighter defender;
+
+    private StateManager stateManager = null;
+
+    private String[] artifacts = {
+            "HELM",
+            "WEAPON",
+            "ARMOR"
+    };
 
     @Override
     public void init() {
@@ -55,25 +65,33 @@ public class GameState implements State {
 
             if (t.getTileClass() == ID.DINO){
                 tempFighter = new Fighter(new Sprite("terrain/dino/1"),
-                        t.getX(), t.getY(), this, Statics.dinoTerrain);
+                        t.getX(), t.getY(),
+                        new FighterMetrics("Zombo", "EARTH"),
+                        this, Statics.dinoTerrain);
                 tempFighter.setPlayerClass(ID.DINO);
                 tempFighter.setPlayerClassName("dino");
             }
             else if (t.getTileClass() == ID.ROBO){
                 tempFighter = new Fighter(new Sprite("terrain/robo/1"),
-                        t.getX(), t.getY(), this, Statics.roboTerrain);
+                        t.getX(), t.getY(),
+                        new FighterMetrics("Zombo", "EARTH"),
+                        this, Statics.roboTerrain);
                 tempFighter.setPlayerClass(ID.ROBO);
                 tempFighter.setPlayerClassName("robo");
             }
             else if (t.getTileClass() == ID.ZOMBO){
                 tempFighter = new Fighter(new Sprite("terrain/zombo/1"),
-                        t.getX(), t.getY(), this, Statics.zomboTerrain);
+                        t.getX(), t.getY(),
+                        new FighterMetrics("Zombo", "WATER"),
+                        this, Statics.zomboTerrain);
                 tempFighter.setPlayerClass(ID.ZOMBO);
                 tempFighter.setPlayerClassName("zombo");
             }
             else if (t.getTileClass() == ID.NINJA){
                 tempFighter = new Fighter(new Sprite("terrain/ninja/1"),
-                        t.getX(), t.getY(), this, Statics.ninjaTerrain);
+                        t.getX(), t.getY(),
+                        new FighterMetrics("Zombo", "FIRE"),
+                        this, Statics.ninjaTerrain);
                 tempFighter.setPlayerClass(ID.NINJA);
                 tempFighter.setPlayerClassName("ninja");
             }
@@ -186,7 +204,14 @@ public class GameState implements State {
 
     @Override
     public void exitState() {
-        isResume = true;
+        if (!gameOver)
+            isResume = true;
+        else if (gameOver){
+            isResume = false;
+            entities.clear();
+            fighters.clear();
+            tiles.clear();
+        }
     }
 
     @Override
@@ -194,9 +219,21 @@ public class GameState implements State {
         return "map";
     }
 
+    public String calculateArtifact(){
+        double seed = Math.random();
+
+        if (seed < 1 / 3.0)
+            return artifacts[0];
+        else if (seed < 2 / 3)
+            return artifacts[1];
+        else if (seed < 3 / 3)
+            return artifacts[2];
+        return null;
+    }
+
     @Override
     public void tick(StateManager stateManager) {
-
+        this.stateManager = stateManager;
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             if (options == null) {
                 for (int i = 0; i < tileMap.length; i++) {
@@ -412,6 +449,20 @@ public class GameState implements State {
         return possible[random];
     }
 
+    public boolean escape(){
+        int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
+        boolean possible[] = {true, true, false, false};
+
+        return possible[random];
+    }
+
+    public boolean item(){
+        int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
+        boolean possible[] = {false, true, false, false};
+
+        return possible[random];
+    }
+
     public void setDefender(int id){
         for (Fighter f : fighters) {
             if (f.getID() == id)
@@ -447,7 +498,17 @@ public class GameState implements State {
                                 return true;
                             } else if (tileMap[i][j + 1].getTileClass() == ID.LAVA
                                     || tileMap[i][j + 1].getTileClass() == ID.PIT) {
-                                System.out.println("WENT OFF THE DEEP END!!!");
+                                if (!item()) {
+                                    gameOver = true;
+                                    stateManager.setState("menu", this);
+                                }
+                                else{
+                                    System.out.println(calculateArtifact());
+                                }
+                            }
+                            else if (tileMap[i][j + 1].getTileClass() == ID.BORDER) {
+                                gameOver = true;
+                                stateManager.setState("menu", this);
                             }
                         }
                         if (j - 1 > -1) {
@@ -473,6 +534,17 @@ public class GameState implements State {
                                 return true;
                             } else if (tileMap[i][j - 1].getTileClass() == ID.LAVA
                                     || tileMap[i][j - 1].getTileClass() == ID.PIT) {
+                                if (!item()) {
+                                    gameOver = true;
+                                    stateManager.setState("menu", this);
+                                }
+                                else{
+                                    System.out.println(calculateArtifact());
+                                }
+                            }
+                            else if (tileMap[i][j - 1].getTileClass() == ID.BORDER) {
+                                gameOver = true;
+                                stateManager.setState("menu", this);
                                 System.out.println("WENT OFF THE DEEP END!!!");
                             }
                         }
@@ -498,7 +570,17 @@ public class GameState implements State {
                                 return true;
                             } else if (tileMap[i + 1][j].getTileClass() == ID.LAVA
                                     || tileMap[i + 1][j].getTileClass() == ID.PIT) {
-                                System.out.println("WENT OFF THE DEEP END!!!");
+                                if (!item()) {
+                                    gameOver = true;
+                                    stateManager.setState("menu", this);
+                                }
+                                else{
+                                    System.out.println(calculateArtifact());
+                                }
+                            }
+                            else if (tileMap[i + 1][j].getTileClass() == ID.BORDER) {
+                                gameOver = true;
+                                stateManager.setState("menu", this);
                             }
                         }
                         if (i - 1 > -1) {
@@ -523,7 +605,17 @@ public class GameState implements State {
                                 return true;
                             } else if (tileMap[i - 1][j].getTileClass() == ID.LAVA
                                     || tileMap[i - 1][j].getTileClass() == ID.PIT) {
-                                System.out.println("WENT OFF THE DEEP END!!!");
+                                if (!item()) {
+                                    gameOver = true;
+                                    stateManager.setState("menu", this);
+                                }
+                                else{
+                                    System.out.println(calculateArtifact());
+                                }
+                            }
+                            else if (tileMap[i - 1][j].getTileClass() == ID.BORDER) {
+                                gameOver = true;
+                                stateManager.setState("menu", this);
                             }
                         }
                     }

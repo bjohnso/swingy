@@ -1,18 +1,20 @@
 package com.swingy.battle;
 
-import com.swingy.heroes.Hero;
+import com.swingy.artifacts.Artifact;
+import com.swingy.heroes.FighterMetrics;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 
 public class BattleEngine implements Runnable{
 
     private PropertyChangeSupport support;
 
-    private Hero challenger;
-    private Hero defender;
+    private FighterMetrics challenger;
+    private FighterMetrics defender;
     private double challengerHP;
     private double defenderHP;
     private int counter = 0;
@@ -22,17 +24,20 @@ public class BattleEngine implements Runnable{
     private int turn = 1;
     private int tickLag = 0;
 
-    public void setChallenger(Hero challenger){
+    private ArrayList<Artifact> artifacts;
+
+    public void setChallenger(FighterMetrics challenger){
         this.challenger = challenger;
     }
 
-    public void setDefender(Hero defender) {
+    public void setDefender(FighterMetrics defender) {
         this.defender = defender;
     }
 
     public BattleEngine(){
         start();
         support = new PropertyChangeSupport(this);
+        artifacts = new ArrayList<>();
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl){
@@ -147,7 +152,7 @@ public class BattleEngine implements Runnable{
 
 
 
-    private Double handicap(Hero attacker, Hero defender){
+    private Double handicap(FighterMetrics attacker, FighterMetrics defender){
         if (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")
                 && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")) {
             return 5.0;

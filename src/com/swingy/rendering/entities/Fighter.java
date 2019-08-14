@@ -1,5 +1,6 @@
 package com.swingy.rendering.entities;
 
+import com.swingy.heroes.FighterMetrics;
 import com.swingy.id.ID;
 import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Sprite;
@@ -14,11 +15,13 @@ public class Fighter extends Mobile{
     private int level;
     private boolean isPlayer;
     private boolean alive;
+    private FighterMetrics fighterMetrics;
 
-    public Fighter(Sprite sprite, double x, double y, State state, Animation animation) {
+    public Fighter(Sprite sprite, double x, double y, FighterMetrics fighterMetrics, State state, Animation animation) {
         super(sprite, x, y, state, animation);
         alive = true;
         isPlayer = false;
+        this.fighterMetrics = fighterMetrics;
     }
 
     @Override
@@ -69,5 +72,13 @@ public class Fighter extends Mobile{
 
     public boolean isAlive(){
         return this.alive;
+    }
+
+    public FighterMetrics getFighterMetrics() {
+        return fighterMetrics;
+    }
+
+    public void setFighterMetrics(FighterMetrics fighterMetrics) {
+        this.fighterMetrics = fighterMetrics;
     }
 }

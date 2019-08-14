@@ -1,4 +1,7 @@
 package com.swingy.artifacts;
 
-public class Armor {
+public class Armor extends Artifact{
+    public Armor(String type) {
+        super(type);
+    }
 }

@@ -1,16 +1,19 @@
 package com.swingy.heroes;
 
+import com.swingy.artifacts.Artifact;
 import com.swingy.interfaces.Fighter;
 import com.swingy.units.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class Hero implements Fighter {
+public class FighterMetrics implements Fighter {
 
     //FighterManager Defined Variables
     protected String _name;
     protected LinkedHashMap<String, Affinity> _affinities = new LinkedHashMap<>();
+    protected ArrayList<Artifact> artifacts;
 
     //System Defined Variables
     protected long _id = 0;
@@ -18,11 +21,7 @@ public class Hero implements Fighter {
     protected double _damage = 0;
     protected int _idCounter = 0;
 
-    public Hero(){
-
-    }
-
-    public Hero(String name, String affinity){
+    public FighterMetrics(String name, String affinity){
         _name = name;
         if (affinity.equalsIgnoreCase("FIRE")) {
             if (!_affinities.containsKey(affinity))
@@ -36,6 +35,7 @@ public class Hero implements Fighter {
             if (!_affinities.containsKey(affinity))
                 _affinities.put("EARTH", new EarthAffinity(10));
         }
+        artifacts = new ArrayList<>();
     }
 
     public String getName(){
@@ -62,6 +62,22 @@ public class Hero implements Fighter {
         _affinities = affinities;
     }
 
+    public ArrayList<Artifact> getArtifacts() {
+        return artifacts;
+    }
+
+    public void setArtifacts(ArrayList<Artifact> artifacts) {
+        this.artifacts = artifacts;
+    }
+
+    public void addArtifact(Artifact artifact){
+        this.artifacts.add(artifact);
+    }
+
+    public void removeArtifact(Artifact artifact){
+        this.artifacts.remove(artifact);
+    }
+
     public double getDamage(){ return _damage; }
 
     @Override
@@ -71,7 +87,7 @@ public class Hero implements Fighter {
     }
 
     @Override
-    public boolean defend(Hero attacker, Hero defender) {
+    public boolean defend(FighterMetrics attacker, FighterMetrics defender) {
         Double rand = Math.random() * 101;
         Double defenceChance = this.getHeroStats().getCounterChance();
         if (rand < defenceChance)
