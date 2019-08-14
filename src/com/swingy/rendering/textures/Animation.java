@@ -1,9 +1,5 @@
 package com.swingy.rendering.textures;
 
-import com.swingy.input.KeyInput;
-import com.swingy.input.MouseInput;
-
-import javax.xml.soap.Text;
 import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -32,13 +28,8 @@ public class Animation{
     }
 
     private void animationEnd(){
-        System.out.println("ANIMATION END FIRED");
         this.animationEnd = true;
         support.firePropertyChange("AnimationEND", false, this.animationEnd);
-    }
-
-    private void sayHi(){
-        support.firePropertyChange("B", null, "HELLO!!!!!!!!!!!");
     }
 
     public Animation(int speed, boolean loop, Texture... frames){

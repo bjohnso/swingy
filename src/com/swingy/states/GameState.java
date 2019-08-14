@@ -131,7 +131,6 @@ public class GameState implements State {
                     if (seed < probability) {
                         Tile tempTile;
                         if (d == "left") {
-                            System.out.println("LEFT");
                             tempTile = tileMap[indexY][indexX - 1];
                             tileMap[indexY][indexX - 1] = tileMap[indexY][indexX];
                             tileMap[indexY][indexX] = tempTile;
@@ -141,7 +140,6 @@ public class GameState implements State {
 
                             p.moveX(-32);
                         }  else if (d == "up") {
-                            System.out.println("UP");
                             tempTile = tileMap[indexY - 1][indexX];
                             tileMap[indexY - 1][indexX] = tileMap[indexY][indexX];
                             tileMap[indexY][indexX] = tempTile;
@@ -152,7 +150,6 @@ public class GameState implements State {
                             p.moveY(-32);
                         }
                         else if (d == "right") {
-                            System.out.println("RIGHT");
                             tempTile = tileMap[indexY][indexX + 1];
                             tileMap[indexY][indexX + 1] = tileMap[indexY][indexX];
                             tileMap[indexY][indexX] = tempTile;
@@ -163,7 +160,6 @@ public class GameState implements State {
                             p.moveX(32);
                         }
                         else {
-                            System.out.println("DOWN");
                             tempTile = tileMap[indexY + 1][indexX];
                             tileMap[indexY + 1][indexX] = tileMap[indexY][indexX];
                             tileMap[indexY][indexX] = tempTile;
@@ -189,7 +185,6 @@ public class GameState implements State {
 
     @Override
     public void exitState() {
-        entities.clear();
         isResume = true;
     }
 
@@ -307,22 +302,24 @@ public class GameState implements State {
             if(options == null) {
                 for (int i = 0; i < tileMap.length; i++) {
                     for (int j = 0; j < tileMap.length; j++) {
-                        if (tileMap[i][j].isPlayer()) {
-                            if (j + 1 < tileMap.length) {
-                                if (tileMap[i][j + 1].getTileClass() == ID.GROUND) {
-                                    Tile tempTile = tileMap[i][j + 1];
-                                    tileMap[i][j + 1] = tileMap[i][j];
-                                    tileMap[i][j] = tempTile;
+                        if (tileMap[i][j] != null) {
+                            if (tileMap[i][j].isPlayer()) {
+                                if (j + 1 < tileMap.length) {
+                                    if (tileMap[i][j + 1].getTileClass() == ID.GROUND) {
+                                        Tile tempTile = tileMap[i][j + 1];
+                                        tileMap[i][j + 1] = tileMap[i][j];
+                                        tileMap[i][j] = tempTile;
 
-                                    tileMap[i][j + 1].moveX(32);
-                                    tileMap[i][j].moveX(-32);
+                                        tileMap[i][j + 1].moveX(32);
+                                        tileMap[i][j].moveX(-32);
 
-                                    player.moveX(32);
-                                    j = tileMap.length;
-                                    i = tileMap.length;
-                                    collision();
-                                    enemyMove();
-                                    collision();
+                                        player.moveX(32);
+                                        j = tileMap.length;
+                                        i = tileMap.length;
+                                        collision();
+                                        enemyMove();
+                                        collision();
+                                    }
                                 }
                             }
                         }
@@ -383,7 +380,8 @@ public class GameState implements State {
 
         for (int i = 0; i < tileMap.length; i++){
             for (int j = 0; j < tileMap.length; j++){
-                tileMap[i][j].render(graphics);
+                if (tileMap[i][j] != null)
+                    tileMap[i][j].render(graphics);
             }
         }
 
@@ -422,112 +420,110 @@ public class GameState implements State {
 
     public boolean collision(){
         for (int i =  0; i < tileMap.length; i++){
-            for (int j = 0; j < tileMap.length; j++){
-                if (tileMap[i][j].isPlayer()){
-                    if (j + 1 < tileMap.length){
-                        if (tileMap[i][j + 1].getTileClass() == ID.NINJA
-                                || tileMap[i][j + 1].getTileClass() == ID.DINO
-                                || tileMap[i][j + 1].getTileClass() == ID.ROBO
-                                || tileMap[i][j + 1].getTileClass() == ID.ZOMBO){
+            for (int j = 0; j < tileMap.length; j++) {
+                if (tileMap[i][j] != null) {
+                    if (tileMap[i][j].isPlayer()) {
+                        if (j + 1 < tileMap.length) {
+                            if (tileMap[i][j + 1].getTileClass() == ID.NINJA
+                                    || tileMap[i][j + 1].getTileClass() == ID.DINO
+                                    || tileMap[i][j + 1].getTileClass() == ID.ROBO
+                                    || tileMap[i][j + 1].getTileClass() == ID.ZOMBO) {
 
-                            setDefender(tileMap[i][j + 1].getMobileID());
+                                setDefender(tileMap[i][j + 1].getMobileID());
 
-                            options = new Button[2];
-                            options[0] = new Button("Fight", (500 + 0 * 80),
-                                    new Font("Arial", Font.PLAIN, 32),
-                                    new Font("Arial", Font.BOLD, 48),
-                                    Color.WHITE,
-                                    Color.YELLOW);
-                            options[1] = new Button("Flee", (500 + 1 * 80),
-                                    new Font("Arial", Font.PLAIN, 32),
-                                    new Font("Arial", Font.BOLD, 48),
-                                    Color.WHITE,
-                                    Color.YELLOW);
+                                options = new Button[2];
+                                options[0] = new Button("Fight", (500 + 0 * 80),
+                                        new Font("Arial", Font.PLAIN, 32),
+                                        new Font("Arial", Font.BOLD, 48),
+                                        Color.WHITE,
+                                        Color.YELLOW);
+                                options[1] = new Button("Flee", (500 + 1 * 80),
+                                        new Font("Arial", Font.PLAIN, 32),
+                                        new Font("Arial", Font.BOLD, 48),
+                                        Color.WHITE,
+                                        Color.YELLOW);
 
-                            return true;
+                                return true;
+                            } else if (tileMap[i][j + 1].getTileClass() == ID.LAVA
+                                    || tileMap[i][j + 1].getTileClass() == ID.PIT) {
+                                System.out.println("WENT OFF THE DEEP END!!!");
+                            }
                         }
-                        else if (tileMap[i][j + 1].getTileClass() == ID.LAVA
-                                || tileMap[i][j + 1].getTileClass() == ID.PIT){
-                            System.out.println("WENT OFF THE DEEP END!!!");
+                        if (j - 1 > -1) {
+                            if (tileMap[i][j - 1].getTileClass() == ID.NINJA
+                                    || tileMap[i][j - 1].getTileClass() == ID.DINO
+                                    || tileMap[i][j - 1].getTileClass() == ID.ROBO
+                                    || tileMap[i][j - 1].getTileClass() == ID.ZOMBO) {
+
+                                setDefender(tileMap[i][j - 1].getMobileID());
+
+                                options = new Button[2];
+                                options[0] = new Button("Fight", (500 + 0 * 80),
+                                        new Font("Arial", Font.PLAIN, 32),
+                                        new Font("Arial", Font.BOLD, 48),
+                                        Color.WHITE,
+                                        Color.YELLOW);
+                                options[1] = new Button("Flee", (500 + 1 * 80),
+                                        new Font("Arial", Font.PLAIN, 32),
+                                        new Font("Arial", Font.BOLD, 48),
+                                        Color.WHITE,
+                                        Color.YELLOW);
+
+                                return true;
+                            } else if (tileMap[i][j - 1].getTileClass() == ID.LAVA
+                                    || tileMap[i][j - 1].getTileClass() == ID.PIT) {
+                                System.out.println("WENT OFF THE DEEP END!!!");
+                            }
                         }
-                    }
-                    if (j - 1 > -1){
-                        if (tileMap[i][j - 1].getTileClass() == ID.NINJA
-                                || tileMap[i][j - 1].getTileClass() == ID.DINO
-                                || tileMap[i][j - 1].getTileClass() == ID.ROBO
-                                || tileMap[i][j - 1].getTileClass() == ID.ZOMBO){
+                        if (i + 1 < tileMap.length) {
+                            if (tileMap[i + 1][j].getTileClass() == ID.NINJA
+                                    || tileMap[i + 1][j].getTileClass() == ID.DINO
+                                    || tileMap[i + 1][j].getTileClass() == ID.ROBO
+                                    || tileMap[i + 1][j].getTileClass() == ID.ZOMBO) {
 
-                            setDefender(tileMap[i][j - 1].getMobileID());
+                                setDefender(tileMap[i + 1][j].getMobileID());
 
-                            options = new Button[2];
-                            options[0] = new Button("Fight", (500 + 0 * 80),
-                                    new Font("Arial", Font.PLAIN, 32),
-                                    new Font("Arial", Font.BOLD, 48),
-                                    Color.WHITE,
-                                    Color.YELLOW);
-                            options[1] = new Button("Flee", (500 + 1 * 80),
-                                    new Font("Arial", Font.PLAIN, 32),
-                                    new Font("Arial", Font.BOLD, 48),
-                                    Color.WHITE,
-                                    Color.YELLOW);
-
-                            return true;
+                                options = new Button[2];
+                                options[0] = new Button("Fight", (500 + 0 * 80),
+                                        new Font("Arial", Font.PLAIN, 32),
+                                        new Font("Arial", Font.BOLD, 48),
+                                        Color.WHITE,
+                                        Color.YELLOW);
+                                options[1] = new Button("Flee", (500 + 1 * 80),
+                                        new Font("Arial", Font.PLAIN, 32),
+                                        new Font("Arial", Font.BOLD, 48),
+                                        Color.WHITE,
+                                        Color.YELLOW);
+                                return true;
+                            } else if (tileMap[i + 1][j].getTileClass() == ID.LAVA
+                                    || tileMap[i + 1][j].getTileClass() == ID.PIT) {
+                                System.out.println("WENT OFF THE DEEP END!!!");
+                            }
                         }
-                        else if (tileMap[i][j - 1].getTileClass() == ID.LAVA
-                                || tileMap[i][j - 1].getTileClass() == ID.PIT){
-                            System.out.println("WENT OFF THE DEEP END!!!");
-                        }
-                    }
-                    if (i + 1 < tileMap.length){
-                        if (tileMap[i + 1][j].getTileClass() == ID.NINJA
-                                || tileMap[i + 1][j].getTileClass() == ID.DINO
-                                || tileMap[i + 1][j].getTileClass() == ID.ROBO
-                                || tileMap[i + 1][j].getTileClass() == ID.ZOMBO){
+                        if (i - 1 > -1) {
+                            if (tileMap[i - 1][j].getTileClass() == ID.NINJA
+                                    || tileMap[i - 1][j].getTileClass() == ID.DINO
+                                    || tileMap[i - 1][j].getTileClass() == ID.ROBO
+                                    || tileMap[i - 1][j].getTileClass() == ID.ZOMBO) {
 
-                            setDefender(tileMap[i + 1][j].getMobileID());
+                                setDefender(tileMap[i - 1][j].getMobileID());
 
-                            options = new Button[2];
-                            options[0] = new Button("Fight", (500 + 0 * 80),
-                                    new Font("Arial", Font.PLAIN, 32),
-                                    new Font("Arial", Font.BOLD, 48),
-                                    Color.WHITE,
-                                    Color.YELLOW);
-                            options[1] = new Button("Flee", (500 + 1 * 80),
-                                    new Font("Arial", Font.PLAIN, 32),
-                                    new Font("Arial", Font.BOLD, 48),
-                                    Color.WHITE,
-                                    Color.YELLOW);
-                            return true;
-                        }
-                        else if (tileMap[i + 1][j].getTileClass() == ID.LAVA
-                                || tileMap[i + 1][j].getTileClass() == ID.PIT){
-                            System.out.println("WENT OFF THE DEEP END!!!");
-                        }
-                    }
-                    if (i - 1 > -1){
-                        if (tileMap[i - 1][j].getTileClass() == ID.NINJA
-                                || tileMap[i - 1][j].getTileClass() == ID.DINO
-                                || tileMap[i - 1][j].getTileClass() == ID.ROBO
-                                || tileMap[i - 1][j].getTileClass() == ID.ZOMBO){
-
-                            setDefender(tileMap[i - 1][j].getMobileID());
-
-                            options = new Button[2];
-                            options[0] = new Button("Fight", (500 + 0 * 80),
-                                    new Font("Arial", Font.PLAIN, 32),
-                                    new Font("Arial", Font.BOLD, 48),
-                                    Color.WHITE,
-                                    Color.YELLOW);
-                            options[1] = new Button("Flee", (500 + 1 * 80),
-                                    new Font("Arial", Font.PLAIN, 32),
-                                    new Font("Arial", Font.BOLD, 48),
-                                    Color.WHITE,
-                                    Color.YELLOW);
-                            return true;
-                        }
-                        else if (tileMap[i - 1][j].getTileClass() == ID.LAVA
-                                || tileMap[i - 1][j].getTileClass() == ID.PIT){
-                            System.out.println("WENT OFF THE DEEP END!!!");
+                                options = new Button[2];
+                                options[0] = new Button("Fight", (500 + 0 * 80),
+                                        new Font("Arial", Font.PLAIN, 32),
+                                        new Font("Arial", Font.BOLD, 48),
+                                        Color.WHITE,
+                                        Color.YELLOW);
+                                options[1] = new Button("Flee", (500 + 1 * 80),
+                                        new Font("Arial", Font.PLAIN, 32),
+                                        new Font("Arial", Font.BOLD, 48),
+                                        Color.WHITE,
+                                        Color.YELLOW);
+                                return true;
+                            } else if (tileMap[i - 1][j].getTileClass() == ID.LAVA
+                                    || tileMap[i - 1][j].getTileClass() == ID.PIT) {
+                                System.out.println("WENT OFF THE DEEP END!!!");
+                            }
                         }
                     }
                 }
@@ -540,13 +536,15 @@ public class GameState implements State {
 
         fighter.setAlive(false);
 
+        System.out.printf("FIGHTERS: %d | ENTITIES %d", fighters.size(), entities.size());
+
         for (int i = 0; i < tileMap.length ;i++){
             for (int j = 0; j < tileMap.length; j++){
                 if (tileMap[i][j].getMobileID() == fighter.getID()) {
                     tiles.remove(tileMap[i][j]);
 
-                    Tile tile = new Tile(tileMap[i][j].getX(), tileMap[i][j].getY(), new Sprite(new SpriteSheet(new Texture("terrain/ground", false), 32), 2, 2), ID.GROUND);
-                    tileMap[i][j] = tile;
+                    tileMap[i][j] = new Tile(tileMap[i][j].getX(), tileMap[i][j].getY(), new Sprite(new SpriteSheet(new Texture("terrain/ground", false), 32), 2, 2), ID.GROUND);
+                    tiles.add(tileMap[i][j]);
 
                     fighters.remove(fighter);
                     entities.remove(fighter);
@@ -556,5 +554,6 @@ public class GameState implements State {
                 }
             }
         }
+        System.out.printf("FIGHTERS: %d | ENTITIES %d", fighters.size(), entities.size());
     }
 }

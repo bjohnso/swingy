@@ -40,4 +40,8 @@ public class GameObjectHandler implements Renderable {
         this.objects.remove(battleObject);
     }
 
+    public void clear(){
+        objects.clear();
+    }
+
 }

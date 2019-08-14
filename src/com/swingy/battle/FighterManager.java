@@ -20,8 +20,6 @@ public class FighterManager extends BattleObject implements Renderable, Property
 
     private BattleState battleState;
 
-    private boolean animationEnd = false;
-
     public FighterManager(int x, int y, ID id, boolean screenLeft, HUD hud, Fighter fighter, BattleState battleState) {
         super(x, y, id);
         this.screenLeft = screenLeft;
@@ -43,19 +41,14 @@ public class FighterManager extends BattleObject implements Renderable, Property
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
 
-        if (evt.getPropertyName().equalsIgnoreCase("AnimationEND")){
+        if (evt.getPropertyName().equalsIgnoreCase("AnimationEND"))
             battleState.setBattleEnd(true);
-        }
-        else if (evt.getPropertyName().equalsIgnoreCase("ChallengerHP") && this.getId() == ID.Challenger){
-            //System.out.println("Challenger" + "\n" + this.hud.getId());
+        else if (evt.getPropertyName().equalsIgnoreCase("ChallengerHP") && this.getId() == ID.Challenger)
             this.hud.setHealth((double) evt.getNewValue());
-        }
-        else if (evt.getPropertyName().equalsIgnoreCase("DefenderHP") && this.getId() == ID.Defender) {
-            //System.out.println("Defender" + "\n" + this.hud.getId());
+        else if (evt.getPropertyName().equalsIgnoreCase("DefenderHP") && this.getId() == ID.Defender)
             this.hud.setHealth((double) evt.getNewValue());
-        }
         else if (evt.getPropertyName().equalsIgnoreCase("ChallengerDEATH") && this.getId() == ID.Challenger) {
-            battleState.setBattleText("VICTORY");
+            battleState.setBattleText("DEFEAT");
             fighter.getAnimation().removePropertyChangeListener(this);
             switch (fighter.getPlayerClass()) {
                 case NINJA:
