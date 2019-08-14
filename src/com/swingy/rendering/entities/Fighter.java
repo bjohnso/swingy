@@ -12,11 +12,13 @@ public class Fighter extends Mobile{
     private ID playerClass;
     private String playerClassName;
     private int level;
-    private boolean isPlayer = false;
-    private boolean alive = true;
+    private boolean isPlayer;
+    private boolean alive;
 
     public Fighter(Sprite sprite, double x, double y, State state, Animation animation) {
         super(sprite, x, y, state, animation);
+        alive = true;
+        isPlayer = false;
     }
 
     @Override
@@ -55,6 +57,10 @@ public class Fighter extends Mobile{
 
     public void setPlayer(boolean player) {
         isPlayer = player;
+    }
+
+    public boolean isPlayer() {
+        return isPlayer;
     }
 
     public void setAlive(boolean alive) {

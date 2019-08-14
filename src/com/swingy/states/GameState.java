@@ -85,6 +85,7 @@ public class GameState implements State {
                 if (t.isPlayer()){
                     playerIndex = tiles.indexOf(t);
                     player = tempFighter;
+                    player.setPlayer(true);
                 }
             }
         }
@@ -533,8 +534,6 @@ public class GameState implements State {
     }
 
     protected void removeFighter(Fighter fighter){
-
-        fighter.setAlive(false);
 
         System.out.printf("FIGHTERS: %d | ENTITIES %d", fighters.size(), entities.size());
 

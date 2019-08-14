@@ -28,8 +28,8 @@ public class BattleState extends Canvas implements State {
 
     private GameObjectHandler gameObjectHandler;
 
-    private Hero a = new Hero("Asuna", "Water");
-    private Hero b = new Hero("Ragos", "Fire");
+    private Hero a;
+    private Hero b;
 
     private BattleEngine battleEngine;
 
@@ -40,11 +40,16 @@ public class BattleState extends Canvas implements State {
     private GameState gameState;
 
     private ArrayList<Entity> entities;
+    private ArrayList<Fighter> fighters;
 
     @Override
     public void init() {
         battleEnd = false;
         entities = new ArrayList<>();
+        fighters = new ArrayList<>();
+
+        a = new Hero("Asuna", "Water");
+        b = new Hero("Ragos", "Fire");
 
         Fighter tempFighter = null;
         switch (GameState.player.getPlayerClass()){
@@ -81,8 +86,10 @@ public class BattleState extends Canvas implements State {
                 tempFighter.setPlayerClassName("zombo");
                 break;
         }
-
-        entities.add(tempFighter);
+        //Preserve Object Info
+        tempFighter.setPlayer(true);
+        tempFighter.setID(GameState.player.getID());
+        fighters.add(tempFighter);
 
         switch (GameState.defender.getPlayerClass()){
             case NINJA:
@@ -118,34 +125,40 @@ public class BattleState extends Canvas implements State {
                 tempFighter.setPlayerClassName("zombo");
                 break;
         }
-
-        entities.add(tempFighter);
+        //Preserve Object Info
+        tempFighter.setID(GameState.defender.getID());
+        fighters.add(tempFighter);
 
         gameObjectHandler = new GameObjectHandler();
 
         HUD challengerHUD = new HUD(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 5, ID.ChallengerHUD);
         HUD defenderHUD = new HUD(DEFAULT_WIDTH / 100 * 75, DEFAULT_HEIGHT / 100 * 5, ID.DefenderHUD);
 
-        gameObjectHandler.addObject(new FighterManager(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40
-                , ID.Challenger, true, challengerHUD, (Fighter) entities.get(1), this));
-
-        gameObjectHandler.addObject(new FighterManager(DEFAULT_WIDTH / 100 * 75,  DEFAULT_HEIGHT / 100 * 40
-                , ID.Defender, false, defenderHUD, (Fighter) entities.get(2), this));
-
+        //Initialising GameObject Handler And FighterManager
+        for (Fighter f : fighters){
+            System.out.printf("IS ALIVE: %s | IS PLAYER %s\n", f.isAlive(), f.isPlayer());
+            if (f.isPlayer()) {
+                gameObjectHandler.addObject(new FighterManager(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40
+                        , ID.Challenger, true, challengerHUD, f, this));
+            }
+            else{
+                gameObjectHandler.addObject(new FighterManager(DEFAULT_WIDTH / 100 * 75,  DEFAULT_HEIGHT / 100 * 40
+                        , ID.Defender, false, defenderHUD, (Fighter) f, this));
+            }
+        }
 
         //Initialising Battle Engine Listeners
         battleEngine = new BattleEngine();
-        battleEngine.addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(0));
-        battleEngine.addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(1));
+
+        for (int i = 0; i < gameObjectHandler.getObjects().size(); i++)
+            battleEngine.addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(i));
 
         battleEngine.setChallenger(a);
         battleEngine.setDefender(b);
 
         //Initialising Animation Listeners
-        tempFighter = (Fighter) entities.get(1);
-        tempFighter.getAnimation().addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(0));
-        tempFighter = (Fighter) entities.get(0);
-        tempFighter.getAnimation().addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(1));
+        for (int i = 0; i < fighters.size(); i++)
+            fighters.get(i).getAnimation().addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(i));
 
         battleText = "FIGHT";
 
@@ -177,11 +190,18 @@ public class BattleState extends Canvas implements State {
         for(Entity e: entities)
             e.tick();
 
+        for(Fighter f: fighters)
+            f.tick();
+
         if (battleEnd) {
-            if (battleText.equalsIgnoreCase("VICTORY")) {
-                gameState.removeFighter((Fighter) entities.get(1));
-                stateManager.setState("map", this);
+            for (Fighter f : fighters) {
+                System.out.printf("IS ALIVE: %s | IS PLAYER %s\n", f.isAlive(), f.isPlayer());
+                if (!f.isAlive())
+                    gameState.removeFighter(f);
             }
+            System.out.println(battleText);
+            if (battleText.equalsIgnoreCase("VICTORY"))
+                stateManager.setState("map", this);
             else
                 stateManager.setState("menu", this);
         }
@@ -206,6 +226,9 @@ public class BattleState extends Canvas implements State {
         for(Entity e: entities)
             e.render(graphics);
 
+        for(Fighter f: fighters)
+            f.render(graphics);
+
         Fonts.drawString(graphics, font, Color.GREEN, battleText, (Swingy.WIDTH - fontMetrics.stringWidth(battleText)) / 2, Swingy.HEIGHT / 2);
 
         graphics.dispose();
@@ -222,5 +245,13 @@ public class BattleState extends Canvas implements State {
 
     public void setBattleEnd(boolean battleEnd) {
         this.battleEnd = battleEnd;
+    }
+
+    public ArrayList<Fighter> getFighters() {
+        return fighters;
+    }
+
+    public void setFighters(ArrayList<Fighter> fighters) {
+        this.fighters = fighters;
     }
 }

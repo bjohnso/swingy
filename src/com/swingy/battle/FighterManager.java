@@ -11,21 +11,25 @@ import com.swingy.statics.Statics;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+
+import static com.swingy.id.ID.*;
 
 public class FighterManager extends BattleObject implements Renderable, PropertyChangeListener {
 
     private boolean screenLeft = true;
     private HUD hud;
+    private ArrayList<Fighter> fighters;
     private Fighter fighter;
-
     private BattleState battleState;
 
     public FighterManager(int x, int y, ID id, boolean screenLeft, HUD hud, Fighter fighter, BattleState battleState) {
         super(x, y, id);
         this.screenLeft = screenLeft;
         this.hud = hud;
-        this.fighter = fighter;
         this.battleState = battleState;
+        this.fighters = battleState.getFighters();
+        this.fighter = fighter;
     }
 
     @Override
@@ -41,51 +45,69 @@ public class FighterManager extends BattleObject implements Renderable, Property
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
 
-        if (evt.getPropertyName().equalsIgnoreCase("AnimationEND"))
+        if (evt.getPropertyName().equalsIgnoreCase("AnimationEND")) {
+            battleState.setFighters(fighters);
             battleState.setBattleEnd(true);
+        }
         else if (evt.getPropertyName().equalsIgnoreCase("ChallengerHP") && this.getId() == ID.Challenger)
             this.hud.setHealth((double) evt.getNewValue());
         else if (evt.getPropertyName().equalsIgnoreCase("DefenderHP") && this.getId() == ID.Defender)
             this.hud.setHealth((double) evt.getNewValue());
         else if (evt.getPropertyName().equalsIgnoreCase("ChallengerDEATH") && this.getId() == ID.Challenger) {
+
             battleState.setBattleText("DEFEAT");
-            fighter.getAnimation().removePropertyChangeListener(this);
+
+            Fighter tempFighter = fighter;
+
+            tempFighter.getAnimation().removePropertyChangeListener(this);
             switch (fighter.getPlayerClass()) {
                 case NINJA:
-                    fighter.setAnimation(Statics.ninjaDeath);
+                    tempFighter.setAnimation(Statics.ninjaDeath);
                     break;
                 case DINO:
-                    fighter.setAnimation(Statics.dinoDeath);
+                    tempFighter.setAnimation(Statics.dinoDeath);
                     break;
                 case ROBO:
-                    fighter.setAnimation(Statics.roboDeath);
+                    tempFighter.setAnimation(Statics.roboDeath);
                     break;
                 case ZOMBO:
-                    fighter.setAnimation(Statics.zomboDeath);
+                    tempFighter.setAnimation(Statics.zomboDeath);
                     break;
             }
-            fighter.getAnimation().addPropertyChangeListener(this);
-            fighter.setAlive(false);
+            tempFighter.getAnimation().addPropertyChangeListener(this);
+            tempFighter.setAlive(false);
+
+            fighters.remove(fighter);
+            fighters.add(tempFighter);
+            fighter = tempFighter;
         }
         else if (evt.getPropertyName().equalsIgnoreCase("DefenderDEATH") && this.getId() == ID.Defender) {
+
             battleState.setBattleText("VICTORY");
-            fighter.getAnimation().removePropertyChangeListener(this);
+
+            Fighter tempFighter = fighter;
+
+            tempFighter.getAnimation().removePropertyChangeListener(this);
             switch (fighter.getPlayerClass()) {
                 case NINJA:
-                    fighter.setAnimation(Statics.ninjaDeathRef);
+                    tempFighter.setAnimation(Statics.ninjaDeathRef);
                     break;
                 case DINO:
-                    fighter.setAnimation(Statics.dinoDeathRef);
+                    tempFighter.setAnimation(Statics.dinoDeathRef);
                     break;
                 case ROBO:
-                    fighter.setAnimation(Statics.roboDeathRef);
+                    tempFighter.setAnimation(Statics.roboDeathRef);
                     break;
                 case ZOMBO:
-                    fighter.setAnimation(Statics.zomboDeathRef);
+                    tempFighter.setAnimation(Statics.zomboDeathRef);
                     break;
             }
-            fighter.getAnimation().addPropertyChangeListener(this);
-            fighter.setAlive(false);
+            tempFighter.getAnimation().addPropertyChangeListener(this);
+            tempFighter.setAlive(false);
+
+            fighters.remove(fighter);
+            fighters.add(tempFighter);
+            fighter = tempFighter;
         }
     }
 }
