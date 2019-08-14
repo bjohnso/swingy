@@ -1,9 +1,9 @@
 package com.swingy.states;
 
 import com.swingy.Main;
-import com.swingy.battle.objects.FighterManager;
+import com.swingy.battle.FighterManager;
 import com.swingy.rendering.entities.Entity;
-import com.swingy.game.BattleEngine;
+import com.swingy.battle.BattleEngine;
 import com.swingy.handlers.GameObjectHandler;
 import com.swingy.heroes.Hero;
 import com.swingy.id.ID;
@@ -110,13 +110,17 @@ public class BattleState extends Canvas implements State {
                 , ID.Defender, false, defenderHUD, defender, this));
 
 
-        //Initialising Battle Engine
+        //Initialising Battle Engine Listeners
         battleEngine = new BattleEngine();
         battleEngine.addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(0));
         battleEngine.addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(1));
 
         battleEngine.setChallenger(a);
         battleEngine.setDefender(b);
+
+        //Initialising Animation Listeners
+        player.getAnimation().addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(0));
+        defender.getAnimation().addPropertyChangeListener((FighterManager)gameObjectHandler.getObjects().get(1));
 
         battleText = "FIGHT";
 

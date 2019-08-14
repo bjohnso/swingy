@@ -1,4 +1,4 @@
-package com.swingy.game;
+package com.swingy.battle;
 
 import com.swingy.heroes.Hero;
 import com.swingy.input.KeyInput;

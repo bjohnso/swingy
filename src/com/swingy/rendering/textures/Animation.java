@@ -1,24 +1,52 @@
 package com.swingy.rendering.textures;
 
+import com.swingy.input.KeyInput;
+import com.swingy.input.MouseInput;
+
 import javax.xml.soap.Text;
 import java.awt.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
-public class Animation {
+public class Animation{
+
+    private PropertyChangeSupport support;
 
     private int count = 0;
     private int index = 0;
+    private int tickLag = 0;
     int increment = 1;
     private int speed;
     private boolean loop;
     private int numFrames;
     private Texture currentFrame;
     private Texture frames[];
+    private boolean animationEnd = false;
+
+    public void addPropertyChangeListener(PropertyChangeListener pcl){
+        support.addPropertyChangeListener(pcl);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener pcl){
+        support.removePropertyChangeListener(pcl);
+    }
+
+    private void animationEnd(){
+        System.out.println("ANIMATION END FIRED");
+        this.animationEnd = true;
+        support.firePropertyChange("AnimationEND", false, this.animationEnd);
+    }
+
+    private void sayHi(){
+        support.firePropertyChange("B", null, "HELLO!!!!!!!!!!!");
+    }
 
     public Animation(int speed, boolean loop, Texture... frames){
         this.speed = speed;
         this.frames = frames;
         this.numFrames = frames.length;
         this.loop = loop;
+        this.support = new PropertyChangeSupport(this);
     }
 
     private void nextFrame(){
@@ -29,6 +57,10 @@ public class Animation {
             if (loop) {
                 increment *= -1;
                 index += increment;
+            }
+            else if(!animationEnd) {
+                if (tickLag++ > 10)
+                    animationEnd();
             }
         }
     }

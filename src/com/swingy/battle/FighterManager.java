@@ -1,11 +1,11 @@
-package com.swingy.battle.objects;
+package com.swingy.battle;
 
-import com.swingy.game.BattleEngine;
+import com.swingy.battle.objects.BattleObject;
+import com.swingy.battle.objects.HUD;
 import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.states.BattleState;
-import com.swingy.states.GameState;
 import com.swingy.statics.Statics;
 
 import java.awt.*;
@@ -19,6 +19,8 @@ public class FighterManager extends BattleObject implements Renderable, Property
     private Fighter fighter;
 
     private BattleState battleState;
+
+    private boolean animationEnd = false;
 
     public FighterManager(int x, int y, ID id, boolean screenLeft, HUD hud, Fighter fighter, BattleState battleState) {
         super(x, y, id);
@@ -40,15 +42,21 @@ public class FighterManager extends BattleObject implements Renderable, Property
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equalsIgnoreCase("ChallengerHP") && this.getId() == ID.Challenger){
-            System.out.println("Challenger" + "\n" + this.hud.getId());
+
+        if (evt.getPropertyName().equalsIgnoreCase("AnimationEND")){
+            battleState.setBattleEnd(true);
+        }
+        else if (evt.getPropertyName().equalsIgnoreCase("ChallengerHP") && this.getId() == ID.Challenger){
+            //System.out.println("Challenger" + "\n" + this.hud.getId());
             this.hud.setHealth((double) evt.getNewValue());
         }
         else if (evt.getPropertyName().equalsIgnoreCase("DefenderHP") && this.getId() == ID.Defender) {
-            System.out.println("Defender" + "\n" + this.hud.getId());
+            //System.out.println("Defender" + "\n" + this.hud.getId());
             this.hud.setHealth((double) evt.getNewValue());
         }
         else if (evt.getPropertyName().equalsIgnoreCase("ChallengerDEATH") && this.getId() == ID.Challenger) {
+            battleState.setBattleText("VICTORY");
+            fighter.getAnimation().removePropertyChangeListener(this);
             switch (fighter.getPlayerClass()) {
                 case NINJA:
                     fighter.setAnimation(Statics.ninjaDeath);
@@ -63,10 +71,12 @@ public class FighterManager extends BattleObject implements Renderable, Property
                     fighter.setAnimation(Statics.zomboDeath);
                     break;
             }
-            battleState.setBattleText("DEFEAT");
-            battleState.setBattleEnd(true);
+            fighter.getAnimation().addPropertyChangeListener(this);
+            fighter.setAlive(false);
         }
         else if (evt.getPropertyName().equalsIgnoreCase("DefenderDEATH") && this.getId() == ID.Defender) {
+            battleState.setBattleText("VICTORY");
+            fighter.getAnimation().removePropertyChangeListener(this);
             switch (fighter.getPlayerClass()) {
                 case NINJA:
                     fighter.setAnimation(Statics.ninjaDeathRef);
@@ -81,8 +91,8 @@ public class FighterManager extends BattleObject implements Renderable, Property
                     fighter.setAnimation(Statics.zomboDeathRef);
                     break;
             }
-            battleState.setBattleText("VICTORY");
-            battleState.setBattleEnd(true);
+            fighter.getAnimation().addPropertyChangeListener(this);
+            fighter.setAlive(false);
         }
     }
 }

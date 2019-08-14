@@ -43,7 +43,6 @@ public class HUD extends BattleObject implements Renderable{
         graphics.fillRect(x,y, width * ((int)HEALTH) / 100, DEFAULT_HEIGHT / 100 * 5 );
     }
 
-
     public void setHealth(Double hitPoints) {
 
         if (counter == 0)
@@ -54,7 +53,6 @@ public class HUD extends BattleObject implements Renderable{
             HEALTH = HEALTH;
         else
             HEALTH = Math.ceil(100 - ((damage / hitPointCapacity * 100)));
-        System.out.println(HEALTH + "\n" + hitPoints + "\n\n");
 
         counter++;
     }

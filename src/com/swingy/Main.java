@@ -1,7 +1,6 @@
 package com.swingy;
 
 import com.swingy.audio.MusicPlayer;
-import com.swingy.game.BattleEngine;
 import com.swingy.handlers.ThreadPool;
 import com.swingy.view.Swingy;
 
@@ -13,8 +12,9 @@ public class Main {
 
         pool = new ThreadPool(3);
         Swingy swingy = new Swingy();
-        MusicPlayer player = new MusicPlayer("Battle");
-        pool.runTask(player);
+        MusicPlayer musicPlayer = new MusicPlayer("Battle");
+
+        pool.runTask(musicPlayer);
         pool.runTask(swingy);
     }
 }

@@ -75,4 +75,8 @@ public abstract class Mobile extends Entity {
     public void setAnimation(Animation animation) {
         this.animation = animation;
     }
+
+    public Animation getAnimation() {
+        return this.animation;
+    }
 }
