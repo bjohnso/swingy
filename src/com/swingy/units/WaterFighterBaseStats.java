@@ -1,7 +1,7 @@
 package com.swingy.units;
 
-public class WaterAffinity extends Affinity{
-    public WaterAffinity(int level){
+public class WaterFighterBaseStats extends FighterBaseStats {
+    public WaterFighterBaseStats(int level){
         updateStats(level);
     }
 

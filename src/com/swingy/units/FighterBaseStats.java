@@ -1,12 +1,12 @@
 package com.swingy.units;
 
-public class Affinity {
+public class FighterBaseStats {
     protected double _attackPoints = 0;
     protected double _defencePoints = 0;
     protected double _hitPoints = 0;
     protected double _counterChance = 0;
 
-    public Affinity(){
+    public FighterBaseStats(){
 
     }
 

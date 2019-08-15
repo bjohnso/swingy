@@ -214,14 +214,21 @@ public class BattleState extends Canvas implements State {
     @Override
     public void render(Graphics graphics) {
 
-        Font font = new Font("Arial", Font.BOLD, 72);
-        FontMetrics fontMetrics = graphics.getFontMetrics(font);
-
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
         Sprite background = new Sprite(new SpriteSheet(new Texture("background/4", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
         background.render(graphics, 0, 0);
+
+        Font font = new Font("Arial", Font.PLAIN, 16);
+        FontMetrics fontMetrics = graphics.getFontMetrics(font);
+
+        //Draw Fighter Stats to Screen
+        for (int i = 0; i < fighters.size(); i++) {
+            for (int j = 0; j < fighters.get(i).getFighterMetrics().toStringArray().size(); j++)
+                Fonts.drawString(graphics, font, Color.GREEN, fighters.get(i).getFighterMetrics().toStringArray().get(j), (i * (Swingy.WIDTH - fontMetrics.stringWidth(battleText) - 80)) + 10, (100 + (j * 100)));
+        }
+
         //graphics.setColor(Color.BLUE);
         //graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 6, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
         //graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 14, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
@@ -233,6 +240,8 @@ public class BattleState extends Canvas implements State {
         for(Fighter f: fighters)
             f.render(graphics);
 
+        font = new Font("Arial", Font.BOLD, 72);
+        fontMetrics = graphics.getFontMetrics(font);
         Fonts.drawString(graphics, font, Color.GREEN, battleText, (Swingy.WIDTH - fontMetrics.stringWidth(battleText)) / 2, Swingy.HEIGHT / 2);
 
         graphics.dispose();

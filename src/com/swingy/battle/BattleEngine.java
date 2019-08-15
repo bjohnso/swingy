@@ -50,11 +50,11 @@ public class BattleEngine implements Runnable{
 
 
     public double calcChallengerHP(){
-        return challenger.getHeroStats().getHitPoints() - challenger.getDamage();
+        return challenger.getFighterStats().getHitPoints() - challenger.getDamage();
     }
 
     public double calcDefenderHP(){
-        return defender.getHeroStats().getHitPoints() - defender.getDamage();
+        return defender.getFighterStats().getHitPoints() - defender.getDamage();
     }
 
     private void setChallengerHP(double challengerHP){
@@ -103,20 +103,20 @@ public class BattleEngine implements Runnable{
             attack("ChallengerAttack");
             challenger.attack();
             if (!defender.defend(challenger, defender)) {
-                defender.takeDamage(challenger.getHeroStats().getAttackPoints()
-                                - (challenger.getHeroStats().getAttackPoints() / 100 * handicap(challenger, defender)),
-                        defender.getHeroStats().getDefencePoints());
+                defender.takeDamage(challenger.getFighterStats().getAttackPoints()
+                                - (challenger.getFighterStats().getAttackPoints() / 100 * handicap(challenger, defender)),
+                        defender.getFighterStats().getDefencePoints());
             } else {
                 //Successful Deflection, Evasion, or Counter
-                if (defender.counter(challenger.getHeroStats().getAttackPoints(),
-                        defender.getHeroStats().getDefencePoints())) {
+                if (defender.counter(challenger.getFighterStats().getAttackPoints(),
+                        defender.getFighterStats().getDefencePoints())) {
                     //Successful Counter
                     attack("DefenderAttack");
                     defender.attack();
-                    challenger.takeDamage(defender.getHeroStats().getAttackPoints()
-                                    - (defender.getHeroStats().getAttackPoints() / 100 * handicap(defender, challenger))
-                                    + (defender.getHeroStats().getHitPoints() / 100 * 19),
-                            challenger.getHeroStats().getDefencePoints());
+                    challenger.takeDamage(defender.getFighterStats().getAttackPoints()
+                                    - (defender.getFighterStats().getAttackPoints() / 100 * handicap(defender, challenger))
+                                    + (defender.getFighterStats().getHitPoints() / 100 * 19),
+                            challenger.getFighterStats().getDefencePoints());
                 }
             }
         }
@@ -125,26 +125,26 @@ public class BattleEngine implements Runnable{
             attack("DefenderAttack");
             defender.attack();
             if(!challenger.defend(defender, challenger)) {
-                challenger.takeDamage(defender.getHeroStats().getAttackPoints()
-                                - (defender.getHeroStats().getAttackPoints() / 100 * handicap(defender, challenger)),
-                        challenger.getHeroStats().getDefencePoints());
+                challenger.takeDamage(defender.getFighterStats().getAttackPoints()
+                                - (defender.getFighterStats().getAttackPoints() / 100 * handicap(defender, challenger)),
+                        challenger.getFighterStats().getDefencePoints());
             } else {
                 //Successful Deflection, Evasion, or Counter
-                if (challenger.counter(defender.getHeroStats().getAttackPoints(),
-                        challenger.getHeroStats().getDefencePoints())){
+                if (challenger.counter(defender.getFighterStats().getAttackPoints(),
+                        challenger.getFighterStats().getDefencePoints())){
                     //Successful Counter
                     attack("ChallengerAttack");
                     challenger.attack();
-                    defender.takeDamage(challenger.getHeroStats().getAttackPoints()
-                                    - (challenger.getHeroStats().getAttackPoints() / 100 * handicap(challenger, defender))
-                                    + (challenger.getHeroStats().getHitPoints() / 100 * 19),
-                            defender.getHeroStats().getDefencePoints());
+                    defender.takeDamage(challenger.getFighterStats().getAttackPoints()
+                                    - (challenger.getFighterStats().getAttackPoints() / 100 * handicap(challenger, defender))
+                                    + (challenger.getFighterStats().getHitPoints() / 100 * 19),
+                            defender.getFighterStats().getDefencePoints());
                 }
             }
         }
-        /*System.out.println("HERO : " + challenger.getName() + "\nHP : " + challenger.getHeroStats().getHitPoints() + "\nDAMAGE : "
+        /*System.out.println("HERO : " + challenger.getName() + "\nHP : " + challenger.getFighterStats().getHitPoints() + "\nDAMAGE : "
                 + challenger.getDamage() + "\n\n");
-        System.out.println("HERO : " + defender.getName() + "\nHP : " + defender.getHeroStats().getHitPoints() + "\nDAMAGE : "
+        System.out.println("HERO : " + defender.getName() + "\nHP : " + defender.getFighterStats().getHitPoints() + "\nDAMAGE : "
                 + defender.getDamage());*/
         setChallengerHP(calcChallengerHP());
         setDefenderHP(calcDefenderHP());

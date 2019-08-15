@@ -1,5 +1,8 @@
 package com.swingy.states;
 
+import com.swingy.artifacts.Armor;
+import com.swingy.artifacts.Helm;
+import com.swingy.artifacts.Weapon;
 import com.swingy.heroes.FighterMetrics;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.rendering.entities.Fighter;
@@ -499,12 +502,12 @@ public class GameState implements State {
                             } else if (tileMap[i][j + 1].getTileClass() == ID.LAVA
                                     || tileMap[i][j + 1].getTileClass() == ID.PIT) {
                                 if (!item()) {
+                                    player.setAlive(false);
                                     gameOver = true;
                                     stateManager.setState("menu", this);
                                 }
-                                else{
-                                    System.out.println(calculateArtifact());
-                                }
+                                else
+                                    addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i][j + 1].getTileClass() == ID.BORDER) {
                                 gameOver = true;
@@ -535,12 +538,12 @@ public class GameState implements State {
                             } else if (tileMap[i][j - 1].getTileClass() == ID.LAVA
                                     || tileMap[i][j - 1].getTileClass() == ID.PIT) {
                                 if (!item()) {
+                                    player.setAlive(false);
                                     gameOver = true;
                                     stateManager.setState("menu", this);
                                 }
-                                else{
-                                    System.out.println(calculateArtifact());
-                                }
+                                else
+                                    addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i][j - 1].getTileClass() == ID.BORDER) {
                                 gameOver = true;
@@ -571,12 +574,12 @@ public class GameState implements State {
                             } else if (tileMap[i + 1][j].getTileClass() == ID.LAVA
                                     || tileMap[i + 1][j].getTileClass() == ID.PIT) {
                                 if (!item()) {
+                                    player.setAlive(false);
                                     gameOver = true;
                                     stateManager.setState("menu", this);
                                 }
-                                else{
-                                    System.out.println(calculateArtifact());
-                                }
+                                else
+                                    addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i + 1][j].getTileClass() == ID.BORDER) {
                                 gameOver = true;
@@ -606,12 +609,12 @@ public class GameState implements State {
                             } else if (tileMap[i - 1][j].getTileClass() == ID.LAVA
                                     || tileMap[i - 1][j].getTileClass() == ID.PIT) {
                                 if (!item()) {
+                                    player.setAlive(false);
                                     gameOver = true;
                                     stateManager.setState("menu", this);
                                 }
-                                else{
-                                    System.out.println(calculateArtifact());
-                                }
+                                else
+                                    addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i - 1][j].getTileClass() == ID.BORDER) {
                                 gameOver = true;
@@ -623,6 +626,20 @@ public class GameState implements State {
             }
         }
         return false;
+    }
+
+    private void addArtifact(String artifact){
+        switch (artifact){
+            case "HELM":
+                player.getFighterMetrics().addArtifact(new Helm(ID.HELM, player.getFighterMetrics().getLevel().getLevel()));
+                break;
+            case "ARMOR":
+                player.getFighterMetrics().addArtifact(new Armor(ID.ARMOR, player.getFighterMetrics().getLevel().getLevel()));
+                break;
+            case "WEAPON":
+                player.getFighterMetrics().addArtifact(new Weapon(ID.WEAPON, player.getFighterMetrics().getLevel().getLevel()));
+                break;
+        }
     }
 
     protected void removeFighter(Fighter fighter){

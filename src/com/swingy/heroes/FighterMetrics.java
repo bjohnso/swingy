@@ -12,7 +12,7 @@ public class FighterMetrics implements Fighter {
 
     //FighterManager Defined Variables
     protected String _name;
-    protected LinkedHashMap<String, Affinity> _affinities = new LinkedHashMap<>();
+    protected LinkedHashMap<String, FighterBaseStats> _affinities = new LinkedHashMap<>();
     protected ArrayList<Artifact> artifacts;
 
     //System Defined Variables
@@ -25,15 +25,15 @@ public class FighterMetrics implements Fighter {
         _name = name;
         if (affinity.equalsIgnoreCase("FIRE")) {
             if (!_affinities.containsKey(affinity))
-                _affinities.put("FIRE", new FireAffinity(10));
+                _affinities.put("FIRE", new FireFighterBaseStats(10));
         }
         else if (affinity.equalsIgnoreCase("WATER")){
             if (!_affinities.containsKey(affinity))
-                _affinities.put("WATER", new WaterAffinity(10));
+                _affinities.put("WATER", new WaterFighterBaseStats(10));
         }
         else if (affinity.equalsIgnoreCase("EARTH")){
             if (!_affinities.containsKey(affinity))
-                _affinities.put("EARTH", new EarthAffinity(10));
+                _affinities.put("EARTH", new EarthFighterBaseStats(10));
         }
         artifacts = new ArrayList<>();
     }
@@ -42,7 +42,7 @@ public class FighterMetrics implements Fighter {
         return _name;
     }
 
-    public HashMap<String, Affinity> getAffinities(){
+    public HashMap<String, FighterBaseStats> getAffinities(){
         return _affinities;
     }
 
@@ -58,7 +58,7 @@ public class FighterMetrics implements Fighter {
         _name = name;
     }
 
-    public void setAffinities(LinkedHashMap<String, Affinity> affinities){
+    public void setAffinities(LinkedHashMap<String, FighterBaseStats> affinities){
         _affinities = affinities;
     }
 
@@ -89,7 +89,7 @@ public class FighterMetrics implements Fighter {
     @Override
     public boolean defend(FighterMetrics attacker, FighterMetrics defender) {
         Double rand = Math.random() * 101;
-        Double defenceChance = this.getHeroStats().getCounterChance();
+        Double defenceChance = this.getFighterStats().getCounterChance();
         if (rand < defenceChance)
             return true;
         else {
@@ -101,7 +101,7 @@ public class FighterMetrics implements Fighter {
     @Override
     public boolean takeDamage(double enemyAttackPoints, double myDefencePoints) {
         this._damage += enemyAttackPoints / myDefencePoints;
-        if (this.getHeroStats().getHitPoints() <= this._damage)
+        if (this.getFighterStats().getHitPoints() <= this._damage)
             return true;
         else
             return false;
@@ -115,7 +115,7 @@ public class FighterMetrics implements Fighter {
             //System.out.println(this._name + " : Absorbed Attack, and Regenerated");
         }
         else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")){
-            FireAffinity fireAffinity = (FireAffinity)this._affinities.entrySet().iterator().next().getValue();
+            FireFighterBaseStats fireAffinity = (FireFighterBaseStats)this._affinities.entrySet().iterator().next().getValue();
             fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + (enemyAttackPoints / myDefencePoints) + (this._damage / 100 * 25));
             this._affinities.replace("FIRE", fireAffinity);
             //System.out.println(this._name + " : Evaded Attack, and Powered Up");
@@ -128,21 +128,40 @@ public class FighterMetrics implements Fighter {
     }
 
     @Override
-    public Affinity getHeroStats() {
-        Affinity affinity = new Affinity();
-
-        for (HashMap.Entry<String, Affinity> a : _affinities.entrySet()){
+    public FighterBaseStats getFighterStats() {
+        FighterBaseStats fighterBaseStats = new FighterBaseStats();
+        //GetBaseStats
+        for (HashMap.Entry<String, FighterBaseStats> a : _affinities.entrySet()){
             if (a.getKey().equalsIgnoreCase("FIRE")){
-                FireAffinity fireAffinity = (FireAffinity)a.getValue();
-                affinity.setAttackPoints(affinity.getAttackPoints() + fireAffinity.getBonusDamage());
+                FireFighterBaseStats fireAffinity = (FireFighterBaseStats)a.getValue();
+                fighterBaseStats.setAttackPoints(fighterBaseStats.getAttackPoints() + fireAffinity.getBonusDamage());
             }
             else
-                affinity.setAttackPoints(affinity.getAttackPoints() + a.getValue().getAttackPoints());
-            affinity.setDefencePoints(affinity.getDefencePoints() + a.getValue().getDefencePoints());
-            affinity.setHitPoints(affinity.getHitPoints() + a.getValue().getHitPoints());
-            affinity.setCounterChance(affinity.getCounterChance() + a.getValue().getCounterChance());
+                fighterBaseStats.setAttackPoints(fighterBaseStats.getAttackPoints() + a.getValue().getAttackPoints());
+            fighterBaseStats.setDefencePoints(fighterBaseStats.getDefencePoints() + a.getValue().getDefencePoints());
+            fighterBaseStats.setHitPoints(fighterBaseStats.getHitPoints() + a.getValue().getHitPoints());
+            fighterBaseStats.setCounterChance(fighterBaseStats.getCounterChance() + a.getValue().getCounterChance());
+        }
+        //Add Additional stats from artifacts
+        for (Artifact a : artifacts){
+            fighterBaseStats.setAttackPoints(fighterBaseStats.getAttackPoints() + a.getAttackBoost());
+            fighterBaseStats.setAttackPoints(fighterBaseStats.getDefencePoints() + a.getDefenceBoost());
+            fighterBaseStats.setAttackPoints(fighterBaseStats.getHitPoints() + a.getHitPointsBoost());
+            fighterBaseStats.setAttackPoints(fighterBaseStats.getCounterChance() + a.getCounterBoost());
         }
 
-        return affinity;
+        return fighterBaseStats;
+    }
+
+
+    public ArrayList<String> toStringArray() {
+        ArrayList<String> toReturn = new ArrayList<>();
+        toReturn.add(this._name);
+        toReturn.add("Level : " + this._level.getLevel());
+        toReturn.add("HP : " + this.getFighterStats().getHitPoints());
+        toReturn.add("AP : " + this.getFighterStats().getAttackPoints());
+        toReturn.add("DP : " + this.getFighterStats().getDefencePoints());
+        toReturn.add("CC : " + this.getFighterStats().getCounterChance() + "%");
+        return toReturn;
     }
 }

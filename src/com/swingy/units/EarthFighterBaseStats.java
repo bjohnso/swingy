@@ -1,8 +1,8 @@
 package com.swingy.units;
 
-public class EarthAffinity extends Affinity{
+public class EarthFighterBaseStats extends FighterBaseStats {
 
-    public EarthAffinity(int level){
+    public EarthFighterBaseStats(int level){
         updateStats(level);
     }
 

@@ -13,7 +13,9 @@ public enum ID {
     ZOMBO(),
     BORDER(),
     GROUND(),
-    ITEM(),
+    HELM(),
+    ARMOR(),
+    WEAPON(),
     LAVA(),
     PIT()
 }

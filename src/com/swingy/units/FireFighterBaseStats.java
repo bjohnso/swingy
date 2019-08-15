@@ -1,10 +1,10 @@
 package com.swingy.units;
 
-public class FireAffinity extends Affinity {
+public class FireFighterBaseStats extends FighterBaseStats {
 
     private double _bonusDamage = 0;
 
-    public FireAffinity(int level){
+    public FireFighterBaseStats(int level){
         updateStats(level);
     }
 
