@@ -38,6 +38,10 @@ public class FighterMetrics implements Fighter {
         artifacts = new ArrayList<>();
     }
 
+    public void setDamage(double _damage) {
+        this._damage = _damage;
+    }
+
     public String getName(){
         return _name;
     }
@@ -82,7 +86,6 @@ public class FighterMetrics implements Fighter {
 
     @Override
     public boolean attack() {
-        //System.out.println(this._name + " : Attacked");
         return true;
     }
 
@@ -92,10 +95,8 @@ public class FighterMetrics implements Fighter {
         Double defenceChance = this.getFighterStats().getCounterChance();
         if (rand < defenceChance)
             return true;
-        else {
-            //System.out.println(this._name + " : Took Damage");
+        else
             return false;
-        }
     }
 
     @Override
@@ -112,18 +113,14 @@ public class FighterMetrics implements Fighter {
     public boolean counter(double enemyAttackPoints, double myDefencePoints) {
         if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")){
             this._damage -= (enemyAttackPoints / myDefencePoints) + (enemyAttackPoints / myDefencePoints / 100 * 13);
-            //System.out.println(this._name + " : Absorbed Attack, and Regenerated");
         }
         else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")){
             FireFighterBaseStats fireAffinity = (FireFighterBaseStats)this._affinities.entrySet().iterator().next().getValue();
             fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + (enemyAttackPoints / myDefencePoints) + (this._damage / 100 * 25));
             this._affinities.replace("FIRE", fireAffinity);
-            //System.out.println(this._name + " : Evaded Attack, and Powered Up");
         }
-        else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")){
-            //System.out.println(this._name + " : Blocked Attack, and Inflicted Damage");
+        else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH"))
             return true;
-        }
         return false;
     }
 
@@ -137,22 +134,31 @@ public class FighterMetrics implements Fighter {
                 fighterBaseStats.setAttackPoints(fighterBaseStats.getAttackPoints() + fireAffinity.getBonusDamage());
             }
             else
-                fighterBaseStats.setAttackPoints(fighterBaseStats.getAttackPoints() + a.getValue().getAttackPoints());
-            fighterBaseStats.setDefencePoints(fighterBaseStats.getDefencePoints() + a.getValue().getDefencePoints());
-            fighterBaseStats.setHitPoints(fighterBaseStats.getHitPoints() + a.getValue().getHitPoints());
-            fighterBaseStats.setCounterChance(fighterBaseStats.getCounterChance() + a.getValue().getCounterChance());
+                fighterBaseStats.setAttackPoints((int)(fighterBaseStats.getAttackPoints() + a.getValue().getAttackPoints()));
+            fighterBaseStats.setDefencePoints((int)(fighterBaseStats.getDefencePoints() + a.getValue().getDefencePoints()));
+            fighterBaseStats.setHitPoints((int)(fighterBaseStats.getHitPoints() + a.getValue().getHitPoints()));
+            fighterBaseStats.setCounterChance((int)(fighterBaseStats.getCounterChance() + a.getValue().getCounterChance()));
         }
         //Add Additional stats from artifacts
         for (Artifact a : artifacts){
-            fighterBaseStats.setAttackPoints(fighterBaseStats.getAttackPoints() + a.getAttackBoost());
-            fighterBaseStats.setAttackPoints(fighterBaseStats.getDefencePoints() + a.getDefenceBoost());
-            fighterBaseStats.setAttackPoints(fighterBaseStats.getHitPoints() + a.getHitPointsBoost());
-            fighterBaseStats.setAttackPoints(fighterBaseStats.getCounterChance() + a.getCounterBoost());
+            fighterBaseStats.setAttackPoints((int)(fighterBaseStats.getAttackPoints() + a.getAttackBoost()));
+            fighterBaseStats.setDefencePoints((int)(fighterBaseStats.getDefencePoints() + a.getDefenceBoost()));
+            fighterBaseStats.setHitPoints((int)(fighterBaseStats.getHitPoints() + a.getHitPointsBoost()));
+            fighterBaseStats.setCounterChance((int)(fighterBaseStats.getCounterChance() + a.getCounterBoost()));
         }
 
         return fighterBaseStats;
     }
 
+    public String toString() {
+        String toReturn = "Fighter : " + this._name
+                + "\nLevel : " + this._level.getLevel()
+                + "\nHP : " + this.getFighterStats().getHitPoints()
+                +"\nAP : " + this.getFighterStats().getAttackPoints()
+                + "\nDP : " + this.getFighterStats().getDefencePoints()
+                +"\nCC : " + this.getFighterStats().getCounterChance() + "%";
+        return toReturn;
+    }
 
     public ArrayList<String> toStringArray() {
         ArrayList<String> toReturn = new ArrayList<>();
