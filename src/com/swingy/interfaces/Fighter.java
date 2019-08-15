@@ -1,6 +1,6 @@
 package com.swingy.interfaces;
 
-import com.swingy.heroes.FighterMetrics;
+import com.swingy.battle.FighterMetrics;
 import com.swingy.units.FighterBaseStats;
 
 public interface Fighter {

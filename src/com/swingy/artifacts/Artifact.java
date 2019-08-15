@@ -10,13 +10,15 @@ public class Artifact {
     protected double _defencePoints = 0;
     protected double _hitPoints = 0;
     protected double _counterChance = 0;
+    protected String type;
 
-    public Artifact(ID id, int level){
+    public Artifact(String type, ID id, int level){
+        this.type = type;
         this.id = id;
         this.level = level;
     }
 
-    protected ID getId() {
+    public ID getId() {
         return id;
     }
 
@@ -24,7 +26,7 @@ public class Artifact {
         return level;
     }
 
-   public void setLevel(int level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 
@@ -63,4 +65,13 @@ public class Artifact {
     protected void setId(ID id) {
         this.id = id;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    protected void setType(String type) {
+        this.type = type;
+    }
+
 }

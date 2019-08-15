@@ -6,14 +6,12 @@ import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.states.BattleState;
-import com.swingy.statics.Statics;
+import com.swingy.helpers.AnimationHelper;
 
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-
-import static com.swingy.id.ID.*;
 
 public class FighterManager extends BattleObject implements Renderable, PropertyChangeListener {
 
@@ -22,6 +20,7 @@ public class FighterManager extends BattleObject implements Renderable, Property
     private ArrayList<Fighter> fighters;
     private Fighter fighter;
     private BattleState battleState;
+    private AnimationHelper animationHelper;
 
     public FighterManager(int x, int y, ID id, boolean screenLeft, HUD hud, Fighter fighter, BattleState battleState) {
         super(x, y, id);
@@ -30,6 +29,7 @@ public class FighterManager extends BattleObject implements Renderable, Property
         this.battleState = battleState;
         this.fighters = battleState.getFighters();
         this.fighter = fighter;
+        this.animationHelper = new AnimationHelper();
     }
 
     @Override
@@ -62,16 +62,16 @@ public class FighterManager extends BattleObject implements Renderable, Property
             tempFighter.getAnimation().removePropertyChangeListener(this);
             switch (fighter.getPlayerClass()) {
                 case NINJA:
-                    tempFighter.setAnimation(Statics.ninjaDeath);
+                    tempFighter.setAnimation(animationHelper.createAnimation("ninjaDeath"));
                     break;
                 case DINO:
-                    tempFighter.setAnimation(Statics.dinoDeath);
+                    tempFighter.setAnimation(animationHelper.createAnimation("dinoDeath"));
                     break;
                 case ROBO:
-                    tempFighter.setAnimation(Statics.roboDeath);
+                    tempFighter.setAnimation(animationHelper.createAnimation("roboDeath"));
                     break;
                 case ZOMBO:
-                    tempFighter.setAnimation(Statics.zomboDeath);
+                    tempFighter.setAnimation(animationHelper.createAnimation("zomboDeath"));
                     break;
             }
             tempFighter.getAnimation().addPropertyChangeListener(this);
@@ -90,16 +90,16 @@ public class FighterManager extends BattleObject implements Renderable, Property
             tempFighter.getAnimation().removePropertyChangeListener(this);
             switch (fighter.getPlayerClass()) {
                 case NINJA:
-                    tempFighter.setAnimation(Statics.ninjaDeathRef);
+                    tempFighter.setAnimation(animationHelper.createAnimation("ninjaDeathRef"));
                     break;
                 case DINO:
-                    tempFighter.setAnimation(Statics.dinoDeathRef);
+                    tempFighter.setAnimation(animationHelper.createAnimation("dinoDeathRef"));
                     break;
                 case ROBO:
-                    tempFighter.setAnimation(Statics.roboDeathRef);
+                    tempFighter.setAnimation(animationHelper.createAnimation("roboDeathRef"));
                     break;
                 case ZOMBO:
-                    tempFighter.setAnimation(Statics.zomboDeathRef);
+                    tempFighter.setAnimation(animationHelper.createAnimation("zomboDeathRef"));
                     break;
             }
             tempFighter.getAnimation().addPropertyChangeListener(this);

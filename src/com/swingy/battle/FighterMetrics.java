@@ -1,4 +1,4 @@
-package com.swingy.heroes;
+package com.swingy.battle;
 
 import com.swingy.artifacts.Artifact;
 import com.swingy.interfaces.Fighter;

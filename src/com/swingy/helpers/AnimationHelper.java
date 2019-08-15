@@ -1,14 +1,18 @@
-package com.swingy.statics;
+package com.swingy.helpers;
 
 import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Texture;
 
-public class Statics {
+public class AnimationHelper {
+
+    public AnimationHelper(){
+
+    }
 
     private static int animationSpeedFast = 10;
     private static int animationSpeedSlow = 30;
 
-    public static Animation createAnimation(String animation){
+    public Animation createAnimation(String animation){
         Animation anime = null;
         switch (animation) {
             case "ninjaTerrain":

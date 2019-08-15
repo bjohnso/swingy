@@ -79,4 +79,10 @@ public abstract class Mobile extends Entity {
     public Animation getAnimation() {
         return this.animation;
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        this.animation = null;
+        super.finalize();
+    }
 }

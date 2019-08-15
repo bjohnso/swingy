@@ -1,7 +1,6 @@
 package com.swingy.battle;
 
 import com.swingy.artifacts.Artifact;
-import com.swingy.heroes.FighterMetrics;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 
@@ -90,10 +89,12 @@ public class BattleEngine implements Runnable{
         counter++;
 
         if (challengerHP == 0) {
+            defender.setDamage(0);
             battleEnd("ChallengerDEATH");
             return;
         }
         else if (defenderHP == 0){
+            challenger.setDamage(0);
             battleEnd("DefenderDEATH");
             return ;
         }
@@ -142,7 +143,7 @@ public class BattleEngine implements Runnable{
                 }
             }
         }
-        /*System.out.println("HERO : " + challenger.getName() + "\nHP : " + challenger.getFighterStats().getHitPoints() + "\nDAMAGE : "
+       /* System.out.println("HERO : " + challenger.getName() + "\nHP : " + challenger.getFighterStats().getHitPoints() + "\nDAMAGE : "
                 + challenger.getDamage() + "\n\n");
         System.out.println("HERO : " + defender.getName() + "\nHP : " + defender.getFighterStats().getHitPoints() + "\nDAMAGE : "
                 + defender.getDamage());*/

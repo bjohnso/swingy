@@ -1,6 +1,6 @@
 package com.swingy.rendering.entities;
 
-import com.swingy.heroes.FighterMetrics;
+import com.swingy.battle.FighterMetrics;
 import com.swingy.id.ID;
 import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Sprite;
@@ -74,11 +74,7 @@ public class Fighter extends Mobile{
         return this.alive;
     }
 
-    public FighterMetrics getFighterMetrics() {
-        return fighterMetrics;
-    }
+    public FighterMetrics getFighterMetrics() { return fighterMetrics; }
 
-    public void setFighterMetrics(FighterMetrics fighterMetrics) {
-        this.fighterMetrics = fighterMetrics;
-    }
+    public void setFighterMetrics(FighterMetrics fighterMetrics) { this.fighterMetrics = fighterMetrics; }
 }

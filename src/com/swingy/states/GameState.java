@@ -3,7 +3,7 @@ package com.swingy.states;
 import com.swingy.artifacts.Armor;
 import com.swingy.artifacts.Helm;
 import com.swingy.artifacts.Weapon;
-import com.swingy.heroes.FighterMetrics;
+import com.swingy.battle.FighterMetrics;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
@@ -16,7 +16,7 @@ import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
-import com.swingy.statics.Statics;
+import com.swingy.helpers.AnimationHelper;
 import com.swingy.view.Swingy;
 
 import java.awt.*;
@@ -33,18 +33,20 @@ public class GameState implements State {
 
     private MapGenerator mapGenerator;
     private int playerIndex;
-    private Button[] options = null;
+    private Button[] options;
     private int currentSelection;
 
     private IDAssigner idAssigner;
 
     private boolean isResume = false;
-    private boolean gameOver = false;
+    private boolean gameOver;
 
     protected static Fighter player;
     protected static Fighter defender;
 
     private StateManager stateManager = null;
+
+    private AnimationHelper animationHelper;
 
     private String[] artifacts = {
             "HELM",
@@ -54,6 +56,9 @@ public class GameState implements State {
 
     @Override
     public void init() {
+        animationHelper = new AnimationHelper();
+        gameOver = false;
+        options = null;
         player = CharacterCreationState.currentFighter;
         mapGenerator = new MapGenerator(player);
         tileMap = mapGenerator.getTileMap();
@@ -69,16 +74,16 @@ public class GameState implements State {
             if (t.getTileClass() == ID.DINO){
                 tempFighter = new Fighter(new Sprite("terrain/dino/1"),
                         t.getX(), t.getY(),
-                        new FighterMetrics("Zombo", "EARTH"),
-                        this, Statics.dinoTerrain);
+                        new FighterMetrics("Dino", "EARTH"),
+                        this, animationHelper.createAnimation("dinoTerrain"));
                 tempFighter.setPlayerClass(ID.DINO);
                 tempFighter.setPlayerClassName("dino");
             }
             else if (t.getTileClass() == ID.ROBO){
                 tempFighter = new Fighter(new Sprite("terrain/robo/1"),
                         t.getX(), t.getY(),
-                        new FighterMetrics("Zombo", "EARTH"),
-                        this, Statics.roboTerrain);
+                        new FighterMetrics("Robo", "EARTH"),
+                        this, animationHelper.createAnimation("roboTerrain"));
                 tempFighter.setPlayerClass(ID.ROBO);
                 tempFighter.setPlayerClassName("robo");
             }
@@ -86,15 +91,15 @@ public class GameState implements State {
                 tempFighter = new Fighter(new Sprite("terrain/zombo/1"),
                         t.getX(), t.getY(),
                         new FighterMetrics("Zombo", "WATER"),
-                        this, Statics.zomboTerrain);
+                        this, animationHelper.createAnimation("zomboTerrain"));
                 tempFighter.setPlayerClass(ID.ZOMBO);
                 tempFighter.setPlayerClassName("zombo");
             }
             else if (t.getTileClass() == ID.NINJA){
                 tempFighter = new Fighter(new Sprite("terrain/ninja/1"),
                         t.getX(), t.getY(),
-                        new FighterMetrics("Zombo", "FIRE"),
-                        this, Statics.ninjaTerrain);
+                        new FighterMetrics("Ninja", "FIRE"),
+                        this, animationHelper.createAnimation("ninjaTerrain"));
                 tempFighter.setPlayerClass(ID.NINJA);
                 tempFighter.setPlayerClassName("ninja");
             }
@@ -254,9 +259,8 @@ public class GameState implements State {
                                     player.moveY(-32);
                                     j = tileMap.length;
                                     i = tileMap.length;
-                                    collision();
-                                    enemyMove();
-                                    collision();
+
+                                    moveLogic();
                                 }
                             }
                         }
@@ -288,9 +292,8 @@ public class GameState implements State {
                                     player.moveY(32);
                                     j = tileMap.length;
                                     i = tileMap.length;
-                                    collision();
-                                    enemyMove();
-                                    collision();
+
+                                    moveLogic();
                                 }
                             }
                         }
@@ -322,9 +325,8 @@ public class GameState implements State {
                                     player.moveX(-32);
                                     j = tileMap.length;
                                     i = tileMap.length;
-                                    collision();
-                                    enemyMove();
-                                    collision();
+
+                                    moveLogic();
                                 }
                             }
                         }
@@ -357,9 +359,8 @@ public class GameState implements State {
                                         player.moveX(32);
                                         j = tileMap.length;
                                         i = tileMap.length;
-                                        collision();
-                                        enemyMove();
-                                        collision();
+
+                                        moveLogic();
                                     }
                                 }
                             }
@@ -405,6 +406,17 @@ public class GameState implements State {
                     stateManager.setState("battle", this);
                 break ;
         }
+    }
+
+    private void moveLogic(){
+        if (item()){
+            String temp = calculateArtifact();
+            System.out.println("NEW ARTIFACT!!! : " + temp);
+            addArtifact(temp);
+        }
+        collision();
+        enemyMove();
+        collision();
     }
 
     @Override
@@ -631,13 +643,13 @@ public class GameState implements State {
     private void addArtifact(String artifact){
         switch (artifact){
             case "HELM":
-                player.getFighterMetrics().addArtifact(new Helm(ID.HELM, player.getFighterMetrics().getLevel().getLevel()));
+                player.getFighterMetrics().addArtifact(new Helm("helm_small", ID.HELM, player.getFighterMetrics().getLevel().getLevel()));
                 break;
             case "ARMOR":
-                player.getFighterMetrics().addArtifact(new Armor(ID.ARMOR, player.getFighterMetrics().getLevel().getLevel()));
+                player.getFighterMetrics().addArtifact(new Armor("armor_small", ID.ARMOR, player.getFighterMetrics().getLevel().getLevel()));
                 break;
             case "WEAPON":
-                player.getFighterMetrics().addArtifact(new Weapon(ID.WEAPON, player.getFighterMetrics().getLevel().getLevel()));
+                player.getFighterMetrics().addArtifact(new Weapon("weapon_small", ID.WEAPON, player.getFighterMetrics().getLevel().getLevel()));
                 break;
         }
     }
