@@ -16,9 +16,13 @@ import com.swingy.view.Swingy;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.swingy.rendering.ui.Button;
+
+import static com.swingy.database.SwingyDB.swingyDB;
 
 public class CharacterCreationState implements State {
 
@@ -138,7 +142,7 @@ public class CharacterCreationState implements State {
             entities.get(currentCharacterSelection).tick();
     }
 
-    private void select(StateManager stateManager){
+    private void select(StateManager stateManager) {
         switch (currentButtonSelection){
             case 0 :
                 currentCharacterSelection++;
@@ -147,6 +151,21 @@ public class CharacterCreationState implements State {
                 break ;
             case 1 :
                 currentFighter = characters[currentCharacterSelection];
+
+                try {
+                    swingyDB.insertPlayer(currentFighter);
+
+                    ResultSet resultSet = swingyDB.queryAll();
+
+                    while (resultSet.next()) {
+                        for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                            System.out.format("%20s", resultSet.getString(i + 1) + " | ");
+                        }
+                    }
+                }catch (SQLException e){
+                    e.printStackTrace();
+                }
+
                 GameState gameState = (GameState) stateManager.setState("map", this);
                 break ;
             case 2 :
