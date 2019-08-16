@@ -2,6 +2,7 @@ package com.swingy.database;
 
 import com.swingy.rendering.entities.Fighter;
 
+import javax.management.Query;
 import javax.swing.*;
 import java.sql.*;
 
@@ -10,9 +11,9 @@ public class SwingyDB {
     private static final String DB_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
     private static final String JDBC_URL = "jdbc:derby:swingydb;create=true";
     private static final String SQL_SELECT = "select * from players";
-    private static final String SQL_INSERT = "insert into players (name, xp, character_class) values";
+    private static final String SQL_INSERT = "insert into players (name, xp, character_class, active) values";
     private static final String SQL_DELETE = "delete from players";
-    private static final String SQL_CREATE = "create table players(id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), name varchar(255), xp varchar(255), character_class varchar (255))";
+    private static final String SQL_CREATE = "create table players(id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), name varchar(255), xp integer, character_class varchar (255), active boolean)";
     private static final String SQL_DROP = "drop table players";
     private Statement statement;
 
@@ -68,14 +69,24 @@ public class SwingyDB {
         closeConnection();
     }
 
-    public void insertPlayer(Fighter fighter) throws SQLException {
+    public long insertPlayer(Fighter fighter) throws SQLException {
         createConnection();
-        connection.createStatement().execute(SQL_INSERT
-                //+ " ('" + fighter.getFighterMetrics().getID() + "'"
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT
                 + " ('" + fighter.getFighterMetrics().getName() + "'"
-                + ",'" + (int)fighter.getFighterMetrics().getLevel().getExperience() + "'"
-                + ",'" + fighter.getPlayerClassName() + "')");
-        System.out.println("Record Successfully Inserted");
+                + "," + (int)fighter.getFighterMetrics().getLevel().getExperience()
+                + ",'" + fighter.getPlayerClassName() + "'"
+                + "," + true + ")", PreparedStatement.RETURN_GENERATED_KEYS);
+
+        preparedStatement.execute();
+
+        //Get Generated ID
+        ResultSet resultSet = preparedStatement.getGeneratedKeys();
+        if (resultSet.next()){
+            System.out.println("Record Successfully Inserted with ID: " + resultSet.getInt(1));
+            return resultSet.getInt(1);
+        }
+        else
+            return -1;
     }
 
     public ResultSet queryPlayer(long id) throws SQLException {

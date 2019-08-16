@@ -19,7 +19,6 @@ public class FighterMetrics implements Fighter {
     protected long _id = 0;
     protected Level _level = new Level();
     protected double _damage = 0;
-    protected int _idCounter = 0;
 
     public FighterMetrics(String name, String affinity){
         _name = name;
@@ -52,6 +51,10 @@ public class FighterMetrics implements Fighter {
 
     public long getID(){
         return _id;
+    }
+
+    public void setID(long _id) {
+        this._id = _id;
     }
 
     public Level getLevel(){

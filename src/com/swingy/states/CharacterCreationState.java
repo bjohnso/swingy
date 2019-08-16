@@ -151,17 +151,8 @@ public class CharacterCreationState implements State {
                 break ;
             case 1 :
                 currentFighter = characters[currentCharacterSelection];
-
                 try {
-                    swingyDB.insertPlayer(currentFighter);
-
-                    ResultSet resultSet = swingyDB.queryAll();
-
-                    while (resultSet.next()) {
-                        for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-                            System.out.format("%20s", resultSet.getString(i + 1) + " | ");
-                        }
-                    }
+                    currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
                 }catch (SQLException e){
                     e.printStackTrace();
                 }
