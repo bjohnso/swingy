@@ -22,7 +22,11 @@ import com.swingy.view.Swingy;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import static com.swingy.database.SwingyDB.swingyDB;
 
 public class GameState implements State {
 
@@ -56,10 +60,49 @@ public class GameState implements State {
     public void init() {
         gameOver = false;
         options = null;
-        player = CharacterCreationState.currentFighter;
+        entities = new ArrayList<Entity>();
+
+        try {
+            ResultSet resultSet = swingyDB.queryPlayer();
+            if (resultSet.next()){
+                switch(resultSet.getString(4)){
+                    case "ninja":
+                        player = new Fighter(new Sprite("ninja/idle/1"),
+                                (Swingy.WIDTH / 2), 100,
+                                new FighterMetrics(resultSet.getString(2), "FIRE"),
+                                this, null);
+                        player.setPlayerClass(ID.NINJA);
+                        break;
+                    case "dino":
+                        player = new Fighter(new Sprite("dino/idle/1"),
+                                (Swingy.WIDTH / 2), 100,
+                                new FighterMetrics(resultSet.getString(2), "EARTH"),
+                                this, null);
+                        player.setPlayerClass(ID.DINO);
+                        break;
+                    case "robo":
+                        player = new Fighter(new Sprite("robo/idle/1"),
+                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "EARTH"),
+                                this, null);
+                        player.setPlayerClass(ID.ROBO);
+                        break;
+                    case "zombo":
+                        player = new Fighter(new Sprite("zombo/idle/1"),
+                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "WATER"),
+                                this, null);
+                        player.setPlayerClass(ID.ZOMBO);
+                        break;
+                }
+                player.setPlayerClassName(resultSet.getString(4));
+                player.getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         mapGenerator = new MapGenerator(player);
         tileMap = mapGenerator.getTileMap();
-        entities = new ArrayList<Entity>();
+
         fighters = new ArrayList<>();
         tiles = mapGenerator.generate();
 
@@ -110,6 +153,8 @@ public class GameState implements State {
                     player = tempFighter;
                     player.setPlayer(true);
                 }
+                else
+                    tempFighter.getFighterMetrics().getLevel().setExperience(player.getFighterMetrics().getLevel().getExperience());
             }
         }
     }

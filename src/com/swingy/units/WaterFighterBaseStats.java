@@ -2,13 +2,14 @@ package com.swingy.units;
 
 public class WaterFighterBaseStats extends FighterBaseStats {
     public WaterFighterBaseStats(int level){
-        updateStats(level);
+        this.level = level;
+        updateStats();
     }
 
-    public void updateStats(int level){
-        this.setAttackPoints(4 * level * 1.75);
-        this.setDefencePoints(8 * level * 2);
-        this.setHitPoints(4 * level * 1.5);
-        this.setCounterChance(0.8 * level * 2);
+    public void updateStats(){
+        this.setAttackPoints(4 * this.level * 1.75);
+        this.setDefencePoints(8 * this.level * 2);
+        this.setHitPoints(4 * this.level * 1.5);
+        this.setCounterChance(0.8 * this.level * 2);
     }
 }

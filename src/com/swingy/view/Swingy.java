@@ -147,6 +147,7 @@ public class Swingy extends Canvas implements Runnable{
         stateManager = new StateManager();
         stateManager.addState(new MenuState(this), null);
         stateManager.addState(new CharacterCreationState(), null);
+        stateManager.addState(new CharacterSelectionState(), null);
         stateManager.addState(new GameState(), null);
         stateManager.addState(new BattleState(), null);
 

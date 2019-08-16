@@ -15,9 +15,10 @@ public class SwingyDB {
     private static final String SQL_DELETE = "delete from players";
     private static final String SQL_CREATE = "create table players(id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), name varchar(255), xp integer, character_class varchar (255), active boolean)";
     private static final String SQL_DROP = "drop table players";
+    private static final String SQL_UPDATE = "update players set";
     private Statement statement;
-
     private Connection connection;
+    private int rowCount;
 
     public static SwingyDB swingyDB;
 
@@ -94,9 +95,30 @@ public class SwingyDB {
         return statement.executeQuery(SQL_SELECT + " where id = " + id);
     }
 
+    public ResultSet queryPlayer() throws SQLException {
+        createConnection();
+        return statement.executeQuery(SQL_SELECT + " where active = true");
+    }
+
     public ResultSet queryAll() throws SQLException {
         createConnection();
-       return statement.executeQuery(SQL_SELECT);
+
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT,
+                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+        ResultSet result = preparedStatement.executeQuery();
+        boolean b = result.last();
+        rowCount = result.getRow();
+        result.beforeFirst();
+
+        return result;
+    }
+
+    public void setCurrentPlayer(long id) throws SQLException {
+        createConnection();
+        connection.createStatement().execute(SQL_UPDATE + " active = true where id = " + id);
+        System.out.println("Player Successfully Set To Active");
+        closeConnection();
     }
 
     public void deletePlayer(long id) throws SQLException {
@@ -116,5 +138,9 @@ public class SwingyDB {
             statement.close();
         if (connection != null)
             connection.close();
+    }
+
+    public int getRowCount() {
+        return rowCount;
     }
 }

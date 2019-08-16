@@ -249,11 +249,6 @@ public class BattleState extends Canvas implements State {
             }
         }
 
-        //graphics.setColor(Color.BLUE);
-        //graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 6, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
-        //graphics.fillRoundRect(DEFAULT_WIDTH / 100 * 14, DEFAULT_HEIGHT / 100 * 10 , 80, 80, 80, 80);
-
-
         gameObjectHandler.render(graphics);
         for(Entity e: entities)
             e.render(graphics);

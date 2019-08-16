@@ -24,15 +24,15 @@ public class FighterMetrics implements Fighter {
         _name = name;
         if (affinity.equalsIgnoreCase("FIRE")) {
             if (!_affinities.containsKey(affinity))
-                _affinities.put("FIRE", new FireFighterBaseStats(10));
+                _affinities.put("FIRE", new FireFighterBaseStats(1));
         }
         else if (affinity.equalsIgnoreCase("WATER")){
             if (!_affinities.containsKey(affinity))
-                _affinities.put("WATER", new WaterFighterBaseStats(10));
+                _affinities.put("WATER", new WaterFighterBaseStats(1));
         }
         else if (affinity.equalsIgnoreCase("EARTH")){
             if (!_affinities.containsKey(affinity))
-                _affinities.put("EARTH", new EarthFighterBaseStats(10));
+                _affinities.put("EARTH", new EarthFighterBaseStats(1));
         }
         artifacts = new ArrayList<>();
     }
@@ -112,8 +112,15 @@ public class FighterMetrics implements Fighter {
 
     }
 
+    public void updateAffinities(){
+        for (HashMap.Entry<String, FighterBaseStats> fbs : _affinities.entrySet()){
+            fbs.getValue().setLevel(this._level.getLevel());
+        }
+    }
+
     @Override
     public boolean counter(double enemyAttackPoints, double myDefencePoints) {
+        updateAffinities();
         if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")){
             this._damage -= (enemyAttackPoints / myDefencePoints) + (enemyAttackPoints / myDefencePoints / 100 * 13);
         }
@@ -129,6 +136,7 @@ public class FighterMetrics implements Fighter {
 
     @Override
     public FighterBaseStats getFighterStats() {
+        updateAffinities();
         FighterBaseStats fighterBaseStats = new FighterBaseStats();
         //GetBaseStats
         for (HashMap.Entry<String, FighterBaseStats> a : _affinities.entrySet()){
@@ -149,11 +157,11 @@ public class FighterMetrics implements Fighter {
             fighterBaseStats.setHitPoints((int)(fighterBaseStats.getHitPoints() + a.getHitPointsBoost()));
             fighterBaseStats.setCounterChance((int)(fighterBaseStats.getCounterChance() + a.getCounterBoost()));
         }
-
         return fighterBaseStats;
     }
 
     public String toString() {
+        updateAffinities();
         String toReturn = "Fighter : " + this._name
                 + "\nLevel : " + this._level.getLevel()
                 + "\nHP : " + this.getFighterStats().getHitPoints()
@@ -164,6 +172,7 @@ public class FighterMetrics implements Fighter {
     }
 
     public ArrayList<String> toStringArray() {
+        updateAffinities();
         ArrayList<String> toReturn = new ArrayList<>();
         toReturn.add(this._name);
         toReturn.add("Level : " + this._level.getLevel());

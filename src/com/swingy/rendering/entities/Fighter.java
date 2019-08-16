@@ -12,7 +12,6 @@ public class Fighter extends Mobile{
 
     private ID playerClass;
     private String playerClassName;
-    private int level;
     private boolean isPlayer;
     private boolean alive;
     private FighterMetrics fighterMetrics;
@@ -34,20 +33,12 @@ public class Fighter extends Mobile{
         super.render(graphics);
     }
 
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
     public void setPlayerClass(ID playerClass) {
         this.playerClass = playerClass;
     }
 
     public ID getPlayerClass() {
         return playerClass;
-    }
-
-    public int getLevel() {
-        return level;
     }
 
     public void setPlayerClassName(String playerClassName) {

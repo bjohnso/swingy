@@ -5,9 +5,18 @@ public class FighterBaseStats {
     protected double _defencePoints = 0;
     protected double _hitPoints = 0;
     protected double _counterChance = 0;
+    protected int level = 0;
 
     public FighterBaseStats(){
 
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public double getAttackPoints(){

@@ -1,14 +1,15 @@
 package com.swingy.states;
 
 import com.swingy.battle.FighterMetrics;
-import com.swingy.rendering.entities.Entity;
-import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
+import com.swingy.rendering.entities.Entity;
+import com.swingy.rendering.entities.Fighter;
 import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
+import com.swingy.rendering.ui.Button;
 import com.swingy.util.AnimationHelper;
 import com.swingy.util.Fonts;
 import com.swingy.view.Swingy;
@@ -20,12 +21,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.swingy.rendering.ui.Button;
-
 import static com.swingy.database.SwingyDB.swingyDB;
 
-public class CharacterCreationState implements State {
-
+public class CharacterSelectionState implements State {
     private ArrayList<Entity> entities;
 
     private Button[] options;
@@ -35,14 +33,13 @@ public class CharacterCreationState implements State {
     private int currentCharacterSelection;
     private boolean stateResume;
 
-    protected static Fighter currentFighter;
+    protected Fighter currentFighter;
 
     @Override
     public void init() {
+        entities = new ArrayList<>();
         currentCharacterSelection = 0;
         stateResume = false;
-
-        entities = new ArrayList<>();
         options = new Button[3];
         options[0] = new Button("Next", 50, (200 + 0 * 80),
                 new Font("Arial", Font.PLAIN, 32),
@@ -60,38 +57,55 @@ public class CharacterCreationState implements State {
                 Color.WHITE,
                 Color.YELLOW);
 
-        characters = new Fighter[4];
+        ResultSet resultSet = null;
+        try {
+            resultSet = swingyDB.queryAll();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-        characters[0] = new Fighter(new Sprite("ninja/idle/1"),
-                (Swingy.WIDTH / 2), 100,
-                new FighterMetrics("Zombo", "FIRE"),this, AnimationHelper.createAnimation("ninjaLarge"));
+        characters = new Fighter[swingyDB.getRowCount()];
 
-        characters[1] = new Fighter(new Sprite("dino/idle/1"),
-                (Swingy.WIDTH / 2), 100,
-                new FighterMetrics("Zombo", "EARTH"),this, AnimationHelper.createAnimation("dinoLarge"));
-
-        characters[2] = new Fighter(new Sprite("robo/idle/1"),
-                (Swingy.WIDTH / 2), 50, new FighterMetrics("Zombo", "EARTH"),
-                this, AnimationHelper.createAnimation("roboLarge"));
-
-        characters[3] = new Fighter(new Sprite("zombo/idle/1"),
-                (Swingy.WIDTH / 2), 50, new FighterMetrics("Zombo", "WATER"),
-                this, AnimationHelper.createAnimation("zomboLarge"));
-
-        characters[0].setPlayerClass(ID.NINJA);
-        characters[1].setPlayerClass(ID.DINO);
-        characters[2].setPlayerClass(ID.ROBO);
-        characters[3].setPlayerClass(ID.ZOMBO);
-
-        characters[0].setPlayerClassName("ninja");
-        characters[1].setPlayerClassName("dino");
-        characters[2].setPlayerClassName("robo");
-        characters[3].setPlayerClassName("zombo");
-
-        characters[0].getFighterMetrics().getLevel().setExperience(1000);
-        characters[1].getFighterMetrics().getLevel().setExperience(1000);
-        characters[2].getFighterMetrics().getLevel().setExperience(1000);
-        characters[3].getFighterMetrics().getLevel().setExperience(1000);
+        //Initialise Database Saves as Fighters
+        int count = 0;
+        while (true){
+            try {
+                if (!resultSet.next()) break;
+                switch(resultSet.getString(4)){
+                    case "ninja":
+                        characters[count] = new Fighter(new Sprite("ninja/idle/1"),
+                                (Swingy.WIDTH / 2), 100,
+                                new FighterMetrics(resultSet.getString(2), "FIRE"),
+                                this, AnimationHelper.createAnimation("ninjaLarge"));
+                        characters[count].setPlayerClass(ID.NINJA);
+                        break;
+                    case "dino":
+                        characters[count] = new Fighter(new Sprite("dino/idle/1"),
+                                (Swingy.WIDTH / 2), 100,
+                                new FighterMetrics(resultSet.getString(2), "EARTH"),
+                                this, AnimationHelper.createAnimation("dinoLarge"));
+                        characters[count].setPlayerClass(ID.DINO);
+                        break;
+                    case "robo":
+                        characters[count] = new Fighter(new Sprite("robo/idle/1"),
+                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "EARTH"),
+                                this, AnimationHelper.createAnimation("roboLarge"));
+                        characters[count].setPlayerClass(ID.ROBO);
+                        break;
+                    case "zombo":
+                        characters[count] = new Fighter(new Sprite("zombo/idle/1"),
+                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "WATER"),
+                                this, AnimationHelper.createAnimation("zomboLarge"));
+                        characters[count].setPlayerClass(ID.ZOMBO);
+                        break;
+                }
+                characters[count].setPlayerClassName(resultSet.getString(4));
+                characters[count].getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            count++;
+        }
     }
 
     @Override
@@ -103,12 +117,16 @@ public class CharacterCreationState implements State {
 
     @Override
     public void exitState() {
+        for (int i = 0; i < characters.length; i++){
+            characters[i] = null;
+        }
+        entities.clear();
         stateResume = true;
     }
 
     @Override
     public String getName() {
-        return "character-new";
+        return "character-load";
     }
 
     @Override
@@ -136,12 +154,13 @@ public class CharacterCreationState implements State {
             }
         }
 
-        if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
+        if ((clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER)) && characters != null)
             select(stateManager);
 
         //Tick only selected character
         if (entities != null)
-            entities.get(currentCharacterSelection).tick();
+            if (entities.size() > 0)
+                entities.get(currentCharacterSelection).tick();
     }
 
     private void select(StateManager stateManager) {
@@ -154,12 +173,10 @@ public class CharacterCreationState implements State {
             case 1 :
                 currentFighter = characters[currentCharacterSelection];
                 try {
-                    currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
                     swingyDB.setCurrentPlayer(currentFighter.getID());
-                }catch (SQLException e){
+                } catch (SQLException e) {
                     e.printStackTrace();
                 }
-
                 GameState gameState = (GameState) stateManager.setState("map", this);
                 break ;
             case 2 :
@@ -176,7 +193,7 @@ public class CharacterCreationState implements State {
         Sprite background = new Sprite(new SpriteSheet(new Texture("background/2", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
         background.render(graphics, 0, 0);
 
-        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Create New Fighter", 72, false);
+        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Load Existing Fighter", 72, false);
 
         for (int i = 0; i < options.length; i++){
             if (i == currentButtonSelection)
@@ -186,9 +203,20 @@ public class CharacterCreationState implements State {
             options[i].render(graphics);
         }
 
+        Font font = new Font("Arial", Font.PLAIN, 16);
+        FontMetrics fontMetrics = graphics.getFontMetrics(font);
+
+        //Draw Current Fighter Stats to Screen
+        int j = 0;
+        for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
+            Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH - fontMetrics.stringWidth("swingy") - 80)) + 10, (100 + (j * 100)));
+            j++;
+        }
+
         //Render only selected character
         if (entities != null)
-            entities.get(currentCharacterSelection).render(graphics);
+            if (entities.size() > 0)
+                entities.get(currentCharacterSelection).render(graphics);
     }
 
     public void addEntity(Entity entity){

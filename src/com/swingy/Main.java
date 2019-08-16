@@ -15,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        swingyDB.dropDB();
+        //swingyDB.dropDB();
         swingyDB.createDB();
 
         pool = new ThreadPool(3);

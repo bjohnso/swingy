@@ -92,10 +92,10 @@ public class MenuState implements State {
     private void select(StateManager stateManager){
         switch (currentSelection){
             case 0 :
-                stateManager.setState("character", this);
+                stateManager.setState("character-new", this);
                 break ;
             case 1 :
-                System.out.println("load game");
+                stateManager.setState("character-load", this);
                 break ;
             case 2 :
                 System.out.println("settings");
