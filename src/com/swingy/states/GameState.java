@@ -16,7 +16,7 @@ import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
-import com.swingy.helpers.AnimationHelper;
+import com.swingy.util.AnimationHelper;
 import com.swingy.view.Swingy;
 
 import java.awt.*;
@@ -46,8 +46,6 @@ public class GameState implements State {
 
     private StateManager stateManager = null;
 
-    private AnimationHelper animationHelper;
-
     private String[] artifacts = {
             "HELM",
             "WEAPON",
@@ -56,7 +54,6 @@ public class GameState implements State {
 
     @Override
     public void init() {
-        animationHelper = new AnimationHelper();
         gameOver = false;
         options = null;
         player = CharacterCreationState.currentFighter;
@@ -75,7 +72,7 @@ public class GameState implements State {
                 tempFighter = new Fighter(new Sprite("terrain/dino/1"),
                         t.getX(), t.getY(),
                         new FighterMetrics("Dino", "EARTH"),
-                        this, animationHelper.createAnimation("dinoTerrain"));
+                        this, null);
                 tempFighter.setPlayerClass(ID.DINO);
                 tempFighter.setPlayerClassName("dino");
             }
@@ -83,7 +80,7 @@ public class GameState implements State {
                 tempFighter = new Fighter(new Sprite("terrain/robo/1"),
                         t.getX(), t.getY(),
                         new FighterMetrics("Robo", "EARTH"),
-                        this, animationHelper.createAnimation("roboTerrain"));
+                        this, null);
                 tempFighter.setPlayerClass(ID.ROBO);
                 tempFighter.setPlayerClassName("robo");
             }
@@ -91,7 +88,7 @@ public class GameState implements State {
                 tempFighter = new Fighter(new Sprite("terrain/zombo/1"),
                         t.getX(), t.getY(),
                         new FighterMetrics("Zombo", "WATER"),
-                        this, animationHelper.createAnimation("zomboTerrain"));
+                        this, null);
                 tempFighter.setPlayerClass(ID.ZOMBO);
                 tempFighter.setPlayerClassName("zombo");
             }
@@ -99,7 +96,7 @@ public class GameState implements State {
                 tempFighter = new Fighter(new Sprite("terrain/ninja/1"),
                         t.getX(), t.getY(),
                         new FighterMetrics("Ninja", "FIRE"),
-                        this, animationHelper.createAnimation("ninjaTerrain"));
+                        this, null);
                 tempFighter.setPlayerClass(ID.NINJA);
                 tempFighter.setPlayerClassName("ninja");
             }

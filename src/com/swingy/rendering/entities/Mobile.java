@@ -21,7 +21,8 @@ public abstract class Mobile extends Entity {
     @Override
     public void tick(){
         move();
-        animation.tick();
+        if (animation != null)
+            animation.tick();
     }
 
     @Override

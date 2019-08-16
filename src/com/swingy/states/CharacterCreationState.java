@@ -9,7 +9,7 @@ import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
-import com.swingy.helpers.AnimationHelper;
+import com.swingy.util.AnimationHelper;
 import com.swingy.util.Fonts;
 import com.swingy.view.Swingy;
 
@@ -32,7 +32,6 @@ public class CharacterCreationState implements State {
     private boolean stateResume = false;
 
     protected static Fighter currentFighter;
-    private AnimationHelper animationHelper;
 
     @Override
     public void init() {
@@ -56,23 +55,21 @@ public class CharacterCreationState implements State {
 
         characters = new Fighter[4];
 
-        animationHelper = new AnimationHelper();
-
         characters[0] = new Fighter(new Sprite("ninja/idle/1"),
                 (Swingy.WIDTH / 2), 100,
-                new FighterMetrics("Zombo", "FIRE"),this, animationHelper.createAnimation("ninjaLarge"));
+                new FighterMetrics("Zombo", "FIRE"),this, AnimationHelper.createAnimation("ninjaLarge"));
 
         characters[1] = new Fighter(new Sprite("dino/idle/1"),
                 (Swingy.WIDTH / 2), 100,
-                new FighterMetrics("Zombo", "EARTH"),this, animationHelper.createAnimation("dinoLarge"));
+                new FighterMetrics("Zombo", "EARTH"),this, AnimationHelper.createAnimation("dinoLarge"));
 
         characters[2] = new Fighter(new Sprite("robo/idle/1"),
                 (Swingy.WIDTH / 2), 50, new FighterMetrics("Zombo", "EARTH"),
-                this, animationHelper.createAnimation("roboLarge"));
+                this, AnimationHelper.createAnimation("roboLarge"));
 
         characters[3] = new Fighter(new Sprite("zombo/idle/1"),
                 (Swingy.WIDTH / 2), 50, new FighterMetrics("Zombo", "WATER"),
-                this, animationHelper.createAnimation("zomboLarge"));
+                this, AnimationHelper.createAnimation("zomboLarge"));
 
         characters[0].setPlayerClass(ID.NINJA);
         characters[1].setPlayerClass(ID.DINO);

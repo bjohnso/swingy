@@ -6,7 +6,7 @@ import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.states.BattleState;
-import com.swingy.helpers.AnimationHelper;
+import com.swingy.util.AnimationHelper;
 
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
