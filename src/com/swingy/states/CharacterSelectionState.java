@@ -31,7 +31,6 @@ public class CharacterSelectionState implements State {
 
     private Fighter[] characters;
     private int currentCharacterSelection;
-    private boolean stateResume;
 
     protected Fighter currentFighter;
 
@@ -39,7 +38,6 @@ public class CharacterSelectionState implements State {
     public void init() {
         entities = new ArrayList<>();
         currentCharacterSelection = 0;
-        stateResume = false;
         options = new Button[3];
         options[0] = new Button("Next", 50, (200 + 0 * 80),
                 new Font("Arial", Font.PLAIN, 32),
@@ -99,6 +97,7 @@ public class CharacterSelectionState implements State {
                         characters[count].setPlayerClass(ID.ZOMBO);
                         break;
                 }
+                characters[count].setID(resultSet.getInt(1));
                 characters[count].setPlayerClassName(resultSet.getString(4));
                 characters[count].getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
             } catch (SQLException e) {
@@ -110,8 +109,7 @@ public class CharacterSelectionState implements State {
 
     @Override
     public State enterState(State callingState) {
-        if (!stateResume)
-            init();
+        init();
         return this;
     }
 
@@ -120,8 +118,9 @@ public class CharacterSelectionState implements State {
         for (int i = 0; i < characters.length; i++){
             characters[i] = null;
         }
+        characters = null;
         entities.clear();
-        stateResume = true;
+        entities = null;
     }
 
     @Override

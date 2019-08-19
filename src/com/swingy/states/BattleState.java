@@ -140,7 +140,6 @@ public class BattleState extends Canvas implements State {
 
         //Initialising GameObject Handler And FighterManager
         for (Fighter f : fighters){
-            System.out.printf("IS ALIVE: %s | IS PLAYER %s\n", f.isAlive(), f.isPlayer());
             if (f.isPlayer()) {
                 gameObjectHandler.addObject(new FighterManager(DEFAULT_WIDTH / 100 * 5, DEFAULT_HEIGHT / 100 * 40
                         , ID.Challenger, true, challengerHUD, f, this));
@@ -164,11 +163,9 @@ public class BattleState extends Canvas implements State {
             else
                 battleEngine.setDefender(fighters.get(i).getFighterMetrics());
             fighters.get(i).getAnimation().addPropertyChangeListener((FighterManager) gameObjectHandler.getObjects().get(i));
-            System.out.println(fighters.get(i).getFighterMetrics().toString());
         }
 
         battleText = "FIGHT";
-
 
         Main.pool.runTask(battleEngine);
     }
@@ -207,11 +204,12 @@ public class BattleState extends Canvas implements State {
                 if (!f.isAlive())
                     gameState.removeFighter(f);
             }
-            System.out.println(battleText);
             if (battleText.equalsIgnoreCase("VICTORY"))
                 stateManager.setState("map", this);
-            else
+            else {
+                gameState.gameOver();
                 stateManager.setState("menu", this);
+            }
         }
     }
 

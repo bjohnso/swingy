@@ -1,7 +1,7 @@
-Warning: Derby (instance a816c00e-016c-9bf1-b4c4-000006cd3a38) is attempting to boot the database /sgoinfre/bjohnso/JavaProjects/swingy/swingydb even though Derby (instance a816c00e-016c-9bf1-4da7-000006cbd470) may still be active.  Only one instance of Derby should boot a database at a time. Severe and non-recoverable corruption can result and may have already occurred.
+Warning: Derby (instance a816c00e-016c-a982-daea-000006cbd488) is attempting to boot the database /sgoinfre/bjohnso/JavaProjects/swingy/swingydb even though Derby (instance a816c00e-016c-a978-0e86-000006cd38f0) may still be active.  Only one instance of Derby should boot a database at a time. Severe and non-recoverable corruption can result and may have already occurred.
 ----------------------------------------------------------------
-Fri Aug 16 21:40:04 SAST 2019:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-016c-9bf1-b4c4-000006cd3a38 
+Mon Aug 19 12:53:41 SAST 2019:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-016c-a982-daea-000006cbd488 
 on database directory /sgoinfre/bjohnso/JavaProjects/swingy/swingydb with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
 Loaded from file:/sgoinfre/bjohnso/JavaProjects/swingy/libs/derby.jar
 java.vendor=Oracle Corporation

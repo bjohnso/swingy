@@ -18,6 +18,11 @@ public abstract class Mobile extends Entity {
         this.animation = animation;
     }
 
+    public Mobile(State state, Animation animation) {
+        super(state);
+        this.animation = animation;
+    }
+
     @Override
     public void tick(){
         move();

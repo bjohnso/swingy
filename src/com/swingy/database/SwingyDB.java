@@ -87,7 +87,13 @@ public class SwingyDB {
             return resultSet.getInt(1);
         }
         else
-            return -1;
+            return 0;
+    }
+
+    public void updatePlayer(int experience) throws SQLException {
+        createConnection();
+        connection.createStatement().execute(SQL_UPDATE + " xp = " + experience + " where active = true");
+        closeConnection();
     }
 
     public ResultSet queryPlayer(long id) throws SQLException {
@@ -138,6 +144,12 @@ public class SwingyDB {
             statement.close();
         if (connection != null)
             connection.close();
+    }
+
+    public void resetCurrentPlayer() throws SQLException {
+        createConnection();
+        connection.createStatement().execute(SQL_UPDATE + " active = false where active = true");
+        closeConnection();
     }
 
     public int getRowCount() {

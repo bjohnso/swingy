@@ -23,8 +23,6 @@ public class BattleEngine implements Runnable{
     private int turn = 1;
     private int tickLag = 0;
 
-    private ArrayList<Artifact> artifacts;
-
     public void setChallenger(FighterMetrics challenger){
         this.challenger = challenger;
     }
@@ -36,7 +34,6 @@ public class BattleEngine implements Runnable{
     public BattleEngine(){
         start();
         support = new PropertyChangeSupport(this);
-        artifacts = new ArrayList<>();
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl){
@@ -71,8 +68,7 @@ public class BattleEngine implements Runnable{
     }
 
     private void battleEnd(String defeated){
-        support.firePropertyChange(defeated, this.battleEnd, true);
-        this.battleEnd = true;
+        support.firePropertyChange(defeated, false, true);
         stop();
     }
 
@@ -83,18 +79,21 @@ public class BattleEngine implements Runnable{
     public void battle(int turn){
 
         if (counter == 0) {
+            challenger.setDamage(0);
+            defender.setDamage(0);
             setChallengerHP((int)calcChallengerHP());
             setDefenderHP((int)calcDefenderHP());
         }
         counter++;
 
-        if (challengerHP == 0) {
-            defender.setDamage(0);
+        if (challengerHP == 0 && !battleEnd) {
+            this.battleEnd = true;
             battleEnd("ChallengerDEATH");
             return;
         }
-        else if (defenderHP == 0){
-            challenger.setDamage(0);
+        else if (defenderHP == 0 && !battleEnd){
+            this.battleEnd = true;
+            challenger.gainExperience();
             battleEnd("DefenderDEATH");
             return ;
         }
@@ -143,10 +142,6 @@ public class BattleEngine implements Runnable{
                 }
             }
         }
-       /* System.out.println("HERO : " + challenger.getName() + "\nHP : " + challenger.getFighterStats().getHitPoints() + "\nDAMAGE : "
-                + challenger.getDamage() + "\n\n");
-        System.out.println("HERO : " + defender.getName() + "\nHP : " + defender.getFighterStats().getHitPoints() + "\nDAMAGE : "
-                + defender.getDamage());*/
         setChallengerHP(calcChallengerHP());
         setDefenderHP(calcDefenderHP());
     }

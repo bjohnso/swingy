@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class MapGenerator {
 
-    private int path = 0, enemy = 0, block = 0, item = 0, lava = 0, pit = 0;
     private String map[][];
     private Tile tileMap[][];
 
@@ -137,46 +136,28 @@ public class MapGenerator {
             x = (Swingy.WIDTH - (MAP_SIZE * 32)) / 2;
         }
 
-        System.out.printf("Mushroom: %d | Lava: %d | Pit: %d | Enemy: %d | Ground: %d\n", item, lava, pit, enemy, path);
         return tiles;
     }
 
     public String calculateEntity(){
         double seed = Math.random();
 
-        if (seed < .15 / 20.0) {
-            lava++;
+        if (seed < .15 / 20.0)
             return entities[0];
-        }
-        else if (seed < .25 / 20.0) {
-            pit++;
+        else if (seed < .25 / 20.0)
             return entities[1];
-        }
-        else if (seed < .3 / 20.0){
-            item++;
+        else if (seed < .3 / 20.0)
             return entities[2];
-        }
-        else if (seed < .4 / 20.0) {
-            enemy++;
+        else if (seed < .4 / 20.0)
             return entities[3];
-        }
-        else if (seed < .5 / 20.0) {
-            enemy++;
+        else if (seed < .5 / 20.0)
             return entities[4];
-        }
-        else if (seed < .6 / 20.0) {
-            enemy++;
+        else if (seed < .6 / 20.0)
             return entities[5];
-        }
-        else if (seed < .7 / 20.0) {
-            enemy++;
+        else if (seed < .7 / 20.0)
             return entities[6];
-        }
-        else {
-            path++;
+        else
             return entities[7];
-        }
-
     }
 
     private boolean checkNineByNine(String c, int x, int y){

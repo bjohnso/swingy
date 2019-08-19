@@ -23,6 +23,13 @@ public class Fighter extends Mobile{
         this.fighterMetrics = fighterMetrics;
     }
 
+    public Fighter(FighterMetrics fighterMetrics, State state, Animation animation){
+        super(state, animation);
+        alive = true;
+        isPlayer = false;
+        this.fighterMetrics = fighterMetrics;
+    }
+
     @Override
     public void tick(){
         super.tick();

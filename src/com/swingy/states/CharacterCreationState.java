@@ -35,7 +35,7 @@ public class CharacterCreationState implements State {
     private int currentCharacterSelection;
     private boolean stateResume;
 
-    protected static Fighter currentFighter;
+    protected Fighter currentFighter;
 
     @Override
     public void init() {
@@ -96,14 +96,14 @@ public class CharacterCreationState implements State {
 
     @Override
     public State enterState(State callingState) {
-        if (!stateResume)
-            init();
+        init();
         return this;
     }
 
     @Override
     public void exitState() {
-        stateResume = true;
+        entities.clear();
+        entities = null;
     }
 
     @Override

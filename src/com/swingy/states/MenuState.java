@@ -11,9 +11,12 @@ import com.swingy.util.Fonts;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 
 import com.swingy.rendering.ui.Button;
 import com.swingy.view.Swingy;
+
+import static com.swingy.database.SwingyDB.swingyDB;
 
 public class MenuState implements State {
 
@@ -22,10 +25,13 @@ public class MenuState implements State {
     private Button[] options;
     private int currentSelection;
 
-    private boolean isResume = false;
-
     @Override
     public void init() {
+        try {
+            swingyDB.resetCurrentPlayer();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         options = new Button[4];
         options[0] = new Button("New Game", (200 + 0 * 80),
                 new Font("Arial", Font.PLAIN, 32),
@@ -51,8 +57,7 @@ public class MenuState implements State {
 
     @Override
     public State enterState(State callingState) {
-        if (!isResume)
-            init();
+        init();
         return this;
     }
 
@@ -109,7 +114,6 @@ public class MenuState implements State {
 
     @Override
     public void exitState() {
-        isResume = true;
     }
 
     @Override

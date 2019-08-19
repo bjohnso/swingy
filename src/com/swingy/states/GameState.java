@@ -43,7 +43,7 @@ public class GameState implements State {
     private IDAssigner idAssigner;
 
     private boolean isResume = false;
-    private boolean gameOver;
+    protected boolean gameOver;
 
     protected static Fighter player;
     protected static Fighter defender;
@@ -58,8 +58,9 @@ public class GameState implements State {
 
     @Override
     public void init() {
+
         gameOver = false;
-        options = null;
+        isResume = true;
         entities = new ArrayList<Entity>();
 
         try {
@@ -67,28 +68,22 @@ public class GameState implements State {
             if (resultSet.next()){
                 switch(resultSet.getString(4)){
                     case "ninja":
-                        player = new Fighter(new Sprite("ninja/idle/1"),
-                                (Swingy.WIDTH / 2), 100,
-                                new FighterMetrics(resultSet.getString(2), "FIRE"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "FIRE"),
                                 this, null);
                         player.setPlayerClass(ID.NINJA);
                         break;
                     case "dino":
-                        player = new Fighter(new Sprite("dino/idle/1"),
-                                (Swingy.WIDTH / 2), 100,
-                                new FighterMetrics(resultSet.getString(2), "EARTH"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "EARTH"),
                                 this, null);
                         player.setPlayerClass(ID.DINO);
                         break;
                     case "robo":
-                        player = new Fighter(new Sprite("robo/idle/1"),
-                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "EARTH"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "EARTH"),
                                 this, null);
                         player.setPlayerClass(ID.ROBO);
                         break;
                     case "zombo":
-                        player = new Fighter(new Sprite("zombo/idle/1"),
-                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "WATER"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "WATER"),
                                 this, null);
                         player.setPlayerClass(ID.ZOMBO);
                         break;
@@ -247,6 +242,13 @@ public class GameState implements State {
 
     @Override
     public State enterState(State callingState) {
+        if (gameOver){
+            isResume = false;
+            entities.clear();
+            fighters.clear();
+            tiles.clear();
+            options = null;
+        }
         if (!isResume)
             init();
         return this;
@@ -261,6 +263,7 @@ public class GameState implements State {
             entities.clear();
             fighters.clear();
             tiles.clear();
+            options = null;
         }
     }
 
@@ -272,13 +275,12 @@ public class GameState implements State {
     public String calculateArtifact(){
         double seed = Math.random();
 
-        if (seed < 1 / 3.0)
+        if (seed < 2.0 / 6.0)
             return artifacts[0];
-        else if (seed < 2 / 3)
+        else if (seed < 4.0 / 6.0)
             return artifacts[1];
-        else if (seed < 3 / 3)
+        else
             return artifacts[2];
-        return null;
     }
 
     @Override
@@ -453,7 +455,6 @@ public class GameState implements State {
     private void moveLogic(){
         if (item()){
             String temp = calculateArtifact();
-            System.out.println("NEW ARTIFACT!!! : " + temp);
             addArtifact(temp);
         }
         collision();
@@ -508,7 +509,7 @@ public class GameState implements State {
 
     public boolean escape(){
         int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
-        boolean possible[] = {true, true, false, false};
+        boolean possible[] = {true, true, true, false};
 
         return possible[random];
     }
@@ -564,8 +565,8 @@ public class GameState implements State {
                                     addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i][j + 1].getTileClass() == ID.BORDER) {
-                                gameOver = true;
-                                stateManager.setState("menu", this);
+                                if (escape())
+                                    passMap();
                             }
                         }
                         if (j - 1 > -1) {
@@ -600,9 +601,8 @@ public class GameState implements State {
                                     addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i][j - 1].getTileClass() == ID.BORDER) {
-                                gameOver = true;
-                                stateManager.setState("menu", this);
-                                System.out.println("WENT OFF THE DEEP END!!!");
+                                if (escape())
+                                    passMap();
                             }
                         }
                         if (i + 1 < tileMap.length) {
@@ -636,8 +636,8 @@ public class GameState implements State {
                                     addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i + 1][j].getTileClass() == ID.BORDER) {
-                                gameOver = true;
-                                stateManager.setState("menu", this);
+                                if (escape())
+                                    passMap();
                             }
                         }
                         if (i - 1 > -1) {
@@ -671,8 +671,8 @@ public class GameState implements State {
                                     addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i - 1][j].getTileClass() == ID.BORDER) {
-                                gameOver = true;
-                                stateManager.setState("menu", this);
+                                if (escape())
+                                    passMap();
                             }
                         }
                     }
@@ -680,6 +680,16 @@ public class GameState implements State {
             }
         }
         return false;
+    }
+
+    private void passMap(){
+        try {
+            swingyDB.updatePlayer((int)player.getFighterMetrics().getLevel().getExperience());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        gameOver = true;
+        stateManager.setState("map", this);
     }
 
     private void addArtifact(String artifact){
@@ -697,9 +707,6 @@ public class GameState implements State {
     }
 
     protected void removeFighter(Fighter fighter){
-
-        System.out.printf("FIGHTERS: %d | ENTITIES %d", fighters.size(), entities.size());
-
         for (int i = 0; i < tileMap.length ;i++){
             for (int j = 0; j < tileMap.length; j++){
                 if (tileMap[i][j].getMobileID() == fighter.getID()) {
@@ -716,6 +723,9 @@ public class GameState implements State {
                 }
             }
         }
-        System.out.printf("FIGHTERS: %d | ENTITIES %d", fighters.size(), entities.size());
+    }
+
+    protected void gameOver(){
+        this.gameOver = true;
     }
 }

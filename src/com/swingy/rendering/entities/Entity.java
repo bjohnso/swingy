@@ -19,9 +19,16 @@ public abstract class Entity {
         this.state.addEntity(this);
     }
 
+    public Entity(State state){
+        this.sprite = null;
+        this.state = state;
+    }
+
     public abstract void tick();
 
-    public void render(Graphics graphics){
-        sprite.render(graphics, x, y);
+    public void render(Graphics graphics)
+    {
+        if (sprite != null)
+            sprite.render(graphics, x, y);
     }
 }

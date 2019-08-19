@@ -20,6 +20,8 @@ public class FighterMetrics implements Fighter {
     protected Level _level = new Level();
     protected double _damage = 0;
 
+    protected String easterEgg = "NO EGGS HERE";
+
     public FighterMetrics(String name, String affinity){
         _name = name;
         if (affinity.equalsIgnoreCase("FIRE")) {
@@ -83,6 +85,18 @@ public class FighterMetrics implements Fighter {
 
     public void removeArtifact(Artifact artifact){
         this.artifacts.remove(artifact);
+    }
+
+    public void setEasterEgg(String easterEgg) {
+        this.easterEgg = easterEgg;
+    }
+
+    public String getEasterEgg() {
+        return easterEgg;
+    }
+
+    public void gainExperience(){
+        this._level.increaseExperience(50);
     }
 
     public double getDamage(){ return _damage; }
@@ -164,6 +178,7 @@ public class FighterMetrics implements Fighter {
         updateAffinities();
         String toReturn = "Fighter : " + this._name
                 + "\nLevel : " + this._level.getLevel()
+                + "\nExperience : " + this._level.getExperience()
                 + "\nHP : " + this.getFighterStats().getHitPoints()
                 +"\nAP : " + this.getFighterStats().getAttackPoints()
                 + "\nDP : " + this.getFighterStats().getDefencePoints()
@@ -176,6 +191,7 @@ public class FighterMetrics implements Fighter {
         ArrayList<String> toReturn = new ArrayList<>();
         toReturn.add(this._name);
         toReturn.add("Level : " + this._level.getLevel());
+        toReturn.add("Experience : " + this._level.getExperience());
         toReturn.add("HP : " + this.getFighterStats().getHitPoints());
         toReturn.add("AP : " + this.getFighterStats().getAttackPoints());
         toReturn.add("DP : " + this.getFighterStats().getDefencePoints());

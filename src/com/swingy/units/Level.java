@@ -11,6 +11,7 @@ public class Level {
 
     public Level(double experience){
         this.experience = experience;
+        setLevel();
     }
 
     private void setLevel() {
@@ -33,6 +34,11 @@ public class Level {
 
     public int getLevel() {
         return this.level;
+    }
+
+    public void increaseExperience(double experience){
+        this.experience += experience;
+        setLevel();
     }
 
     public void setExperience(double experience) {
