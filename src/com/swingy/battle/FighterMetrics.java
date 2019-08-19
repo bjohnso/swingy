@@ -162,14 +162,14 @@ public class FighterMetrics implements Fighter {
                 fighterBaseStats.setAttackPoints((int)(fighterBaseStats.getAttackPoints() + a.getValue().getAttackPoints()));
             fighterBaseStats.setDefencePoints((int)(fighterBaseStats.getDefencePoints() + a.getValue().getDefencePoints()));
             fighterBaseStats.setHitPoints((int)(fighterBaseStats.getHitPoints() + a.getValue().getHitPoints()));
-            fighterBaseStats.setCounterChance((int)(fighterBaseStats.getCounterChance() + a.getValue().getCounterChance()));
+            fighterBaseStats.setCounterChance((fighterBaseStats.getCounterChance() + a.getValue().getCounterChance()));
         }
         //Add Additional stats from artifacts
         for (Artifact a : artifacts){
             fighterBaseStats.setAttackPoints((int)(fighterBaseStats.getAttackPoints() + a.getAttackBoost()));
             fighterBaseStats.setDefencePoints((int)(fighterBaseStats.getDefencePoints() + a.getDefenceBoost()));
             fighterBaseStats.setHitPoints((int)(fighterBaseStats.getHitPoints() + a.getHitPointsBoost()));
-            fighterBaseStats.setCounterChance((int)(fighterBaseStats.getCounterChance() + a.getCounterBoost()));
+            fighterBaseStats.setCounterChance((fighterBaseStats.getCounterChance() + a.getCounterBoost()));
         }
         return fighterBaseStats;
     }

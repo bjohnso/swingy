@@ -24,6 +24,14 @@ public abstract class Entity {
         this.state = state;
     }
 
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
+    }
+
+    public Sprite getSprite() {
+        return sprite;
+    }
+
     public abstract void tick();
 
     public void render(Graphics graphics)

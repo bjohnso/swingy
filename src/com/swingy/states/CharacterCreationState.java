@@ -16,7 +16,6 @@ import com.swingy.view.Swingy;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -155,7 +154,7 @@ public class CharacterCreationState implements State {
                 currentFighter = characters[currentCharacterSelection];
                 try {
                     currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
-                    swingyDB.setCurrentPlayer(currentFighter.getID());
+                    swingyDB.setCurrentPlayer(currentFighter.getMobileID());
                 }catch (SQLException e){
                     e.printStackTrace();
                 }

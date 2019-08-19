@@ -97,7 +97,7 @@ public class CharacterSelectionState implements State {
                         characters[count].setPlayerClass(ID.ZOMBO);
                         break;
                 }
-                characters[count].setID(resultSet.getInt(1));
+                characters[count].setMobileID(resultSet.getInt(1));
                 characters[count].setPlayerClassName(resultSet.getString(4));
                 characters[count].getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
             } catch (SQLException e) {
@@ -172,7 +172,7 @@ public class CharacterSelectionState implements State {
             case 1 :
                 currentFighter = characters[currentCharacterSelection];
                 try {
-                    swingyDB.setCurrentPlayer(currentFighter.getID());
+                    swingyDB.setCurrentPlayer(currentFighter.getMobileID());
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

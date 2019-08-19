@@ -16,7 +16,6 @@ import com.swingy.rendering.textures.Sprite;
 import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
-import com.swingy.util.AnimationHelper;
 import com.swingy.view.Swingy;
 
 import java.awt.*;
@@ -88,6 +87,7 @@ public class GameState implements State {
                         player.setPlayerClass(ID.ZOMBO);
                         break;
                 }
+                player.getFighterMetrics().setID(resultSet.getInt(1));
                 player.setPlayerClassName(resultSet.getString(4));
                 player.getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
             }
@@ -140,16 +140,21 @@ public class GameState implements State {
             }
 
             if (tempFighter != null) {
-                tempFighter.setID(idAssigner.next());
-                t.setMobileID(tempFighter.getID());
-                fighters.add(tempFighter);
+                tempFighter.setMobileID(idAssigner.next());
+                t.setMobileID(tempFighter.getMobileID());
                 if (t.isPlayer()){
                     playerIndex = tiles.indexOf(t);
-                    player = tempFighter;
+                    player.setSprite(tempFighter.getSprite());
+                    player.setMobileID(tempFighter.getMobileID());
+                    player.setX(t.getX());
+                    player.setY(t.getY());
                     player.setPlayer(true);
+                    fighters.add(player);
                 }
-                else
+                else {
+                    fighters.add(tempFighter);
                     tempFighter.getFighterMetrics().getLevel().setExperience(player.getFighterMetrics().getLevel().getExperience());
+                }
             }
         }
     }
@@ -523,7 +528,7 @@ public class GameState implements State {
 
     public void setDefender(int id){
         for (Fighter f : fighters) {
-            if (f.getID() == id)
+            if (f.getMobileID() == id)
                 defender = f;
         }
     }
@@ -692,11 +697,11 @@ public class GameState implements State {
 
     private void passMap(){
         try {
-            swingyDB.updatePlayer((int)player.getFighterMetrics().getLevel().getExperience());
+            swingyDB.updatePlayer(player);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        gameOver = true;
+        this.gameOver = true;
         stateManager.setState("map", this);
     }
 
@@ -717,7 +722,7 @@ public class GameState implements State {
     protected void removeFighter(Fighter fighter){
         for (int i = 0; i < tileMap.length ;i++){
             for (int j = 0; j < tileMap.length; j++){
-                if (tileMap[i][j].getMobileID() == fighter.getID()) {
+                if (tileMap[i][j].getMobileID() == fighter.getMobileID()) {
                     tiles.remove(tileMap[i][j]);
 
                     tileMap[i][j] = new Tile(tileMap[i][j].getX(), tileMap[i][j].getY(), new Sprite(new SpriteSheet(new Texture("terrain/ground", false), 32), 2, 2), ID.GROUND);

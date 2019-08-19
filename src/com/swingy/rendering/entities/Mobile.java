@@ -11,7 +11,7 @@ public abstract class Mobile extends Entity {
     protected double dx, dy;
     protected Animation animation;
     protected boolean moving = false;
-    private int id;
+    private int mobileID;
 
     public Mobile(Sprite sprite, double x, double y, State state, Animation animation) {
         super(sprite, x, y, state);
@@ -46,12 +46,12 @@ public abstract class Mobile extends Entity {
         dy = 0;
     }
 
-    public void setID(int id) {
-        this.id = id;
+    public void setMobileID(int id) {
+        this.mobileID = id;
     }
 
-    public int getID() {
-        return id;
+    public int getMobileID() {
+        return mobileID;
     }
 
     public double getX(){

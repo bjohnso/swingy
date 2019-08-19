@@ -88,7 +88,7 @@ public class BattleState extends Canvas implements State {
         }
         //Preserve Object Info
         tempFighter.setPlayer(true);
-        tempFighter.setID(GameState.player.getID());
+        tempFighter.setMobileID(GameState.player.getMobileID());
         fighters.add(tempFighter);
 
         switch (GameState.defender.getPlayerClass()){
@@ -130,7 +130,7 @@ public class BattleState extends Canvas implements State {
                 break;
         }
         //Preserve Object Info
-        tempFighter.setID(GameState.defender.getID());
+        tempFighter.setMobileID(GameState.defender.getMobileID());
         fighters.add(tempFighter);
 
         gameObjectHandler = new GameObjectHandler();

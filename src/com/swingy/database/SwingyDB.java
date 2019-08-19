@@ -90,9 +90,9 @@ public class SwingyDB {
             return 0;
     }
 
-    public void updatePlayer(int experience) throws SQLException {
+    public void updatePlayer(Fighter fighter) throws SQLException {
         createConnection();
-        connection.createStatement().execute(SQL_UPDATE + " xp = " + experience + " where active = true");
+        connection.createStatement().execute(SQL_UPDATE + " xp = " + fighter.getFighterMetrics().getLevel().getExperience() + " where id = " + fighter.getFighterMetrics().getID());
         closeConnection();
     }
 
