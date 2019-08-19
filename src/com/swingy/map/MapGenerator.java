@@ -42,16 +42,24 @@ public class MapGenerator {
         float y = (Swingy.HEIGHT - (MAP_SIZE * 32)) / 2;
         float x = (Swingy.WIDTH - (MAP_SIZE * 32)) / 2;
 
+        map[map.length / 2][map.length / 2] = "P";
+        map[(map.length / 2) - 1][map.length / 2] = "p";
+        map[(map.length / 2) + 1][map.length / 2] = "p";
+        map[map.length / 2][(map.length / 2) - 1] = "p";
+        map[map.length / 2][(map.length / 2) + 1] = "p";
+
         for (int i = 0; i < map.length; i++){
             for (int j = 0; j < map[i].length; j++) {
 
-                if (i == map.length / 2 && j == map.length / 2) {
-                    map[i][j] = "P";
+                if (map[i][j] == "P") {
                     tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/" + fighter.getPlayerClassName() + "/1", false), 32), 1, 1), true);
                     tileMap[i][j].setTileClass(fighter.getPlayerClass());
                     tiles.add(tileMap[i][j]);
                 }
-
+                else if (map[i][j] == "p"){
+                    tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground", false), 32), 2, 2), ID.GROUND);
+                    tiles.add(tileMap[i][j]);
+                }
                 else if (map[i][j] != "!"){
                         if (i == 0) {
                             if (j == 0)
@@ -163,7 +171,7 @@ public class MapGenerator {
     private boolean checkNineByNine(String c, int x, int y){
         for (int i = y; i < y + 3; i++){
             for (int j = x; j < x + 3; j++){
-                if (map[i][j] == c || map[i][j] == "P")
+                if (map[i][j] == c || map[i][j] == "P" || map[i][j] == "p")
                     return true;
             }
         }

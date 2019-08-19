@@ -557,6 +557,7 @@ public class GameState implements State {
                             } else if (tileMap[i][j + 1].getTileClass() == ID.LAVA
                                     || tileMap[i][j + 1].getTileClass() == ID.PIT) {
                                 if (!item()) {
+                                    System.out.println("DEATH BY DEEP END");
                                     player.setAlive(false);
                                     gameOver = true;
                                     stateManager.setState("menu", this);
@@ -565,6 +566,7 @@ public class GameState implements State {
                                     addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i][j + 1].getTileClass() == ID.BORDER) {
+                                System.out.println("PASSED LEVEL");
                                 if (escape())
                                     passMap();
                             }
@@ -593,6 +595,7 @@ public class GameState implements State {
                             } else if (tileMap[i][j - 1].getTileClass() == ID.LAVA
                                     || tileMap[i][j - 1].getTileClass() == ID.PIT) {
                                 if (!item()) {
+                                    System.out.println("DEATH BY DEEP END");
                                     player.setAlive(false);
                                     gameOver = true;
                                     stateManager.setState("menu", this);
@@ -601,6 +604,7 @@ public class GameState implements State {
                                     addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i][j - 1].getTileClass() == ID.BORDER) {
+                                System.out.println("PASSED LEVEL");
                                 if (escape())
                                     passMap();
                             }
@@ -628,6 +632,7 @@ public class GameState implements State {
                             } else if (tileMap[i + 1][j].getTileClass() == ID.LAVA
                                     || tileMap[i + 1][j].getTileClass() == ID.PIT) {
                                 if (!item()) {
+                                    System.out.println("DEATH BY DEEP END");
                                     player.setAlive(false);
                                     gameOver = true;
                                     stateManager.setState("menu", this);
@@ -636,6 +641,7 @@ public class GameState implements State {
                                     addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i + 1][j].getTileClass() == ID.BORDER) {
+                                System.out.println("PASSED LEVEL");
                                 if (escape())
                                     passMap();
                             }
@@ -663,6 +669,7 @@ public class GameState implements State {
                             } else if (tileMap[i - 1][j].getTileClass() == ID.LAVA
                                     || tileMap[i - 1][j].getTileClass() == ID.PIT) {
                                 if (!item()) {
+                                    System.out.println("DEATH BY DEEP END");
                                     player.setAlive(false);
                                     gameOver = true;
                                     stateManager.setState("menu", this);
@@ -671,6 +678,7 @@ public class GameState implements State {
                                     addArtifact(calculateArtifact());
                             }
                             else if (tileMap[i - 1][j].getTileClass() == ID.BORDER) {
+                                System.out.println("PASSED LEVEL");
                                 if (escape())
                                     passMap();
                             }
