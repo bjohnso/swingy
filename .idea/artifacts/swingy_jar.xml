@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="swingy:jar">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="swingy.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/target/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="swingy" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/derby.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

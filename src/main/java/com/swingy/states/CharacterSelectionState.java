@@ -33,34 +33,36 @@ public class CharacterSelectionState implements State {
     private int currentCharacterSelection;
 
     protected Fighter currentFighter;
+    ResultSet resultSet = null;
+
+    private int numSaves;
 
     @Override
     public void init() {
+        currentButtonSelection = 0;
         entities = new ArrayList<>();
         currentCharacterSelection = 0;
-        options = new Button[3];
+        options = new Button[4];
         options[0] = new Button("Next", 50, (200 + 0 * 80),
                 new Font("Arial", Font.PLAIN, 32),
                 new Font("Arial", Font.BOLD, 48),
                 Color.WHITE,
                 Color.YELLOW);
-        options[1] = new Button("Play", 50, (200 + 3 * 80),
+        options[1] = new Button("Delete", 50, (200 + 1 * 80),
                 new Font("Arial", Font.PLAIN, 32),
                 new Font("Arial", Font.BOLD, 48),
                 Color.WHITE,
                 Color.YELLOW);
-        options[2] = new Button("Back", 50, (200 + 4 * 80),
+        options[2] = new Button("Play", 50, (200 + 4 * 80),
                 new Font("Arial", Font.PLAIN, 32),
                 new Font("Arial", Font.BOLD, 48),
                 Color.WHITE,
                 Color.YELLOW);
-
-        ResultSet resultSet = null;
-        try {
-            resultSet = swingyDB.queryAll();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        options[3] = new Button("Back", 50, (200 + 5 * 80),
+                new Font("Arial", Font.PLAIN, 32),
+                new Font("Arial", Font.BOLD, 48),
+                Color.WHITE,
+                Color.YELLOW);
 
         characters = new Fighter[swingyDB.getRowCount()];
 
@@ -97,7 +99,7 @@ public class CharacterSelectionState implements State {
                         characters[count].setPlayerClass(ID.ZOMBO);
                         break;
                 }
-                characters[count].setMobileID(resultSet.getInt(1));
+                characters[count].getFighterMetrics().setID((resultSet.getInt(1)));
                 characters[count].setPlayerClassName(resultSet.getString(4));
                 characters[count].getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
             } catch (SQLException e) {
@@ -109,7 +111,15 @@ public class CharacterSelectionState implements State {
 
     @Override
     public State enterState(State callingState) {
-        init();
+
+        try {
+            resultSet = swingyDB.queryAll();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if ((numSaves = swingyDB.getRowCount()) > 0)
+            init();
+
         return this;
     }
 
@@ -130,6 +140,10 @@ public class CharacterSelectionState implements State {
 
     @Override
     public void tick(StateManager stateManager) {
+
+        if(numSaves < 0)
+            stateManager.setState("menu", this);
+
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentButtonSelection--;
             if (currentButtonSelection < 0){
@@ -146,10 +160,12 @@ public class CharacterSelectionState implements State {
 
         boolean clicked = false;
 
-        for (int i = 0; i < options.length; i++) {
-            if (options[i].intersects(new Rectangle(MouseInput.getX(), MouseInput.getY(), 1, 1))) {
-                currentButtonSelection = i;
-                clicked = MouseInput.wasPressed(MouseEvent.BUTTON1);
+        if (options != null) {
+            for (int i = 0; i < options.length; i++) {
+                if (options[i].intersects(new Rectangle(MouseInput.getX(), MouseInput.getY(), 1, 1))) {
+                    currentButtonSelection = i;
+                    clicked = MouseInput.wasPressed(MouseEvent.BUTTON1);
+                }
             }
         }
 
@@ -169,7 +185,16 @@ public class CharacterSelectionState implements State {
                 if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
                 break ;
+
             case 1 :
+                currentFighter = characters[currentCharacterSelection];
+                try {
+                    swingyDB.deletePlayer(currentFighter.getFighterMetrics().getID());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                stateManager.setState("character-load", this);
+            case 2 :
                 currentFighter = characters[currentCharacterSelection];
                 try {
                     swingyDB.setCurrentPlayer(currentFighter.getMobileID());
@@ -178,7 +203,7 @@ public class CharacterSelectionState implements State {
                 }
                 GameState gameState = (GameState) stateManager.setState("map", this);
                 break ;
-            case 2 :
+            case 3 :
                 stateManager.setState("menu", this);
                 break ;
         }
@@ -194,22 +219,26 @@ public class CharacterSelectionState implements State {
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Load Existing Fighter", 72, false);
 
-        for (int i = 0; i < options.length; i++){
-            if (i == currentButtonSelection)
-                options[i].setSelected(true);
-            else
-                options[i].setSelected(false);
-            options[i].render(graphics);
+        if (options != null) {
+            for (int i = 0; i < options.length; i++) {
+                if (i == currentButtonSelection)
+                    options[i].setSelected(true);
+                else
+                    options[i].setSelected(false);
+                options[i].render(graphics);
+            }
         }
 
         Font font = new Font("Arial", Font.PLAIN, 16);
         FontMetrics fontMetrics = graphics.getFontMetrics(font);
 
         //Draw Current Fighter Stats to Screen
-        int j = 0;
-        for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
-            Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH - fontMetrics.stringWidth("swingy") - 80)) + 10, (100 + (j * 100)));
-            j++;
+        if (characters != null) {
+            int j = 0;
+            for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
+                Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH - fontMetrics.stringWidth("swingy") - 80)) + 10, (100 + (j * 100)));
+                j++;
+            }
         }
 
         //Render only selected character

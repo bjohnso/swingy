@@ -12,7 +12,7 @@ public class FighterMetrics implements Fighter {
 
     //FighterManager Defined Variables
     protected String _name;
-    protected LinkedHashMap<String, FighterBaseStats> _affinities = new LinkedHashMap<>();
+    protected LinkedHashMap<String, FighterBaseStats> _affinities = new LinkedHashMap<String, FighterBaseStats>();
     protected ArrayList<Artifact> artifacts;
 
     //System Defined Variables
@@ -96,7 +96,7 @@ public class FighterMetrics implements Fighter {
     }
 
     public void gainExperience(){
-        this._level.increaseExperience(50);
+        this._level.increaseExperience(250);
     }
 
     public double getDamage(){ return _damage; }

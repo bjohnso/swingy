@@ -15,17 +15,11 @@ public class Level {
     }
 
     private void setLevel() {
-        double _dup = 0;
+        int possible = 1;
 
-        int counter = this.level;
-        while (_dup < this.experience){
-            _dup = (counter * 1000) + ((counter - 1) * (counter -1)) * 450;
-            if (this.experience <= _dup) {
-                this.level = counter;
-                break;
-            }
-            counter++;
-        }
+        while ((possible * 1000) + (((possible - 1) * (possible - 1)) * 450) <= experience)
+            possible++;
+        level = --possible;
     }
 
     public double getExperience() {
