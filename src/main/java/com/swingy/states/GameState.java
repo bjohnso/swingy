@@ -425,6 +425,10 @@ public class GameState implements State {
             }
         }
 
+        if (KeyInput.wasPressed(KeyEvent.VK_Q)){
+            quitMap();
+        }
+
         boolean clicked = false;
 
         if (options != null) {
@@ -703,6 +707,16 @@ public class GameState implements State {
         }
         this.gameOver = true;
         stateManager.setState("map", this);
+    }
+
+    private void quitMap(){
+        try {
+            swingyDB.updatePlayer(player);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        this.gameOver = true;
+        stateManager.setState("menu", this);
     }
 
     private void addArtifact(String artifact){

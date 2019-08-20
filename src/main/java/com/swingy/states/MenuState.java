@@ -27,6 +27,7 @@ public class MenuState implements State {
 
     @Override
     public void init() {
+        currentSelection = 0;
         try {
             swingyDB.resetCurrentPlayer();
         } catch (SQLException e) {
@@ -103,7 +104,7 @@ public class MenuState implements State {
                 stateManager.setState("character-load", this);
                 break ;
             case 2 :
-                System.out.println("settings");
+                stateManager.setState("settings", this);
                 break ;
             case 3 :
                 System.out.println("exit");

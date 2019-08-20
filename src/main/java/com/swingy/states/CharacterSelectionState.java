@@ -111,7 +111,6 @@ public class CharacterSelectionState implements State {
 
     @Override
     public State enterState(State callingState) {
-
         try {
             resultSet = swingyDB.queryAll();
         } catch (SQLException e) {
@@ -119,17 +118,24 @@ public class CharacterSelectionState implements State {
         }
         if ((numSaves = swingyDB.getRowCount()) > 0)
             init();
+        else {
+            entities = null;
+            characters = null;
+            options = null;
+        }
 
         return this;
     }
 
     @Override
     public void exitState() {
-        for (int i = 0; i < characters.length; i++){
-            characters[i] = null;
-        }
-        characters = null;
-        entities.clear();
+        /*if (characters != null) {
+            for (int i = 0; i < characters.length; i++) {
+                characters[i] = null;
+            }
+        }*/
+        if (entities != null)
+            entities.clear();
         entities = null;
     }
 
@@ -141,7 +147,7 @@ public class CharacterSelectionState implements State {
     @Override
     public void tick(StateManager stateManager) {
 
-        if(numSaves < 0)
+        if(numSaves <= 0)
             stateManager.setState("menu", this);
 
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
@@ -194,10 +200,11 @@ public class CharacterSelectionState implements State {
                     e.printStackTrace();
                 }
                 stateManager.setState("character-load", this);
+                break ;
             case 2 :
                 currentFighter = characters[currentCharacterSelection];
                 try {
-                    swingyDB.setCurrentPlayer(currentFighter.getMobileID());
+                    swingyDB.setCurrentPlayer(currentFighter.getFighterMetrics().getID());
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

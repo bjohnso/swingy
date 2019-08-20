@@ -47,27 +47,29 @@ public class SwingyDB {
         }
     }
 
-    public void createDB() {
-        try {
-            if (existDB()) {
-                System.out.println("SwingDB Already Exists");
-                return;
-            }
-            else {
-                createConnection();
-                connection.createStatement().execute(SQL_CREATE);
-                System.out.println("SwingDB Successfully Created");
-                closeConnection();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void createDB() throws SQLException {
+        if (existDB()) {
+            System.out.println("SwingDB Already Exists");
+            return;
+        }
+        else {
+            createConnection();
+            connection.createStatement().execute(SQL_CREATE);
+            System.out.println("SwingDB Successfully Created");
+            closeConnection();
         }
     }
 
     public void dropDB() throws SQLException {
-        createConnection();
-        connection.createStatement().execute(SQL_DROP);
-        closeConnection();
+        if (existDB()) {
+            createConnection();
+            connection.createStatement().execute(SQL_DROP);
+            System.out.println("SwingDB Successfully Dropped");
+            closeConnection();
+        }
+        else{
+            System.out.println("SwingDB Does Not Exist");
+        }
     }
 
     public long insertPlayer(Fighter fighter) throws SQLException {
