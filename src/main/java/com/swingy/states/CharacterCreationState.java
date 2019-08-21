@@ -1,5 +1,6 @@
 package com.swingy.states;
 
+import com.sun.istack.internal.NotNull;
 import com.swingy.battle.FighterMetrics;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.rendering.entities.Fighter;
@@ -20,6 +21,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.swingy.rendering.ui.Button;
+
+import javax.swing.*;
 
 import static com.swingy.database.SwingyDB.swingyDB;
 
@@ -63,18 +66,18 @@ public class CharacterCreationState implements State {
 
         characters[0] = new Fighter(new Sprite("ninja/idle/1"),
                 (Swingy.WIDTH / 2), 100,
-                new FighterMetrics("Zombo", "FIRE"),this, AnimationHelper.createAnimation("ninjaLarge"));
+                new FighterMetrics("NINPO"),this, AnimationHelper.createAnimation("ninjaLarge"));
 
         characters[1] = new Fighter(new Sprite("dino/idle/1"),
                 (Swingy.WIDTH / 2), 100,
-                new FighterMetrics("Zombo", "EARTH"),this, AnimationHelper.createAnimation("dinoLarge"));
+                new FighterMetrics("BEAST"),this, AnimationHelper.createAnimation("dinoLarge"));
 
         characters[2] = new Fighter(new Sprite("robo/idle/1"),
-                (Swingy.WIDTH / 2), 50, new FighterMetrics("Zombo", "EARTH"),
+                (Swingy.WIDTH / 2), 50, new FighterMetrics("BEAST"),
                 this, AnimationHelper.createAnimation("roboLarge"));
 
         characters[3] = new Fighter(new Sprite("zombo/idle/1"),
-                (Swingy.WIDTH / 2), 50, new FighterMetrics("Zombo", "WATER"),
+                (Swingy.WIDTH / 2), 50, new FighterMetrics("SCOURGE"),
                 this, AnimationHelper.createAnimation("zomboLarge"));
 
         characters[0].setPlayerClass(ID.NINJA);
@@ -139,18 +142,25 @@ public class CharacterCreationState implements State {
             select(stateManager);
 
         //Tick only selected character
-        if (entities != null)
-            entities.get(currentCharacterSelection).tick();
+        if (entities != null) {
+            if (entities.size() > currentCharacterSelection)
+                entities.get(currentCharacterSelection).tick();
+        }
     }
 
     private void select(StateManager stateManager) {
-        switch (currentButtonSelection){
-            case 0 :
+        switch (currentButtonSelection) {
+            case 0:
                 currentCharacterSelection++;
                 if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
-                break ;
-            case 1 :
+                break;
+            case 1:
+                @NotNull
+                String userInput = JOptionPane.showInputDialog("Character Name");
+                if (userInput == null)
+                    userInput = characters[currentCharacterSelection].getPlayerClassName();
+                characters[currentCharacterSelection].getFighterMetrics().setName(userInput);
                 currentFighter = characters[currentCharacterSelection];
                 try {
                     currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
@@ -158,8 +168,7 @@ public class CharacterCreationState implements State {
                 }catch (SQLException e){
                     e.printStackTrace();
                 }
-
-                GameState gameState = (GameState) stateManager.setState("map", this);
+                stateManager.setState("map", this);
                 break ;
             case 2 :
                 stateManager.setState("menu", this);
@@ -186,11 +195,14 @@ public class CharacterCreationState implements State {
         }
 
         //Render only selected character
-        if (entities != null)
-            entities.get(currentCharacterSelection).render(graphics);
+        if (entities != null) {
+            if (entities.size() > currentCharacterSelection)
+                entities.get(currentCharacterSelection).render(graphics);
+        }
     }
 
     public void addEntity(Entity entity){
-        entities.add(entity);
+        if (entities != null)
+            entities.add(entity);
     }
 }

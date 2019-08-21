@@ -61,28 +61,29 @@ public class GameState implements State {
         gameOver = false;
         isResume = true;
         entities = new ArrayList<Entity>();
+        currentSelection = 0;
 
         try {
             ResultSet resultSet = swingyDB.queryPlayer();
             if (resultSet.next()){
                 switch(resultSet.getString(4)){
                     case "ninja":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "FIRE"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINPO"),
                                 this, null);
                         player.setPlayerClass(ID.NINJA);
                         break;
                     case "dino":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "EARTH"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "BEAST"),
                                 this, null);
                         player.setPlayerClass(ID.DINO);
                         break;
                     case "robo":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "EARTH"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "BEAST"),
                                 this, null);
                         player.setPlayerClass(ID.ROBO);
                         break;
                     case "zombo":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "WATER"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "SCOURGE"),
                                 this, null);
                         player.setPlayerClass(ID.ZOMBO);
                         break;
@@ -109,7 +110,7 @@ public class GameState implements State {
             if (t.getTileClass() == ID.DINO){
                 tempFighter = new Fighter(new Sprite("terrain/dino/1"),
                         t.getX(), t.getY(),
-                        new FighterMetrics("Dino", "EARTH"),
+                        new FighterMetrics("Dino", "BEAST"),
                         this, null);
                 tempFighter.setPlayerClass(ID.DINO);
                 tempFighter.setPlayerClassName("dino");
@@ -117,7 +118,7 @@ public class GameState implements State {
             else if (t.getTileClass() == ID.ROBO){
                 tempFighter = new Fighter(new Sprite("terrain/robo/1"),
                         t.getX(), t.getY(),
-                        new FighterMetrics("Robo", "EARTH"),
+                        new FighterMetrics("Robo", "BEAST"),
                         this, null);
                 tempFighter.setPlayerClass(ID.ROBO);
                 tempFighter.setPlayerClassName("robo");
@@ -125,7 +126,7 @@ public class GameState implements State {
             else if (t.getTileClass() == ID.ZOMBO){
                 tempFighter = new Fighter(new Sprite("terrain/zombo/1"),
                         t.getX(), t.getY(),
-                        new FighterMetrics("Zombo", "WATER"),
+                        new FighterMetrics("Zombo", "SCOURGE"),
                         this, null);
                 tempFighter.setPlayerClass(ID.ZOMBO);
                 tempFighter.setPlayerClassName("zombo");
@@ -133,7 +134,7 @@ public class GameState implements State {
             else if (t.getTileClass() == ID.NINJA){
                 tempFighter = new Fighter(new Sprite("terrain/ninja/1"),
                         t.getX(), t.getY(),
-                        new FighterMetrics("Ninja", "FIRE"),
+                        new FighterMetrics("Ninja", "NINPO"),
                         this, null);
                 tempFighter.setPlayerClass(ID.NINJA);
                 tempFighter.setPlayerClassName("ninja");
@@ -269,6 +270,11 @@ public class GameState implements State {
             fighters.clear();
             tiles.clear();
             options = null;
+        }
+        try {
+            swingyDB.closeConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -455,7 +461,7 @@ public class GameState implements State {
                 break ;
             case 1 :
                 options = null;
-                if (!flee());
+                if (flee() == false);
                     stateManager.setState("battle", this);
                 break ;
         }
@@ -507,13 +513,13 @@ public class GameState implements State {
     }
 
     public boolean flee(){
-        int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
-        boolean possible[] = {false, true, false, false};
+       /* int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
+        boolean possible[] = {true, true, true, true};*/
 
-        if (possible[random] == true)
-            defender = null;
+        /*if (possible[random] == true)
+            defender = null;*/
 
-        return possible[random];
+        return true;
     }
 
     public boolean escape(){

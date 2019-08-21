@@ -21,6 +21,8 @@ public class Fighter extends Mobile{
         alive = true;
         isPlayer = false;
         this.fighterMetrics = fighterMetrics;
+        if (fighterMetrics.getName() == "")
+            this.fighterMetrics.setName(this.playerClassName);
     }
 
     public Fighter(FighterMetrics fighterMetrics, State state, Animation animation){
@@ -28,6 +30,8 @@ public class Fighter extends Mobile{
         alive = true;
         isPlayer = false;
         this.fighterMetrics = fighterMetrics;
+        if (fighterMetrics.getName() == "")
+            this.fighterMetrics.setName(this.playerClassName);
     }
 
     @Override

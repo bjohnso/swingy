@@ -3,6 +3,7 @@ package com.swingy.battle;
 import com.swingy.artifacts.Artifact;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -22,6 +23,10 @@ public class BattleEngine implements Runnable{
     private boolean running;
     private int turn = 1;
     private int tickLag = 0;
+
+    public boolean end = false;
+    public int winCount = 0;
+    public int balancedWinCount = 0;
 
     public void setChallenger(FighterMetrics challenger){
         this.challenger = challenger;
@@ -69,6 +74,7 @@ public class BattleEngine implements Runnable{
 
     private void battleEnd(String defeated){
         support.firePropertyChange(defeated, false, true);
+        this.end =true;
         stop();
     }
 
@@ -86,12 +92,15 @@ public class BattleEngine implements Runnable{
         }
         counter++;
 
-        if (challengerHP == 0 && !battleEnd) {
+        if (challengerHP <= 0 && !battleEnd) {
             this.battleEnd = true;
             battleEnd("ChallengerDEATH");
             return;
         }
-        else if (defenderHP == 0 && !battleEnd){
+        else if (defenderHP <= 0 && !battleEnd){
+            winCount++;
+            if (challengerHP - 10 >= defenderHP && defenderHP + 15 <= challengerHP)
+                balancedWinCount++;
             this.battleEnd = true;
             challenger.gainExperience();
             battleEnd("DefenderDEATH");
@@ -115,7 +124,7 @@ public class BattleEngine implements Runnable{
                     defender.attack();
                     challenger.takeDamage(defender.getFighterStats().getAttackPoints()
                                     - (defender.getFighterStats().getAttackPoints() / 100 * handicap(defender, challenger))
-                                    + (defender.getFighterStats().getHitPoints() / 100 * 19),
+                                    + (defender.getFighterStats().getHitPoints() / 100 * 30),
                             challenger.getFighterStats().getDefencePoints());
                 }
             }
@@ -144,24 +153,42 @@ public class BattleEngine implements Runnable{
         }
         setChallengerHP(calcChallengerHP());
         setDefenderHP(calcDefenderHP());
+
+        //System.out.println(challenger.toString() + "\nHP LEFT : " + (challenger.getFighterStats().getHitPoints() - challenger.getDamage()) + "\n");
+        //System.out.println(defender.toString() + "\nHP LEFT : " + (defender.getFighterStats().getHitPoints() - defender.getDamage()) + "\n");
     }
 
 
 
     private Double handicap(FighterMetrics attacker, FighterMetrics defender){
-        if (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")
-                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")) {
-            return 5.0;
+        double toReturn = 0;
+        switch (attacker.getAffinities().entrySet().iterator().next().getKey()){
+            case "NINPO":
+                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("MECHA"))
+                    toReturn = 93.5;
+                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("SCOURGE"))
+                    toReturn = 92.0;
+                break;
+            case "BEAST":
+                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("NINPO"))
+                    toReturn = 12.0;
+                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("MECHA"))
+                    toReturn = 23.0;
+                break;
+            case "SCOURGE":
+                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("BEAST"))
+                    toReturn = 16.0;
+                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("NINPO"))
+                    toReturn = 0;
+                break;
+            case "MECHA":
+                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("SCOURGE"))
+                    toReturn = 45.0;
+                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("BEAST"))
+                    toReturn = 0.0;
+                break;
         }
-        else if (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")
-                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")) {
-            return .9;
-        }
-        else if (attacker.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH")
-                && defender.getAffinities().entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")) {
-            return 7.0;
-        }
-        return 0.0;
+        return toReturn;
     }
 
 

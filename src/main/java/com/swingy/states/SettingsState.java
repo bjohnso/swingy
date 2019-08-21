@@ -27,7 +27,6 @@ public class SettingsState implements State {
     private Button[] options;
     private  int currentButtonSelection;
 
-    protected Fighter currentFighter;
 
     @Override
     public void init() {
@@ -63,6 +62,8 @@ public class SettingsState implements State {
 
     @Override
     public void tick(StateManager stateManager) {
+
+
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentButtonSelection--;
             if (currentButtonSelection < 0){
@@ -94,15 +95,15 @@ public class SettingsState implements State {
     }
 
     private void select(StateManager stateManager) {
+
         switch (currentButtonSelection){
-            case 0 :
+            case 0:
                 try {
-                    swingyDB.dropDB();
-                    swingyDB.createDB();
+                    swingyDB.deleteAll();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                break ;
+                break;
         }
         stateManager.setState("menu", this);
     }

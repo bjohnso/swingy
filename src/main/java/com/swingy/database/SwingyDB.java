@@ -136,12 +136,19 @@ public class SwingyDB {
         closeConnection();
     }
 
+    public void deleteAll() throws SQLException {
+        createConnection();
+        connection.createStatement().execute(SQL_DELETE + " where 1 = 1");
+        System.out.println("Record Successfully Deleted");
+        closeConnection();
+    }
+
     private void createConnection() throws SQLException {
         connection = DriverManager.getConnection(JDBC_URL);
         statement = connection.createStatement();
     }
 
-    private void closeConnection() throws SQLException {
+    public void closeConnection() throws SQLException {
         if (statement != null)
             statement.close();
         if (connection != null)

@@ -3,6 +3,7 @@ package com.swingy.battle;
 import com.swingy.artifacts.Artifact;
 import com.swingy.interfaces.Fighter;
 import com.swingy.units.*;
+import com.swingy.util.NumberHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,19 +23,43 @@ public class FighterMetrics implements Fighter {
 
     protected String easterEgg = "NO EGGS HERE";
 
+    public FighterMetrics(String affinity){
+        if (affinity.equalsIgnoreCase("NINPO")) {
+            if (!_affinities.containsKey(affinity))
+                _affinities.put("NINPO", new NinpoFighterBaseStats(1));
+        }
+        else if (affinity.equalsIgnoreCase("")){
+            if (!_affinities.containsKey(affinity))
+                _affinities.put("SCOURGE", new ScourgeFighterBaseStats(1));
+        }
+        else if (affinity.equalsIgnoreCase("BEAST")){
+            if (!_affinities.containsKey(affinity))
+                _affinities.put("BEAST", new BeastFighterBaseStats(1));
+        }
+        else if (affinity.equalsIgnoreCase("MECHA")){
+            if (!_affinities.containsKey(affinity))
+                _affinities.put("MECHA", new MechaFighterBaseStats(1));
+        }
+        artifacts = new ArrayList<>();
+    }
+
     public FighterMetrics(String name, String affinity){
-        _name = name;
-        if (affinity.equalsIgnoreCase("FIRE")) {
+        this._name = name;
+        if (affinity.equalsIgnoreCase("NINPO")) {
             if (!_affinities.containsKey(affinity))
-                _affinities.put("FIRE", new FireFighterBaseStats(1));
+                _affinities.put("NINPO", new NinpoFighterBaseStats(1));
         }
-        else if (affinity.equalsIgnoreCase("WATER")){
+        else if (affinity.equalsIgnoreCase("SCOURGE")){
             if (!_affinities.containsKey(affinity))
-                _affinities.put("WATER", new WaterFighterBaseStats(1));
+                _affinities.put("SCOURGE", new ScourgeFighterBaseStats(1));
         }
-        else if (affinity.equalsIgnoreCase("EARTH")){
+        else if (affinity.equalsIgnoreCase("BEAST")){
             if (!_affinities.containsKey(affinity))
-                _affinities.put("EARTH", new EarthFighterBaseStats(1));
+                _affinities.put("BEAST", new BeastFighterBaseStats(1));
+        }
+        else if (affinity.equalsIgnoreCase("MECHA")){
+            if (!_affinities.containsKey(affinity))
+                _affinities.put("MECHA", new MechaFighterBaseStats(1));
         }
         artifacts = new ArrayList<>();
     }
@@ -135,15 +160,17 @@ public class FighterMetrics implements Fighter {
     @Override
     public boolean counter(double enemyAttackPoints, double myDefencePoints) {
         updateAffinities();
-        if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("WATER")){
+        if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("SCOURGE")){
             this._damage -= (enemyAttackPoints / myDefencePoints) + (enemyAttackPoints / myDefencePoints / 100 * 13);
         }
-        else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("FIRE")){
-            FireFighterBaseStats fireAffinity = (FireFighterBaseStats)this._affinities.entrySet().iterator().next().getValue();
-            fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + (enemyAttackPoints / myDefencePoints) + (this._damage / 100 * 25));
-            this._affinities.replace("FIRE", fireAffinity);
+        else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("NINPO")){
+            NinpoFighterBaseStats fireAffinity = (NinpoFighterBaseStats)this._affinities.entrySet().iterator().next().getValue();
+            fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + (enemyAttackPoints / myDefencePoints) + NumberHelper.round(((this._damage) * 2), 2));
+            this._affinities.replace("NINPO", fireAffinity);
         }
-        else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("EARTH"))
+        else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("BEAST"))
+            return true;
+        else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("MECHA"))
             return true;
         return false;
     }
@@ -154,21 +181,22 @@ public class FighterMetrics implements Fighter {
         FighterBaseStats fighterBaseStats = new FighterBaseStats();
         //GetBaseStats
         for (HashMap.Entry<String, FighterBaseStats> a : _affinities.entrySet()){
-            if (a.getKey().equalsIgnoreCase("FIRE")){
-                FireFighterBaseStats fireAffinity = (FireFighterBaseStats)a.getValue();
-                fighterBaseStats.setAttackPoints(fighterBaseStats.getAttackPoints() + fireAffinity.getBonusDamage());
+            if (a.getKey().equalsIgnoreCase("NINPO")){
+                NinpoFighterBaseStats fireAffinity = (NinpoFighterBaseStats)a.getValue();
+                fighterBaseStats.setAttackPoints(NumberHelper.round(a.getValue().getAttackPoints() + fireAffinity.getBonusDamage(), 0));
             }
             else
-                fighterBaseStats.setAttackPoints((int)(fighterBaseStats.getAttackPoints() + a.getValue().getAttackPoints()));
-            fighterBaseStats.setDefencePoints((int)(fighterBaseStats.getDefencePoints() + a.getValue().getDefencePoints()));
-            fighterBaseStats.setHitPoints((int)(fighterBaseStats.getHitPoints() + a.getValue().getHitPoints()));
-            fighterBaseStats.setCounterChance((fighterBaseStats.getCounterChance() + a.getValue().getCounterChance()));
+                fighterBaseStats.setAttackPoints(a.getValue().getAttackPoints());
+            fighterBaseStats.setDefencePoints(a.getValue().getDefencePoints());
+            fighterBaseStats.setHitPoints(a.getValue().getHitPoints());
+            fighterBaseStats.setCounterChance(a.getValue().getCounterChance());
+            break;
         }
         //Add Additional stats from artifacts
         for (Artifact a : artifacts){
-            fighterBaseStats.setAttackPoints((int)(fighterBaseStats.getAttackPoints() + a.getAttackBoost()));
-            fighterBaseStats.setDefencePoints((int)(fighterBaseStats.getDefencePoints() + a.getDefenceBoost()));
-            fighterBaseStats.setHitPoints((int)(fighterBaseStats.getHitPoints() + a.getHitPointsBoost()));
+            fighterBaseStats.setAttackPoints((fighterBaseStats.getAttackPoints() + a.getAttackBoost()));
+            fighterBaseStats.setDefencePoints((fighterBaseStats.getDefencePoints() + a.getDefenceBoost()));
+            fighterBaseStats.setHitPoints((fighterBaseStats.getHitPoints() + a.getHitPointsBoost()));
             fighterBaseStats.setCounterChance((fighterBaseStats.getCounterChance() + a.getCounterBoost()));
         }
         return fighterBaseStats;

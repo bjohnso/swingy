@@ -11,10 +11,15 @@ import com.swingy.util.Fonts;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import com.swingy.rendering.ui.Button;
 import com.swingy.view.Swingy;
+
+import javax.imageio.ImageIO;
 
 import static com.swingy.database.SwingyDB.swingyDB;
 
@@ -27,6 +32,11 @@ public class MenuState implements State {
 
     @Override
     public void init() {
+        try {
+            swingyDB.createDB();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         currentSelection = 0;
         try {
             swingyDB.resetCurrentPlayer();
@@ -54,6 +64,14 @@ public class MenuState implements State {
                 new Font("Arial", Font.BOLD, 48),
                 Color.WHITE,
                 Color.YELLOW);
+    }
+
+    public void dropDB(){
+        try {
+            swingyDB.dropDB();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

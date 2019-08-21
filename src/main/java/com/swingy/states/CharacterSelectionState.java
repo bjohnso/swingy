@@ -53,6 +53,7 @@ public class CharacterSelectionState implements State {
                 new Font("Arial", Font.BOLD, 48),
                 Color.WHITE,
                 Color.YELLOW);
+
         options[2] = new Button("Play", 50, (200 + 4 * 80),
                 new Font("Arial", Font.PLAIN, 32),
                 new Font("Arial", Font.BOLD, 48),
@@ -75,26 +76,26 @@ public class CharacterSelectionState implements State {
                     case "ninja":
                         characters[count] = new Fighter(new Sprite("ninja/idle/1"),
                                 (Swingy.WIDTH / 2), 100,
-                                new FighterMetrics(resultSet.getString(2), "FIRE"),
+                                new FighterMetrics(resultSet.getString(2), "NINPO"),
                                 this, AnimationHelper.createAnimation("ninjaLarge"));
                         characters[count].setPlayerClass(ID.NINJA);
                         break;
                     case "dino":
                         characters[count] = new Fighter(new Sprite("dino/idle/1"),
                                 (Swingy.WIDTH / 2), 100,
-                                new FighterMetrics(resultSet.getString(2), "EARTH"),
+                                new FighterMetrics(resultSet.getString(2), "BEAST"),
                                 this, AnimationHelper.createAnimation("dinoLarge"));
                         characters[count].setPlayerClass(ID.DINO);
                         break;
                     case "robo":
                         characters[count] = new Fighter(new Sprite("robo/idle/1"),
-                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "EARTH"),
+                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "BEAST"),
                                 this, AnimationHelper.createAnimation("roboLarge"));
                         characters[count].setPlayerClass(ID.ROBO);
                         break;
                     case "zombo":
                         characters[count] = new Fighter(new Sprite("zombo/idle/1"),
-                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "WATER"),
+                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "SCOURGE"),
                                 this, AnimationHelper.createAnimation("zomboLarge"));
                         characters[count].setPlayerClass(ID.ZOMBO);
                         break;
@@ -129,14 +130,14 @@ public class CharacterSelectionState implements State {
 
     @Override
     public void exitState() {
-        /*if (characters != null) {
-            for (int i = 0; i < characters.length; i++) {
-                characters[i] = null;
-            }
-        }*/
         if (entities != null)
             entities.clear();
         entities = null;
+        try {
+            swingyDB.closeConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -191,7 +192,6 @@ public class CharacterSelectionState implements State {
                 if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
                 break ;
-
             case 1 :
                 currentFighter = characters[currentCharacterSelection];
                 try {
@@ -208,7 +208,7 @@ public class CharacterSelectionState implements State {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                GameState gameState = (GameState) stateManager.setState("map", this);
+                stateManager.setState("map", this);
                 break ;
             case 3 :
                 stateManager.setState("menu", this);
@@ -241,10 +241,12 @@ public class CharacterSelectionState implements State {
 
         //Draw Current Fighter Stats to Screen
         if (characters != null) {
-            int j = 0;
-            for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
-                Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH - fontMetrics.stringWidth("swingy") - 80)) + 10, (100 + (j * 100)));
-                j++;
+            if (characters.length > currentCharacterSelection){
+                int j = 0;
+                for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
+                    Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH - fontMetrics.stringWidth("swingy") - 80)) + 10, (100 + (j * 100)));
+                    j++;
+                }
             }
         }
 
