@@ -1,5 +1,7 @@
 package com.swingy.map;
 
+import com.swingy.input.KeyInput;
+import com.swingy.input.MouseInput;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.rendering.textures.Sprite;
@@ -9,7 +11,7 @@ import com.swingy.view.Swingy;
 
 import java.util.ArrayList;
 
-public class MapGenerator {
+public class MapGenerator{
 
     private String map[][];
     private Tile tileMap[][];
@@ -18,6 +20,8 @@ public class MapGenerator {
     private static int MAP_SIZE;
 
     private Fighter fighter;
+
+    private boolean running;
 
     private String[] entities = {
             "LAVA",
@@ -82,7 +86,6 @@ public class MapGenerator {
                                 tileMap[i][j] = new Tile(x, y, new Sprite(new SpriteSheet(new Texture("terrain/ground", false), 32), 3, 2), ID.BORDER);
                             else {
                                 int padding = 32;
-                                Tile tile;
                                 switch (calculateEntity()) {
                                     case "LAVA":
                                         if (i + 2 < MAP_SIZE - 1 && j + 2 < MAP_SIZE - 1 && !checkNineByNine("!", j, i)) {

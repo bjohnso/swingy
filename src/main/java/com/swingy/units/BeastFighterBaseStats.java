@@ -13,6 +13,6 @@ public class BeastFighterBaseStats extends FighterBaseStats {
         this.setAttackPoints(NumberHelper.round((6 * this.level * 1.75), 2));
         this.setDefencePoints(NumberHelper.round((6 * this.level * 2),2));
         this.setHitPoints(NumberHelper.round((9 * this.level * 2), 2));
-        this.setCounterChance(NumberHelper.round((0.6 * this.level * 1.75), 2));
+        this.setCounterChance(NumberHelper.round((16 * this.level * 1.75), 2));
     }
 }

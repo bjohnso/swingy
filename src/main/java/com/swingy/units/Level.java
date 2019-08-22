@@ -20,6 +20,8 @@ public class Level {
         while ((possible * 1000) + (((possible - 1) * (possible - 1)) * 450) <= experience)
             possible++;
         level = --possible;
+        if (level > 5)
+            level = 5;
     }
 
     public double getExperience() {

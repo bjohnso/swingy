@@ -33,7 +33,7 @@ public class Swingy extends Canvas implements Runnable{
     private void render(){
         BufferStrategy bufferStrategy = getBufferStrategy();
         if (bufferStrategy == null){
-            createBufferStrategy(3);
+            createBufferStrategy(2);
             return;
         }
 
@@ -54,6 +54,41 @@ public class Swingy extends Canvas implements Runnable{
     @Override
     public void run() {
         requestFocus();
+
+
+
+
+
+        /*long lastTime = System.nanoTime();
+        double amountOfTicks = 60.0;
+        double ns = 1000000000 / amountOfTicks;
+        double delta = 0;
+        long timer = System.currentTimeMillis();
+        int frames = 0;
+        while(running) {
+            long now = System.nanoTime();
+            delta += (now - lastTime) / ns;
+            lastTime = now;
+            while(delta >= 1) {
+                tick();
+                delta--;
+            }
+            render();
+            frames++;
+
+            if(System.currentTimeMillis() - timer > 1000) {
+                timer += 1000;
+                System.out.printf("FPS: %d\n", frames);
+                frames = 0;
+            }
+        }*/
+
+
+
+
+
+
+
 
         //Game Loop
         double targetTicks = 60.0;
@@ -84,11 +119,11 @@ public class Swingy extends Canvas implements Runnable{
                 canRender = false;
             }
 
-            try {
+            /*try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
 
             if (canRender){
                 render();

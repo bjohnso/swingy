@@ -12,10 +12,10 @@ public class NinpoFighterBaseStats extends FighterBaseStats {
     }
 
     public void updateStats(){
-        this.setAttackPoints(NumberHelper.round((9 * this.level * 1.25), 2));
-        this.setDefencePoints(NumberHelper.round((5 * this.level * 1.25), 2));
-        this.setHitPoints(NumberHelper.round((5 * this.level * 1.25), 2));
-        this.setCounterChance(NumberHelper.round((8.0 * this.level * 1.25), 2));
+        this.setAttackPoints(NumberHelper.round((12 * this.level * 2), 2));
+        this.setDefencePoints(NumberHelper.round((6 * this.level * 1.5), 2));
+        this.setHitPoints(NumberHelper.round((6 * this.level * 1.5), 2));
+        this.setCounterChance(NumberHelper.round((24.0 * this.level * 1.5), 2));
     }
 
     public double getBonusDamage() {

@@ -244,7 +244,7 @@ public class CharacterSelectionState implements State {
             if (characters.length > currentCharacterSelection){
                 int j = 0;
                 for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
-                    Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH - fontMetrics.stringWidth("swingy") - 80)) + 10, (100 + (j * 100)));
+                    Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH - fontMetrics.stringWidth("swingy") - 160)) + 10, (100 + (j * 100)));
                     j++;
                 }
             }

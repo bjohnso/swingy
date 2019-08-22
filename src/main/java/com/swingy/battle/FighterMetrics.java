@@ -143,7 +143,9 @@ public class FighterMetrics implements Fighter {
 
     @Override
     public boolean takeDamage(double enemyAttackPoints, double myDefencePoints) {
-        this._damage += enemyAttackPoints / myDefencePoints;
+        this._damage += NumberHelper.round(enemyAttackPoints / myDefencePoints, 2);
+        if (this._damage < 0)
+            this._damage = 0;
         if (this.getFighterStats().getHitPoints() <= this._damage)
             return true;
         else
@@ -161,11 +163,13 @@ public class FighterMetrics implements Fighter {
     public boolean counter(double enemyAttackPoints, double myDefencePoints) {
         updateAffinities();
         if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("SCOURGE")){
-            this._damage -= (enemyAttackPoints / myDefencePoints) + (enemyAttackPoints / myDefencePoints / 100 * 13);
+            this._damage -= NumberHelper.round((enemyAttackPoints / myDefencePoints), 2) + NumberHelper.round((enemyAttackPoints / myDefencePoints / 100 * 13), 2);
+            if (this._damage < 0)
+                this._damage = 0;
         }
         else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("NINPO")){
             NinpoFighterBaseStats fireAffinity = (NinpoFighterBaseStats)this._affinities.entrySet().iterator().next().getValue();
-            fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + (enemyAttackPoints / myDefencePoints) + NumberHelper.round(((this._damage) * 2), 2));
+            fireAffinity.setBonusDamage(fireAffinity.getBonusDamage() + NumberHelper.round((enemyAttackPoints / myDefencePoints), 2) + NumberHelper.round(((this._damage) * 2), 2));
             this._affinities.replace("NINPO", fireAffinity);
         }
         else if (this._affinities.entrySet().iterator().next().getKey().equalsIgnoreCase("BEAST"))

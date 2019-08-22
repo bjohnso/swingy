@@ -4,7 +4,7 @@ import com.swingy.rendering.entities.Entity;
 
 import java.awt.*;
 
-public interface State {
+public interface State{
     public void init();
     public State enterState(State callingState);
     public void exitState();

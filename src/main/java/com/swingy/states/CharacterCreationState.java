@@ -39,8 +39,12 @@ public class CharacterCreationState implements State {
 
     protected Fighter currentFighter;
 
+    String userInput;
+
     @Override
     public void init() {
+
+        userInput = null;
         currentCharacterSelection = 0;
         stateResume = false;
 
@@ -105,7 +109,10 @@ public class CharacterCreationState implements State {
     @Override
     public void exitState() {
         entities.clear();
+        characters = null;
+        options = null;
         entities = null;
+        currentButtonSelection = -1;
     }
 
     @Override
@@ -131,15 +138,18 @@ public class CharacterCreationState implements State {
 
         boolean clicked = false;
 
-        for (int i = 0; i < options.length; i++) {
-            if (options[i].intersects(new Rectangle(MouseInput.getX(), MouseInput.getY(), 1, 1))) {
-                currentButtonSelection = i;
-                clicked = MouseInput.wasPressed(MouseEvent.BUTTON1);
-            }
-        }
+        if (options != null) {
 
-        if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
-            select(stateManager);
+            for (int i = 0; i < options.length; i++) {
+                if (options[i].intersects(new Rectangle(MouseInput.getX(), MouseInput.getY(), 1, 1))) {
+                    currentButtonSelection = i;
+                    clicked = MouseInput.wasPressed(MouseEvent.BUTTON1);
+                }
+            }
+
+            if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
+                select(stateManager);
+        }
 
         //Tick only selected character
         if (entities != null) {
@@ -156,16 +166,13 @@ public class CharacterCreationState implements State {
                     currentCharacterSelection = 0;
                 break;
             case 1:
-                @NotNull
-                String userInput = JOptionPane.showInputDialog("Character Name");
-                if (userInput == null)
-                    userInput = characters[currentCharacterSelection].getPlayerClassName();
+                userInput = characters[currentCharacterSelection].getPlayerClassName();
                 characters[currentCharacterSelection].getFighterMetrics().setName(userInput);
                 currentFighter = characters[currentCharacterSelection];
                 try {
                     currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
                     swingyDB.setCurrentPlayer(currentFighter.getMobileID());
-                }catch (SQLException e){
+                } catch (SQLException e) {
                     e.printStackTrace();
                 }
                 stateManager.setState("map", this);

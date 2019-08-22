@@ -19,7 +19,7 @@ public class Main {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        pool = new ThreadPool(3);
+        pool = new ThreadPool(4);
         Swingy swingy = new Swingy();
         MusicPlayer musicPlayer = new MusicPlayer("Battle");
 
@@ -32,8 +32,9 @@ public class Main {
         FighterMetrics mecha = new FighterMetrics("Optimus", "MECHA");
         int winCount = 0;
         int balancedWinCount = 0;
+        double averagePowerDifference = 0;
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             BattleEngine battleEngine = new BattleEngine();
             battleEngine.setChallenger(ninpo);
             battleEngine.setDefender(beast);
@@ -44,14 +45,16 @@ public class Main {
             }
             winCount += battleEngine.winCount;
             balancedWinCount += battleEngine.balancedWinCount;
+            averagePowerDifference += (int)battleEngine.averagePowerDifference;
         }
         System.out.println("Ninpo vs Beast");
-        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d\n\n", winCount, balancedWinCount);
+        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d | DIFFERENCE IN POWER : %f\n\n", winCount, balancedWinCount, averagePowerDifference/winCount);
         winCount = 0;
         balancedWinCount = 0;
+        averagePowerDifference = 0;
 
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             BattleEngine battleEngine = new BattleEngine();
             battleEngine.setChallenger(beast);
             battleEngine.setDefender(scourge);
@@ -62,13 +65,15 @@ public class Main {
             }
             winCount += battleEngine.winCount;
             balancedWinCount += battleEngine.balancedWinCount;
+            averagePowerDifference += (int)battleEngine.averagePowerDifference;
         }
         System.out.println("Beast vs Scourge");
-        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d\n\n", winCount, balancedWinCount);
+        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d | DIFFERENCE IN POWER : %f\n\n", winCount, balancedWinCount, averagePowerDifference/winCount);
         winCount = 0;
         balancedWinCount = 0;
+        averagePowerDifference = 0;
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             BattleEngine battleEngine = new BattleEngine();
             battleEngine.setChallenger(scourge);
             battleEngine.setDefender(mecha);
@@ -79,13 +84,15 @@ public class Main {
             }
             winCount += battleEngine.winCount;
             balancedWinCount += battleEngine.balancedWinCount;
+            averagePowerDifference += (int)battleEngine.averagePowerDifference;
         }
         System.out.println("Scourge vs Mecha");
-        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d\n\n", winCount, balancedWinCount);
+        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d | DIFFERENCE IN POWER : %f\n\n", winCount, balancedWinCount, averagePowerDifference/winCount);
         winCount = 0;
         balancedWinCount = 0;
+        averagePowerDifference = 0;
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             BattleEngine battleEngine = new BattleEngine();
             battleEngine.setChallenger(mecha);
             battleEngine.setDefender(ninpo);
@@ -96,13 +103,15 @@ public class Main {
             }
             winCount += battleEngine.winCount;
             balancedWinCount += battleEngine.balancedWinCount;
+            averagePowerDifference += (int)battleEngine.averagePowerDifference;
         }
         System.out.println("Mecha vs Ninpo");
-        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d\n\n", winCount, balancedWinCount);
+        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d | DIFFERENCE IN POWER : %f\n\n", winCount, balancedWinCount, averagePowerDifference/winCount);
         winCount = 0;
         balancedWinCount = 0;
+        averagePowerDifference = 0;
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             BattleEngine battleEngine = new BattleEngine();
             battleEngine.setChallenger(ninpo);
             battleEngine.setDefender(scourge);
@@ -113,13 +122,15 @@ public class Main {
             }
             winCount += battleEngine.winCount;
             balancedWinCount += battleEngine.balancedWinCount;
+            averagePowerDifference += (int)battleEngine.averagePowerDifference;
         }
         System.out.println("Ninpo vs Scourge");
-        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d\n\n", winCount, balancedWinCount);
+        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d | DIFFERENCE IN POWER : %f\n\n", winCount, balancedWinCount, averagePowerDifference/winCount);
         winCount = 0;
         balancedWinCount = 0;
+        averagePowerDifference = 0;
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             BattleEngine battleEngine = new BattleEngine();
             battleEngine.setChallenger(mecha);
             battleEngine.setDefender(beast);
@@ -130,11 +141,13 @@ public class Main {
             }
             winCount += battleEngine.winCount;
             balancedWinCount += battleEngine.balancedWinCount;
+            averagePowerDifference += (int)battleEngine.averagePowerDifference;
         }
         System.out.println("Mecha vs Beast");
-        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d\n\n", winCount, balancedWinCount);
+        System.out.printf("WIN COUNT : %d | BALANCED WIN COUNT : %d | DIFFERENCE IN POWER : %f\n\n", winCount, balancedWinCount, averagePowerDifference/winCount);
         winCount = 0;
-        balancedWinCount = 0;*/
+        balancedWinCount = 0;
+        averagePowerDifference = 0;*/
 
     }
 }

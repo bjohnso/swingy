@@ -3,6 +3,7 @@ package com.swingy.battle;
 import com.swingy.artifacts.Artifact;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
+import com.swingy.util.NumberHelper;
 import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.beans.PropertyChangeListener;
@@ -27,6 +28,7 @@ public class BattleEngine implements Runnable{
     public boolean end = false;
     public int winCount = 0;
     public int balancedWinCount = 0;
+    public double averagePowerDifference = 0;
 
     public void setChallenger(FighterMetrics challenger){
         this.challenger = challenger;
@@ -98,6 +100,7 @@ public class BattleEngine implements Runnable{
             return;
         }
         else if (defenderHP <= 0 && !battleEnd){
+            averagePowerDifference += NumberHelper.round(challenger.getFighterStats().getHitPoints(), 2) - NumberHelper.round(challenger.getDamage(), 2);
             winCount++;
             if (challengerHP - 10 >= defenderHP && defenderHP + 15 <= challengerHP)
                 balancedWinCount++;
@@ -159,38 +162,36 @@ public class BattleEngine implements Runnable{
     }
 
 
-
     private Double handicap(FighterMetrics attacker, FighterMetrics defender){
         double toReturn = 0;
         switch (attacker.getAffinities().entrySet().iterator().next().getKey()){
             case "NINPO":
                 if (defender.getAffinities().entrySet().iterator().next().getKey().equals("MECHA"))
-                    toReturn = 93.5;
+                    toReturn = 96.0;
                 else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("SCOURGE"))
-                    toReturn = 92.0;
+                    toReturn = 97.0;
                 break;
             case "BEAST":
                 if (defender.getAffinities().entrySet().iterator().next().getKey().equals("NINPO"))
-                    toReturn = 12.0;
+                    toReturn = 95.0;
                 else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("MECHA"))
                     toReturn = 23.0;
                 break;
             case "SCOURGE":
                 if (defender.getAffinities().entrySet().iterator().next().getKey().equals("BEAST"))
-                    toReturn = 16.0;
+                    toReturn = 30.0;
                 else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("NINPO"))
                     toReturn = 0;
                 break;
             case "MECHA":
                 if (defender.getAffinities().entrySet().iterator().next().getKey().equals("SCOURGE"))
-                    toReturn = 45.0;
+                    toReturn = 85.0;
                 else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("BEAST"))
-                    toReturn = 0.0;
+                    toReturn = 20.0;
                 break;
         }
         return toReturn;
     }
-
 
     @Override
     public void run() {
@@ -221,12 +222,6 @@ public class BattleEngine implements Runnable{
                 canRender = true;
             } else {
                 canRender = false;
-            }
-
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
 
             if (canRender){

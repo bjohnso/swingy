@@ -1,5 +1,6 @@
 package com.swingy.states;
 
+import com.swingy.Main;
 import com.swingy.artifacts.Armor;
 import com.swingy.artifacts.Helm;
 import com.swingy.artifacts.Weapon;
@@ -21,13 +22,14 @@ import com.swingy.view.Swingy;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferStrategy;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import static com.swingy.database.SwingyDB.swingyDB;
 
-public class GameState implements State {
+public class GameState extends Canvas implements State {
 
     private ArrayList<Entity> entities;
     private ArrayList<Fighter> fighters;
@@ -97,11 +99,10 @@ public class GameState implements State {
         }
 
         mapGenerator = new MapGenerator(player);
+        tiles = mapGenerator.generate();
         tileMap = mapGenerator.getTileMap();
 
         fighters = new ArrayList<>();
-        tiles = mapGenerator.generate();
-
         idAssigner = new IDAssigner(1);
 
         for (Tile t: tiles){
