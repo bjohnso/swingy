@@ -1,7 +1,7 @@
 package com.swingy.rendering.entities;
 
 import com.swingy.rendering.textures.Animation;
-import com.swingy.rendering.textures.Sprite;
+import com.swingy.rendering.textures.Texture;
 import com.swingy.states.State;
 
 import java.awt.*;
@@ -11,9 +11,9 @@ public abstract class Mobile extends Entity {
     protected double dx, dy;
     protected Animation animation;
     protected boolean moving = false;
-    private int mobileID;
+    private String mobileID;
 
-    public Mobile(Sprite sprite, double x, double y, State state, Animation animation) {
+    public Mobile(Texture sprite, double x, double y, State state, Animation animation) {
         super(sprite, x, y, state);
         this.animation = animation;
     }
@@ -46,11 +46,11 @@ public abstract class Mobile extends Entity {
         dy = 0;
     }
 
-    public void setMobileID(int id) {
+    public void setMobileID(String id) {
         this.mobileID = id;
     }
 
-    public int getMobileID() {
+    public String getMobileID() {
         return mobileID;
     }
 

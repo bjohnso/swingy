@@ -1,6 +1,6 @@
 package com.swingy.rendering.entities;
 
-import com.swingy.rendering.textures.Sprite;
+import com.swingy.rendering.textures.Texture;
 import com.swingy.states.State;
 
 import java.awt.*;
@@ -8,10 +8,10 @@ import java.awt.*;
 public abstract class Entity {
 
     protected double x, y;
-    protected Sprite sprite;
+    protected Texture sprite;
     protected State state;
 
-    public Entity(Sprite sprite, double x, double y, State state){
+    public Entity(Texture sprite, double x, double y, State state){
         this.sprite = sprite;
         this.x = x;
         this.y = y;
@@ -24,11 +24,11 @@ public abstract class Entity {
         this.state = state;
     }
 
-    public void setSprite(Sprite sprite) {
+    public void setSprite(Texture sprite) {
         this.sprite = sprite;
     }
 
-    public Sprite getSprite() {
+    public Texture getSprite() {
         return sprite;
     }
 

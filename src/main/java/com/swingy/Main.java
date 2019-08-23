@@ -26,10 +26,10 @@ public class Main {
         pool.runTask(musicPlayer);
         pool.runTask(swingy);
 
-        /*FighterMetrics ninpo = new FighterMetrics("Asuna", "NINPO");
-        FighterMetrics beast = new FighterMetrics("Rex", "BEAST");
-        FighterMetrics scourge = new FighterMetrics("Odesa", "SCOURGE");
-        FighterMetrics mecha = new FighterMetrics("Optimus", "MECHA");
+        /*FighterMetrics ninpo = new FighterMetrics("Asuna", "NINJA");
+        FighterMetrics beast = new FighterMetrics("Rex", "DINO");
+        FighterMetrics scourge = new FighterMetrics("Odesa", "ZOMBO");
+        FighterMetrics mecha = new FighterMetrics("Optimus", "ROBO");
         int winCount = 0;
         int balancedWinCount = 0;
         double averagePowerDifference = 0;

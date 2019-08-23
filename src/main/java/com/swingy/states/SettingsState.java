@@ -1,16 +1,10 @@
 package com.swingy.states;
 
-import com.swingy.battle.FighterMetrics;
-import com.swingy.id.ID;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.rendering.entities.Entity;
-import com.swingy.rendering.entities.Fighter;
-import com.swingy.rendering.textures.Sprite;
-import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
-import com.swingy.util.AnimationHelper;
 import com.swingy.util.Fonts;
 import com.swingy.view.Swingy;
 
@@ -18,7 +12,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import static com.swingy.database.SwingyDB.swingyDB;
 
@@ -113,7 +106,7 @@ public class SettingsState implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Sprite background = new Sprite(new SpriteSheet(new Texture("background/2", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        Texture background = new Texture(new Texture("background/2", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Settings", 72, false);

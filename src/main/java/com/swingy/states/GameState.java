@@ -1,20 +1,18 @@
 package com.swingy.states;
 
-import com.swingy.Main;
 import com.swingy.artifacts.Armor;
 import com.swingy.artifacts.Helm;
 import com.swingy.artifacts.Weapon;
 import com.swingy.battle.FighterMetrics;
+import com.swingy.id.MobileIDAssigner;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.id.IDAssigner;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
-import com.swingy.map.MapGenerator;
+import com.swingy.map.TileMapGenerator;
 import com.swingy.map.Tile;
-import com.swingy.rendering.textures.Sprite;
-import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
 import com.swingy.view.Swingy;
@@ -22,7 +20,6 @@ import com.swingy.view.Swingy;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferStrategy;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,15 +30,14 @@ public class GameState extends Canvas implements State {
 
     private ArrayList<Entity> entities;
     private ArrayList<Fighter> fighters;
-    private ArrayList<Tile> tiles;
     private Tile[][] tileMap = null;
 
-    private MapGenerator mapGenerator;
+    private TileMapGenerator tileMapGenerator;
     private int playerIndex;
     private Button[] options;
     private int currentSelection;
 
-    private IDAssigner idAssigner;
+    private MobileIDAssigner idAssigner;
 
     private boolean isResume = false;
     protected boolean gameOver;
@@ -70,22 +66,22 @@ public class GameState extends Canvas implements State {
             if (resultSet.next()){
                 switch(resultSet.getString(4)){
                     case "ninja":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINPO"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINJA"),
                                 this, null);
                         player.setPlayerClass(ID.NINJA);
                         break;
                     case "dino":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "BEAST"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
                                 this, null);
                         player.setPlayerClass(ID.DINO);
                         break;
                     case "robo":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "BEAST"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
                                 this, null);
                         player.setPlayerClass(ID.ROBO);
                         break;
                     case "zombo":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "SCOURGE"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ZOMBO"),
                                 this, null);
                         player.setPlayerClass(ID.ZOMBO);
                         break;
@@ -98,64 +94,42 @@ public class GameState extends Canvas implements State {
             e.printStackTrace();
         }
 
-        mapGenerator = new MapGenerator(player);
-        tiles = mapGenerator.generate();
-        tileMap = mapGenerator.getTileMap();
+        tileMapGenerator = new TileMapGenerator(player);
+        tileMapGenerator.generate();
+        tileMap = tileMapGenerator.getTileMap();
 
         fighters = new ArrayList<>();
-        idAssigner = new IDAssigner(1);
+        idAssigner = new MobileIDAssigner();
+        int idCounter = 0;
+        for (int i = 0; i < tileMap.length; i++){
+            for (int j = 0; j < tileMap.length; j++){
+                if (tileMap[i][j].getTileClassName() != "" && tileMap[i][j].getTileClassName() != null) {
+                    Fighter tempFighter = null;
+                    tempFighter = new Fighter(new Texture("terrain/" + tileMap[i][j].getTileClassName().toLowerCase() + "/1", false),
+                            0, 0,
+                            new FighterMetrics(tileMap[i][j].getTileClassName(), tileMap[i][j].getTileClassName()),
+                            this, null);
+                    tempFighter.setPlayerClass(tileMap[i][j].getTileClass());
+                    tempFighter.setPlayerClassName(tileMap[i][j].getTileClassName().toLowerCase());
+                    tempFighter.setMobileID(idAssigner.addID(tileMap[i][j].getCoordinate(idCounter++)));
 
-        for (Tile t: tiles){
-            Fighter tempFighter = null;
+                    String parts[] = tempFighter.getMobileID().split("-");
+                    tempFighter.setX(Double.parseDouble(parts[0]));
+                    tempFighter.setX(Double.parseDouble(parts[1]));
 
-            if (t.getTileClass() == ID.DINO){
-                tempFighter = new Fighter(new Sprite("terrain/dino/1"),
-                        t.getX(), t.getY(),
-                        new FighterMetrics("Dino", "BEAST"),
-                        this, null);
-                tempFighter.setPlayerClass(ID.DINO);
-                tempFighter.setPlayerClassName("dino");
-            }
-            else if (t.getTileClass() == ID.ROBO){
-                tempFighter = new Fighter(new Sprite("terrain/robo/1"),
-                        t.getX(), t.getY(),
-                        new FighterMetrics("Robo", "BEAST"),
-                        this, null);
-                tempFighter.setPlayerClass(ID.ROBO);
-                tempFighter.setPlayerClassName("robo");
-            }
-            else if (t.getTileClass() == ID.ZOMBO){
-                tempFighter = new Fighter(new Sprite("terrain/zombo/1"),
-                        t.getX(), t.getY(),
-                        new FighterMetrics("Zombo", "SCOURGE"),
-                        this, null);
-                tempFighter.setPlayerClass(ID.ZOMBO);
-                tempFighter.setPlayerClassName("zombo");
-            }
-            else if (t.getTileClass() == ID.NINJA){
-                tempFighter = new Fighter(new Sprite("terrain/ninja/1"),
-                        t.getX(), t.getY(),
-                        new FighterMetrics("Ninja", "NINPO"),
-                        this, null);
-                tempFighter.setPlayerClass(ID.NINJA);
-                tempFighter.setPlayerClassName("ninja");
-            }
-
-            if (tempFighter != null) {
-                tempFighter.setMobileID(idAssigner.next());
-                t.setMobileID(tempFighter.getMobileID());
-                if (t.isPlayer()){
-                    playerIndex = tiles.indexOf(t);
-                    player.setSprite(tempFighter.getSprite());
-                    player.setMobileID(tempFighter.getMobileID());
-                    player.setX(t.getX());
-                    player.setY(t.getY());
-                    player.setPlayer(true);
-                    fighters.add(player);
-                }
-                else {
-                    fighters.add(tempFighter);
-                    tempFighter.getFighterMetrics().getLevel().setExperience(player.getFighterMetrics().getLevel().getExperience());
+                    if (tempFighter != null) {
+                        if (tempFighter.getMobileID().equalsIgnoreCase(tileMapGenerator.getPlayerCoordinate())) {
+                            player.setSprite(tempFighter.getSprite());
+                            player.setMobileID(tempFighter.getMobileID());
+                            player.setX(tempFighter.getX());
+                            player.setX(tempFighter.getY());
+                            player.setPlayer(true);
+                            fighters.add(player);
+                        } else {
+                            fighters.add(tempFighter);
+                            tempFighter.getFighterMetrics().getLevel().setExperience(player.getFighterMetrics().getLevel().getExperience());
+                        }
+                    }
                 }
             }
         }
@@ -163,7 +137,7 @@ public class GameState extends Canvas implements State {
 
     public void enemyMove(){
 
-        for (Fighter p: fighters) {
+        /*for (Fighter p: fighters) {
             if (p != player && p.isAlive()) {
                 ArrayList<String> directions = new ArrayList<>();
                 int originX = (Swingy.WIDTH - (tileMap.length * 32)) / 2;
@@ -244,7 +218,7 @@ public class GameState extends Canvas implements State {
                     }
                 }
             }
-        }
+        }*/
     }
 
     @Override
@@ -253,7 +227,6 @@ public class GameState extends Canvas implements State {
             isResume = false;
             entities.clear();
             fighters.clear();
-            tiles.clear();
             options = null;
         }
         if (!isResume)
@@ -269,7 +242,6 @@ public class GameState extends Canvas implements State {
             isResume = false;
             entities.clear();
             fighters.clear();
-            tiles.clear();
             options = null;
         }
         try {
@@ -311,6 +283,7 @@ public class GameState extends Canvas implements State {
 
                                     tileMap[i - 1][j].moveY(-32);
                                     tileMap[i][j].moveY(32);
+                                    //remove tile method to remove old render coordinate of player and add new rendor coordinate
 
                                     player.moveY(-32);
                                     j = tileMap.length;
@@ -484,7 +457,7 @@ public class GameState extends Canvas implements State {
         graphics.setColor(Color.WHITE);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Sprite background = new Sprite(new SpriteSheet(new Texture("background/3", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        Texture background = new Texture(new Texture("background/3", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
         for (Entity e : entities)
@@ -538,10 +511,10 @@ public class GameState extends Canvas implements State {
     }
 
     public void setDefender(int id){
-        for (Fighter f : fighters) {
+        /*for (Fighter f : fighters) {
             if (f.getMobileID() == id)
                 defender = f;
-        }
+        }*/
     }
 
     public boolean collision(){
@@ -741,13 +714,11 @@ public class GameState extends Canvas implements State {
     }
 
     protected void removeFighter(Fighter fighter){
-        for (int i = 0; i < tileMap.length ;i++){
+        /*for (int i = 0; i < tileMap.length ;i++){
             for (int j = 0; j < tileMap.length; j++){
                 if (tileMap[i][j].getMobileID() == fighter.getMobileID()) {
-                    tiles.remove(tileMap[i][j]);
 
-                    tileMap[i][j] = new Tile(tileMap[i][j].getX(), tileMap[i][j].getY(), new Sprite(new SpriteSheet(new Texture("terrain/ground", false), 32), 2, 2), ID.GROUND);
-                    tiles.add(tileMap[i][j]);
+                    tileMap[i][j] = new Tile(tileMap[i][j].getX(), tileMap[i][j].getY(), new Texture(new Texture("terrain/ground", false), 2, 2, 32), ID.GROUND);
 
                     fighters.remove(fighter);
                     entities.remove(fighter);
@@ -756,7 +727,7 @@ public class GameState extends Canvas implements State {
                     j = tileMap.length;
                 }
             }
-        }
+        }*/
     }
 
     protected void gameOver(){

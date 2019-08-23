@@ -125,7 +125,7 @@ public class SwingyDB {
     public void setCurrentPlayer(long id) throws SQLException {
         createConnection();
         connection.createStatement().execute(SQL_UPDATE + " active = true where id = " + id);
-        System.out.println("Player Successfully Set To Active");
+        System.out.println("Player with ID : " + id +" Successfully Set To Active");
         closeConnection();
     }
 

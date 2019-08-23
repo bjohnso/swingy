@@ -6,8 +6,6 @@ import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.rendering.entities.Fighter;
-import com.swingy.rendering.textures.Sprite;
-import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
 import com.swingy.util.AnimationHelper;
@@ -74,28 +72,28 @@ public class CharacterSelectionState implements State {
                 if (!resultSet.next()) break;
                 switch(resultSet.getString(4)){
                     case "ninja":
-                        characters[count] = new Fighter(new Sprite("ninja/idle/1"),
+                        characters[count] = new Fighter(new Texture("ninja/idle/1", false),
                                 (Swingy.WIDTH / 2), 100,
-                                new FighterMetrics(resultSet.getString(2), "NINPO"),
+                                new FighterMetrics(resultSet.getString(2), "NINJA"),
                                 this, AnimationHelper.createAnimation("ninjaLarge"));
                         characters[count].setPlayerClass(ID.NINJA);
                         break;
                     case "dino":
-                        characters[count] = new Fighter(new Sprite("dino/idle/1"),
+                        characters[count] = new Fighter(new Texture("dino/idle/1", false),
                                 (Swingy.WIDTH / 2), 100,
-                                new FighterMetrics(resultSet.getString(2), "BEAST"),
+                                new FighterMetrics(resultSet.getString(2), "DINO"),
                                 this, AnimationHelper.createAnimation("dinoLarge"));
                         characters[count].setPlayerClass(ID.DINO);
                         break;
                     case "robo":
-                        characters[count] = new Fighter(new Sprite("robo/idle/1"),
-                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "BEAST"),
+                        characters[count] = new Fighter(new Texture("robo/idle/1", false),
+                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "DINO"),
                                 this, AnimationHelper.createAnimation("roboLarge"));
                         characters[count].setPlayerClass(ID.ROBO);
                         break;
                     case "zombo":
-                        characters[count] = new Fighter(new Sprite("zombo/idle/1"),
-                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "SCOURGE"),
+                        characters[count] = new Fighter(new Texture("zombo/idle/1", false),
+                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "ZOMBO"),
                                 this, AnimationHelper.createAnimation("zomboLarge"));
                         characters[count].setPlayerClass(ID.ZOMBO);
                         break;
@@ -221,7 +219,7 @@ public class CharacterSelectionState implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Sprite background = new Sprite(new SpriteSheet(new Texture("background/2", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        Texture background = new Texture(new Texture("background/2", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Load Existing Fighter", 72, false);
