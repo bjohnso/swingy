@@ -2,10 +2,11 @@ package com.swingy.input;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 
 public class KeyInput extends KeyAdapter {
 
-    private static final int NUM_KEYS = 256;
+    private static int NUM_KEYS = 256;
 
     private static final boolean keys[] = new boolean[NUM_KEYS];
     private static final boolean lastKeys[] = new boolean[NUM_KEYS];

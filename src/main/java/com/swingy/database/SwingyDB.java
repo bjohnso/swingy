@@ -1,6 +1,7 @@
 package com.swingy.database;
 
 import com.swingy.rendering.entities.Fighter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.management.Query;
 import javax.swing.*;
@@ -72,7 +73,7 @@ public class SwingyDB {
         }
     }
 
-    public long insertPlayer(Fighter fighter) throws SQLException {
+    public long insertPlayer(@NotNull Fighter fighter) throws SQLException {
         createConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT
                 + " ('" + fighter.getFighterMetrics().getName() + "'"
@@ -92,7 +93,7 @@ public class SwingyDB {
             return 0;
     }
 
-    public void updatePlayer(Fighter fighter) throws SQLException {
+    public void updatePlayer(@NotNull Fighter fighter) throws SQLException {
         createConnection();
         connection.createStatement().execute(SQL_UPDATE + " xp = " + fighter.getFighterMetrics().getLevel().getExperience() + " where id = " + fighter.getFighterMetrics().getID());
         closeConnection();
@@ -144,7 +145,8 @@ public class SwingyDB {
     }
 
     private void createConnection() throws SQLException {
-        connection = DriverManager.getConnection(JDBC_URL);
+        if (connection == null)
+            connection = DriverManager.getConnection(JDBC_URL);
         statement = connection.createStatement();
     }
 
@@ -153,6 +155,7 @@ public class SwingyDB {
             statement.close();
         if (connection != null)
             connection.close();
+        connection = null;
     }
 
     public void resetCurrentPlayer() throws SQLException {

@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.swingy.database.SwingyDB.swingyDB;
 
@@ -30,7 +31,7 @@ public class GameState extends Canvas implements State {
 
     private ArrayList<Entity> entities;
     private ArrayList<Fighter> fighters;
-    private Tile[][] tileMap = null;
+    private HashMap<String, Tile> tileMap = null;
 
     private TileMapGenerator tileMapGenerator;
     private int playerIndex;
@@ -44,6 +45,8 @@ public class GameState extends Canvas implements State {
 
     protected static Fighter player;
     protected static Fighter defender;
+
+    protected String playerCoordinates;
 
     private StateManager stateManager = null;
 
@@ -76,7 +79,7 @@ public class GameState extends Canvas implements State {
                         player.setPlayerClass(ID.DINO);
                         break;
                     case "robo":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ROBO"),
                                 this, null);
                         player.setPlayerClass(ID.ROBO);
                         break;
@@ -99,26 +102,26 @@ public class GameState extends Canvas implements State {
         tileMap = tileMapGenerator.getTileMap();
 
         fighters = new ArrayList<>();
-        idAssigner = new MobileIDAssigner();
-        int idCounter = 0;
-        for (int i = 0; i < tileMap.length; i++){
-            for (int j = 0; j < tileMap.length; j++){
-                if (tileMap[i][j].getTileClassName() != "" && tileMap[i][j].getTileClassName() != null) {
+
+        for(HashMap.Entry<String, Tile> t : tileMap.entrySet()){
+            if (t.getValue().getTileClassName() != "" && t.getValue().getTileClassName() != null){
+                for (HashMap.Entry<String, String> tObject: t.getValue().getCoordinates().entrySet()){
                     Fighter tempFighter = null;
-                    tempFighter = new Fighter(new Texture("terrain/" + tileMap[i][j].getTileClassName().toLowerCase() + "/1", false),
+                    tempFighter = new Fighter(new Texture("terrain/" + t.getValue().getTileClassName().toLowerCase() + "/1", false),
                             0, 0,
-                            new FighterMetrics(tileMap[i][j].getTileClassName(), tileMap[i][j].getTileClassName()),
+                            new FighterMetrics(t.getValue().getTileClassName(), t.getValue().getTileClassName()),
                             this, null);
-                    tempFighter.setPlayerClass(tileMap[i][j].getTileClass());
-                    tempFighter.setPlayerClassName(tileMap[i][j].getTileClassName().toLowerCase());
-                    tempFighter.setMobileID(idAssigner.addID(tileMap[i][j].getCoordinate(idCounter++)));
+                    tempFighter.setPlayerClass(t.getValue().getTileClass());
+                    tempFighter.setPlayerClassName(t.getValue().getTileClassName().toLowerCase());
+                    tempFighter.setMobileID(tObject.getValue());
 
                     String parts[] = tempFighter.getMobileID().split("-");
                     tempFighter.setX(Double.parseDouble(parts[0]));
-                    tempFighter.setX(Double.parseDouble(parts[1]));
+                    tempFighter.setY(Double.parseDouble(parts[1]));
 
                     if (tempFighter != null) {
                         if (tempFighter.getMobileID().equalsIgnoreCase(tileMapGenerator.getPlayerCoordinate())) {
+                            playerCoordinates = tileMapGenerator.getPlayerCoordinate();
                             player.setSprite(tempFighter.getSprite());
                             player.setMobileID(tempFighter.getMobileID());
                             player.setX(tempFighter.getX());
@@ -267,32 +270,56 @@ public class GameState extends Canvas implements State {
             return artifacts[2];
     }
 
+    private boolean coordinateCompare(String str1, String str2, float modX1, float modY1, float modX2, float modY2){
+        double x1 = Double.parseDouble(str1.split("-")[0]) + modX1;
+        double y1 = Double.parseDouble(str1.split("-")[1]) + modY1;
+        double x2 = Double.parseDouble(str2.split("-")[0]) + modX2;
+        double y2 = Double.parseDouble(str2.split("-")[1]) + modY2;
+
+        if (x1 == x2 && y1 == y2)
+            return true;
+        return false;
+    }
+
+    private String coordinateMod(String str1, float modX, float modY){
+        double x1 = Double.parseDouble(str1.split("-")[0]) + modX;
+        double y1 = Double.parseDouble(str1.split("-")[1]) + modY;
+
+        return x1 + "-" + y1;
+    }
+
     @Override
     public void tick(StateManager stateManager) {
         this.stateManager = stateManager;
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             if (options == null) {
-                for (int i = 0; i < tileMap.length; i++) {
-                    for (int j = 0; j < tileMap.length; j++) {
-                        if (tileMap[i][j].isPlayer()) {
-                            if (i - 1 > -1) {
-                                if (tileMap[i - 1][j].getTileClass() == ID.GROUND) {
-                                    Tile tempTile = tileMap[i - 1][j];
-                                    tileMap[i - 1][j] = tileMap[i][j];
-                                    tileMap[i][j] = tempTile;
+                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
+                        Tile groundTile = tileMap.get("GROUND");
+                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                            if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, 32, 0, 0)){
+                                //Swap Render Coordinates on adjacent tiles
+                                String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, -32);
+                                String newGroundCoordinate = playerCoordinates;
 
-                                    tileMap[i - 1][j].moveY(-32);
-                                    tileMap[i][j].moveY(32);
-                                    //remove tile method to remove old render coordinate of player and add new rendor coordinate
+                                System.out.printf("PLAYERTILE OLD: %S | GROUNDTILE OLD %S\n", playerTile.getCoordinate("PLAYER"), groundTile.getCoordinate(tGround.getKey()));
 
-                                    player.moveY(-32);
-                                    j = tileMap.length;
-                                    i = tileMap.length;
+                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                    moveLogic();
-                                }
+                                System.out.printf("PLAYERTILE NEW: %S | GROUNDTILE NEW %S\n", newGroundCoordinate, newPlayerCoordinate);
+
+                                player.setMobileID(newPlayerCoordinate);
+                                playerCoordinates = newPlayerCoordinate;
+                                //player.setX(Double.parseDouble(playerCoordinates.split("-")[0]));
+                                //player.setY(Double.parseDouble(playerCoordinates.split("-")[1]));
+
+                                //moveLogic();
+                                break ;
                             }
                         }
+                        break ;
                     }
                 }
             }
@@ -306,26 +333,33 @@ public class GameState extends Canvas implements State {
 
         if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)){
             if (options == null) {
-                for (int i = 0; i < tileMap.length; i++) {
-                    for (int j = 0; j < tileMap.length; j++) {
-                        if (tileMap[i][j].isPlayer()) {
-                            if (i + 1 < tileMap.length) {
-                                if (tileMap[i + 1][j].getTileClass() == ID.GROUND) {
-                                    Tile tempTile = tileMap[i + 1][j];
-                                    tileMap[i + 1][j] = tileMap[i][j];
-                                    tileMap[i][j] = tempTile;
+                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
+                        Tile groundTile = tileMap.get("GROUND");
+                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                            if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, -32, 0, 0)){
+                                //Swap Render Coordinates on adjacent tiles
+                                String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, 32);
+                                String newGroundCoordinate = playerCoordinates;
 
-                                    tileMap[i + 1][j].moveY(32);
-                                    tileMap[i][j].moveY(-32);
+                                System.out.printf("PLAYERTILE OLD: %S | GROUNDTILE OLD %S\n", playerTile.getCoordinate("PLAYER"), groundTile.getCoordinate(tGround.getKey()));
 
-                                    player.moveY(32);
-                                    j = tileMap.length;
-                                    i = tileMap.length;
+                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                    moveLogic();
-                                }
+                                System.out.printf("PLAYERTILE NEW: %S | GROUNDTILE NEW %S\n", newGroundCoordinate, newPlayerCoordinate);
+
+                                player.setMobileID(newPlayerCoordinate);
+                                playerCoordinates = newPlayerCoordinate;
+                                //player.setX(Double.parseDouble(playerCoordinates.split("-")[0]));
+                                //player.setY(Double.parseDouble(playerCoordinates.split("-")[1]));
+
+                                //moveLogic();
+                                break ;
                             }
                         }
+                        break ;
                     }
                 }
             }
@@ -339,26 +373,32 @@ public class GameState extends Canvas implements State {
 
         if (KeyInput.wasPressed(KeyEvent.VK_LEFT) || KeyInput.wasPressed(KeyEvent.VK_A)){
             if (options == null) {
-                for (int i = 0; i < tileMap.length; i++) {
-                    for (int j = 0; j < tileMap.length; j++) {
-                        if (tileMap[i][j].isPlayer()) {
-                            if (j - 1 > -1) {
-                                if (tileMap[i][j - 1].getTileClass() == ID.GROUND) {
-                                    Tile tempTile = tileMap[i][j - 1];
-                                    tileMap[i][j - 1] = tileMap[i][j];
-                                    tileMap[i][j] = tempTile;
+                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
+                        Tile groundTile = tileMap.get("GROUND");
+                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                            if (coordinateCompare(tGround.getValue(), playerCoordinates, 32, 0, 0, 0)){
+                                //Swap Render Coordinates on adjacent tiles
+                                String newPlayerCoordinate = coordinateMod(playerCoordinates, -32, 0);
+                                String newGroundCoordinate = playerCoordinates;
 
-                                    tileMap[i][j - 1].moveX(-32);
-                                    tileMap[i][j].moveX(32);
+                                System.out.printf("PLAYERTILE OLD: %S | GROUNDTILE OLD %S\n", playerTile.getCoordinate("PLAYER"), groundTile.getCoordinate(tGround.getKey()));
 
-                                    player.moveX(-32);
-                                    j = tileMap.length;
-                                    i = tileMap.length;
+                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                    moveLogic();
-                                }
+                                player.setMobileID(newPlayerCoordinate);
+                                playerCoordinates = newPlayerCoordinate;
+                                System.out.printf("PLAYERTILE OLD: %S | GROUNDTILE OLD %S\n", newGroundCoordinate, newPlayerCoordinate);
+                                //player.setX(Double.parseDouble(playerCoordinates.split("-")[0]));
+                                //player.setY(Double.parseDouble(playerCoordinates.split("-")[1]));
+
+                                //moveLogic();
+                                break ;
                             }
                         }
+                        break ;
                     }
                 }
             }
@@ -372,28 +412,32 @@ public class GameState extends Canvas implements State {
 
         if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) || KeyInput.wasPressed(KeyEvent.VK_D)){
             if(options == null) {
-                for (int i = 0; i < tileMap.length; i++) {
-                    for (int j = 0; j < tileMap.length; j++) {
-                        if (tileMap[i][j] != null) {
-                            if (tileMap[i][j].isPlayer()) {
-                                if (j + 1 < tileMap.length) {
-                                    if (tileMap[i][j + 1].getTileClass() == ID.GROUND) {
-                                        Tile tempTile = tileMap[i][j + 1];
-                                        tileMap[i][j + 1] = tileMap[i][j];
-                                        tileMap[i][j] = tempTile;
+                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
+                        Tile groundTile = tileMap.get("GROUND");
+                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                            if (coordinateCompare(tGround.getValue(), playerCoordinates, -32, 0, 0, 0)){
+                                //Swap Render Coordinates on adjacent tiles
+                                String newPlayerCoordinate = coordinateMod(playerCoordinates, 32, 0);
+                                String newGroundCoordinate = playerCoordinates;
 
-                                        tileMap[i][j + 1].moveX(32);
-                                        tileMap[i][j].moveX(-32);
+                                System.out.printf("PLAYERTILE OLD: %S | GROUNDTILE OLD %S\n", playerTile.getCoordinate("PLAYER"), groundTile.getCoordinate(tGround.getKey()));
 
-                                        player.moveX(32);
-                                        j = tileMap.length;
-                                        i = tileMap.length;
+                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                        moveLogic();
-                                    }
-                                }
+                                player.setMobileID(newPlayerCoordinate);
+                                playerCoordinates = newPlayerCoordinate;
+                                System.out.printf("PLAYERTILE NEW: %S | GROUNDTILE NEW %S\n", newGroundCoordinate, newPlayerCoordinate);
+                                //player.setX(Double.parseDouble(playerCoordinates.split("-")[0]));
+                                //player.setY(Double.parseDouble(playerCoordinates.split("-")[1]));
+
+                                //moveLogic();
+                                break ;
                             }
                         }
+                        break ;
                     }
                 }
             }
@@ -460,15 +504,13 @@ public class GameState extends Canvas implements State {
         Texture background = new Texture(new Texture("background/3", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
-        for (Entity e : entities)
-            e.render(graphics);
-
-        for (int i = 0; i < tileMap.length; i++){
-            for (int j = 0; j < tileMap.length; j++){
-                if (tileMap[i][j] != null)
-                    tileMap[i][j].render(graphics);
-            }
+        if (entities != null) {
+            for (Entity e : entities)
+                e.render(graphics);
         }
+
+        for(HashMap.Entry<String, Tile> t : tileMap.entrySet())
+            t.getValue().render(graphics);
 
         if (options != null) {
             for (int i = 0; i < options.length; i++) {
@@ -518,7 +560,7 @@ public class GameState extends Canvas implements State {
     }
 
     public boolean collision(){
-        for (int i =  0; i < tileMap.length; i++){
+        /*for (int i =  0; i < tileMap.length; i++){
             for (int j = 0; j < tileMap.length; j++) {
                 if (tileMap[i][j] != null) {
                     if (tileMap[i][j].isPlayer()) {
@@ -675,7 +717,7 @@ public class GameState extends Canvas implements State {
                     }
                 }
             }
-        }
+        }*/
         return false;
     }
 

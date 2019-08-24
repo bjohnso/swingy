@@ -4,6 +4,7 @@ import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.states.*;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -53,7 +54,7 @@ public class Swingy extends Canvas implements Runnable{
         requestFocus();
 
         //Game Loop
-        double targetTicks = 30.0;
+        double targetTicks = 60.0;
         double nanoSecondsPT = 100000000.0 / targetTicks;
         double unprocessed = 0.0;
         long lastTime = System.nanoTime();
@@ -72,7 +73,7 @@ public class Swingy extends Canvas implements Runnable{
 
                 //Update Input References
                 KeyInput.update();
-                MouseInput.update();
+                //MouseInput.update();
 
                 unprocessed--;
                 tps++;
@@ -82,7 +83,7 @@ public class Swingy extends Canvas implements Runnable{
             }
 
             try {
-                Thread.sleep(1);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -104,7 +105,6 @@ public class Swingy extends Canvas implements Runnable{
     }
 
     private void start(){
-        stateManager.setState("menu", null);
         if (running)
             return;
         running = true;
@@ -137,9 +137,9 @@ public class Swingy extends Canvas implements Runnable{
 
         //Input Listeners
         addKeyListener(new KeyInput());
-        MouseInput mouseInput = new MouseInput();
-        addMouseListener(mouseInput);
-        addMouseMotionListener(mouseInput);
+        //MouseInput mouseInput = new MouseInput();
+        //addMouseListener(mouseInput);
+        //addMouseMotionListener(mouseInput);
 
         stateManager = new StateManager();
         stateManager.addState(new MenuState(this));

@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class Tile {
 
-    ArrayList<String> coordinates = new ArrayList<>();;
+    HashMap<String, String> coordinates = new HashMap<>();
     protected Texture sprite;
     protected boolean solid;
     protected ID tileClass;
@@ -18,20 +18,17 @@ public class Tile {
     protected boolean isPlayer = false;
 
     public Tile(float x, float y, Texture sprite){
-        addCoordinate(x, y);
         this.sprite = sprite;
         this.solid = true;
     }
 
     public Tile(float x, float y, Texture sprite, boolean isPlayer){
-        addCoordinate(x, y);
         this.sprite = sprite;
         this.solid = true;
         this.isPlayer = isPlayer;
     }
 
     public Tile(float x, float y, Texture sprite, ID tileClass){
-        addCoordinate(x, y);
         this.sprite = sprite;
         this.solid = true;
         this.tileClass = tileClass;
@@ -51,20 +48,32 @@ public class Tile {
         setTileClassName();
     }
 
-    public void addCoordinate(float x, float y){
-        coordinates.add(x + "-" + y);
+    public void addCoordinate(String key, float x, float y){
+        coordinates.put(key, x + "-" + y);
     }
 
-    public void removeTile(float x, float y){
+    public void addCoordinate(String key, String coordinate){
+        coordinates.put(key, coordinate);
+    }
+
+    public void removeCoordinate(float x, float y){
         coordinates.remove(x + "-" + y);
     }
 
-    public ArrayList<String> getCoordinates() {
+    public void replaceCoordinate(String key, String cooridinate ){
+        coordinates.replace(key, cooridinate);
+    }
+
+    public void removeCoordinate(String key){
+        coordinates.remove(key);
+    }
+
+    public HashMap<String, String> getCoordinates() {
         return coordinates;
     }
 
-    public String getCoordinate(int i) {
-        return coordinates.get(i);
+    public String getCoordinate(String key) {
+        return coordinates.get(key);
     }
 
     /*public float getX() {
@@ -96,8 +105,8 @@ public class Tile {
     }
 
     public void render(Graphics graphics) {
-        for (String s : coordinates) {
-            String parts[] = s.split("-");
+        for (HashMap.Entry<String, String> s: coordinates.entrySet()) {
+            String parts[] = s.getValue().split("-");
             sprite.render(graphics, Double.parseDouble(parts[0]), Double.parseDouble(parts[1]));
         }
     }
