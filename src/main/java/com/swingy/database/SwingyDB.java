@@ -1,13 +1,15 @@
 package com.swingy.database;
 
+import com.swingy.input.KeyInput;
 import com.swingy.rendering.entities.Fighter;
+import com.swingy.view.Swingy;
 import org.jetbrains.annotations.NotNull;
 
 import javax.management.Query;
 import javax.swing.*;
 import java.sql.*;
 
-public class SwingyDB {
+public class SwingyDB{
 
     private static final String DB_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
     private static final String JDBC_URL = "jdbc:derby:swingydb;create=true";
@@ -20,6 +22,8 @@ public class SwingyDB {
     private Statement statement;
     private Connection connection;
     private int rowCount;
+
+    private boolean running = false;
 
     public static SwingyDB swingyDB;
 
@@ -87,6 +91,7 @@ public class SwingyDB {
         ResultSet resultSet = preparedStatement.getGeneratedKeys();
         if (resultSet.next()){
             System.out.println("Record Successfully Inserted with ID: " + resultSet.getInt(1));
+            rest();
             return resultSet.getInt(1);
         }
         else
@@ -97,6 +102,7 @@ public class SwingyDB {
         createConnection();
         connection.createStatement().execute(SQL_UPDATE + " xp = " + fighter.getFighterMetrics().getLevel().getExperience() + " where id = " + fighter.getFighterMetrics().getID());
         closeConnection();
+        rest();
     }
 
     public ResultSet queryPlayer(long id) throws SQLException {
@@ -120,6 +126,7 @@ public class SwingyDB {
         rowCount = result.getRow();
         result.beforeFirst();
 
+        rest();
         return result;
     }
 
@@ -128,6 +135,7 @@ public class SwingyDB {
         connection.createStatement().execute(SQL_UPDATE + " active = true where id = " + id);
         System.out.println("Player with ID : " + id +" Successfully Set To Active");
         closeConnection();
+        rest();
     }
 
     public void deletePlayer(long id) throws SQLException {
@@ -162,9 +170,15 @@ public class SwingyDB {
         createConnection();
         connection.createStatement().execute(SQL_UPDATE + " active = false where active = true");
         closeConnection();
+        rest();
     }
 
     public int getRowCount() {
         return rowCount;
     }
+
+    private void rest(){
+        Swingy.rest();
+    }
+
 }

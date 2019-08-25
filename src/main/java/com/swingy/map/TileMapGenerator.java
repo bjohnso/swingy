@@ -37,8 +37,8 @@ public class TileMapGenerator {
 
     public TileMapGenerator(Fighter fighter){
         this.fighter = fighter;
-        //MAP_SIZE = (fighter.getFighterMetrics().getLevel().getLevel() - 1) * 5 + 10 - (fighter.getFighterMetrics().getLevel().getLevel() % 2);
-        MAP_SIZE = (5 - 1) * 5 + 10 - (5 % 2);
+        MAP_SIZE = (fighter.getFighterMetrics().getLevel().getLevel() - 1) * 5 + 10 - (fighter.getFighterMetrics().getLevel().getLevel() % 2);
+        //MAP_SIZE = (5 - 1) * 5 + 10 - (5 % 2);
         map = new String[MAP_SIZE][MAP_SIZE];
         tileMap = new Tile[MAP_SIZE][MAP_SIZE];
 

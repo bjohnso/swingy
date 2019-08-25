@@ -16,6 +16,7 @@ public class Tile {
     protected String tileClassName;
     protected int MobileID;
     protected boolean isPlayer = false;
+    protected String figherClassName;
 
     public Tile(float x, float y, Texture sprite){
         this.sprite = sprite;
@@ -123,22 +124,51 @@ public class Tile {
         return tileClassName;
     }
 
+    public String getFigherClassName() {
+        return figherClassName;
+    }
+
     public void setTileClassName(){
         switch (tileClass){
             case DINO:
-                tileClassName = "DINO";
+                figherClassName = "DINO";
+                tileClassName = "FIGHTER";
                 break;
             case ROBO:
-                tileClassName = "ROBO";
+                figherClassName = "ROBO";
+                tileClassName = "FIGHTER";
                 break;
             case ZOMBO:
-                tileClassName = "ZOMBO";
+                figherClassName = "ZOMBO";
+                tileClassName = "FIGHTER";
                 break;
             case NINJA:
-                tileClassName = "NINJA";
+                figherClassName = "NINJA";
+                tileClassName = "FIGHTER";
+                break;
+            case BORDER:
+                figherClassName = "";
+                tileClassName = "BORDER";
+                break;
+            case LAVA:
+                figherClassName = "";
+                tileClassName = "TRAP";
+                break;
+            case PIT:
+                figherClassName = "";
+                tileClassName = "TRAP";
+                break;
+            case GROUND:
+                figherClassName = "";
+                tileClassName = "GROUND";
+                break;
+            case MUSHROOM:
+                figherClassName = "";
+                tileClassName = "OBSTRUCTION";
                 break;
             default:
                 tileClassName = "";
+                figherClassName = "";
         }
     }
 }

@@ -73,7 +73,7 @@ public class Swingy extends Canvas implements Runnable{
 
                 //Update Input References
                 KeyInput.update();
-                //MouseInput.update();
+                MouseInput.update();
 
                 unprocessed--;
                 tps++;
@@ -102,6 +102,14 @@ public class Swingy extends Canvas implements Runnable{
         }
 
         System.exit(0);
+    }
+
+    public static void rest(){
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void start(){
@@ -137,9 +145,9 @@ public class Swingy extends Canvas implements Runnable{
 
         //Input Listeners
         addKeyListener(new KeyInput());
-        //MouseInput mouseInput = new MouseInput();
-        //addMouseListener(mouseInput);
-        //addMouseMotionListener(mouseInput);
+        MouseInput mouseInput = new MouseInput();
+        addMouseListener(mouseInput);
+        addMouseMotionListener(mouseInput);
 
         stateManager = new StateManager();
         stateManager.addState(new MenuState(this));

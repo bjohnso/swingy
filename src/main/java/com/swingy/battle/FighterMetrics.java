@@ -28,7 +28,7 @@ public class FighterMetrics implements Fighter {
             if (!_affinities.containsKey(affinity))
                 _affinities.put("NINJA", new NinpoFighterBaseStats(1));
         }
-        else if (affinity.equalsIgnoreCase("")){
+        else if (affinity.equalsIgnoreCase("ZOMBO")){
             if (!_affinities.containsKey(affinity))
                 _affinities.put("ZOMBO", new ScourgeFighterBaseStats(1));
         }
