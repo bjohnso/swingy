@@ -3,23 +3,16 @@ package com.swingy.states;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
-import com.swingy.rendering.textures.Sprite;
-import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.util.Fonts;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
 import com.swingy.rendering.ui.Button;
 import com.swingy.view.Swingy;
-
-import javax.imageio.ImageIO;
 
 import static com.swingy.database.SwingyDB.swingyDB;
 
@@ -144,7 +137,7 @@ public class MenuState implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Sprite background = new Sprite(new SpriteSheet(new Texture("background/1", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        Texture background = new Texture(new Texture("background/1", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, Swingy.TITLE, 80, false);

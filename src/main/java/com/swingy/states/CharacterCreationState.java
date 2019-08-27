@@ -1,14 +1,11 @@
 package com.swingy.states;
 
-import com.sun.istack.internal.NotNull;
 import com.swingy.battle.FighterMetrics;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
-import com.swingy.rendering.textures.Sprite;
-import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.util.AnimationHelper;
 import com.swingy.util.Fonts;
@@ -21,8 +18,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.swingy.rendering.ui.Button;
-
-import javax.swing.*;
 
 import static com.swingy.database.SwingyDB.swingyDB;
 
@@ -68,20 +63,20 @@ public class CharacterCreationState implements State {
 
         characters = new Fighter[4];
 
-        characters[0] = new Fighter(new Sprite("ninja/idle/1"),
+        characters[0] = new Fighter(new Texture("ninja/idle/1", false),
                 (Swingy.WIDTH / 2), 100,
-                new FighterMetrics("NINPO"),this, AnimationHelper.createAnimation("ninjaLarge"));
+                new FighterMetrics("NINJA"),this, AnimationHelper.createAnimation("ninjaLarge"));
 
-        characters[1] = new Fighter(new Sprite("dino/idle/1"),
+        characters[1] = new Fighter(new Texture("dino/idle/1", false),
                 (Swingy.WIDTH / 2), 100,
-                new FighterMetrics("BEAST"),this, AnimationHelper.createAnimation("dinoLarge"));
+                new FighterMetrics("DINO"),this, AnimationHelper.createAnimation("dinoLarge"));
 
-        characters[2] = new Fighter(new Sprite("robo/idle/1"),
-                (Swingy.WIDTH / 2), 50, new FighterMetrics("BEAST"),
+        characters[2] = new Fighter(new Texture("robo/idle/1", false),
+                (Swingy.WIDTH / 2), 50, new FighterMetrics("DINO"),
                 this, AnimationHelper.createAnimation("roboLarge"));
 
-        characters[3] = new Fighter(new Sprite("zombo/idle/1"),
-                (Swingy.WIDTH / 2), 50, new FighterMetrics("SCOURGE"),
+        characters[3] = new Fighter(new Texture("zombo/idle/1", false),
+                (Swingy.WIDTH / 2), 50, new FighterMetrics("ZOMBO"),
                 this, AnimationHelper.createAnimation("zomboLarge"));
 
         characters[0].setPlayerClass(ID.NINJA);
@@ -171,7 +166,7 @@ public class CharacterCreationState implements State {
                 currentFighter = characters[currentCharacterSelection];
                 try {
                     currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
-                    swingyDB.setCurrentPlayer(currentFighter.getMobileID());
+                    swingyDB.setCurrentPlayer(currentFighter.getFighterMetrics().getID());
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -188,17 +183,21 @@ public class CharacterCreationState implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Sprite background = new Sprite(new SpriteSheet(new Texture("background/2", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        Texture background = new Texture(new Texture("background/2", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Create New Fighter", 72, false);
 
-        for (int i = 0; i < options.length; i++){
-            if (i == currentButtonSelection)
-                options[i].setSelected(true);
-            else
-                options[i].setSelected(false);
-            options[i].render(graphics);
+        if (options != null) {
+            if (options.length > 0) {
+                for (int i = 0; i < options.length; i++) {
+                    if (i == currentButtonSelection)
+                        options[i].setSelected(true);
+                    else
+                        options[i].setSelected(false);
+                    options[i].render(graphics);
+                }
+            }
         }
 
         //Render only selected character

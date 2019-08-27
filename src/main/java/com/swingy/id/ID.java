@@ -17,5 +17,6 @@ public enum ID {
     ARMOR(),
     WEAPON(),
     LAVA(),
-    PIT()
+    PIT(),
+    MUSHROOM()
 }

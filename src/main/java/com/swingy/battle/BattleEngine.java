@@ -165,28 +165,28 @@ public class BattleEngine implements Runnable{
     private Double handicap(FighterMetrics attacker, FighterMetrics defender){
         double toReturn = 0;
         switch (attacker.getAffinities().entrySet().iterator().next().getKey()){
-            case "NINPO":
-                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("MECHA"))
+            case "NINJA":
+                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("ROBO"))
                     toReturn = 96.0;
-                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("SCOURGE"))
+                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("ZOMBO"))
                     toReturn = 97.0;
                 break;
-            case "BEAST":
-                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("NINPO"))
+            case "DINO":
+                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("NINJA"))
                     toReturn = 95.0;
-                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("MECHA"))
+                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("ROBO"))
                     toReturn = 23.0;
                 break;
-            case "SCOURGE":
-                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("BEAST"))
+            case "ZOMBO":
+                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("DINO"))
                     toReturn = 30.0;
-                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("NINPO"))
+                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("NINJA"))
                     toReturn = 0;
                 break;
-            case "MECHA":
-                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("SCOURGE"))
+            case "ROBO":
+                if (defender.getAffinities().entrySet().iterator().next().getKey().equals("ZOMBO"))
                     toReturn = 85.0;
-                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("BEAST"))
+                else if (defender.getAffinities().entrySet().iterator().next().getKey().equals("DINO"))
                     toReturn = 20.0;
                 break;
         }

@@ -1,20 +1,17 @@
 package com.swingy.states;
 
-import com.swingy.Main;
 import com.swingy.artifacts.Armor;
 import com.swingy.artifacts.Helm;
 import com.swingy.artifacts.Weapon;
 import com.swingy.battle.FighterMetrics;
+import com.swingy.id.MobileIDAssigner;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
-import com.swingy.id.IDAssigner;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
-import com.swingy.map.MapGenerator;
+import com.swingy.map.TileMapGenerator;
 import com.swingy.map.Tile;
-import com.swingy.rendering.textures.Sprite;
-import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
 import com.swingy.view.Swingy;
@@ -22,32 +19,34 @@ import com.swingy.view.Swingy;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferStrategy;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.swingy.database.SwingyDB.swingyDB;
+import static com.swingy.map.TileMapGenerator.groundIDAssigner;
 
 public class GameState extends Canvas implements State {
 
     private ArrayList<Entity> entities;
     private ArrayList<Fighter> fighters;
-    private ArrayList<Tile> tiles;
-    private Tile[][] tileMap = null;
+    private HashMap<String, Tile> tileMap = null;
 
-    private MapGenerator mapGenerator;
+    private TileMapGenerator tileMapGenerator;
     private int playerIndex;
     private Button[] options;
     private int currentSelection;
 
-    private IDAssigner idAssigner;
+    private MobileIDAssigner idAssigner;
 
     private boolean isResume = false;
     protected boolean gameOver;
 
     protected static Fighter player;
     protected static Fighter defender;
+
+    protected String playerCoordinates;
 
     private StateManager stateManager = null;
 
@@ -70,22 +69,22 @@ public class GameState extends Canvas implements State {
             if (resultSet.next()){
                 switch(resultSet.getString(4)){
                     case "ninja":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINPO"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINJA"),
                                 this, null);
                         player.setPlayerClass(ID.NINJA);
                         break;
                     case "dino":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "BEAST"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
                                 this, null);
                         player.setPlayerClass(ID.DINO);
                         break;
                     case "robo":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "BEAST"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ROBO"),
                                 this, null);
                         player.setPlayerClass(ID.ROBO);
                         break;
                     case "zombo":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "SCOURGE"),
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ZOMBO"),
                                 this, null);
                         player.setPlayerClass(ID.ZOMBO);
                         break;
@@ -98,64 +97,42 @@ public class GameState extends Canvas implements State {
             e.printStackTrace();
         }
 
-        mapGenerator = new MapGenerator(player);
-        tiles = mapGenerator.generate();
-        tileMap = mapGenerator.getTileMap();
+        tileMapGenerator = new TileMapGenerator(player);
+        tileMapGenerator.generate();
+        tileMap = tileMapGenerator.getTileMap();
 
         fighters = new ArrayList<>();
-        idAssigner = new IDAssigner(1);
 
-        for (Tile t: tiles){
-            Fighter tempFighter = null;
+        for(HashMap.Entry<String, Tile> t : tileMap.entrySet()){
+            if (t.getValue().getFigtherClassName() != "" && t.getValue().getFigtherClassName() != null){
+                for (HashMap.Entry<String, String> tObject: t.getValue().getCoordinates().entrySet()){
+                    Fighter tempFighter = null;
+                    tempFighter = new Fighter(new Texture("terrain/" + t.getValue().getFigtherClassName().toLowerCase() + "/1", false),
+                            0, 0,
+                            new FighterMetrics(t.getValue().getTileClassName(), t.getValue().getFigtherClassName()),
+                            this, null);
+                    tempFighter.setPlayerClass(t.getValue().getTileClass());
+                    tempFighter.setPlayerClassName(t.getValue().getFigtherClassName().toLowerCase());
+                    tempFighter.setMobileID(tObject.getValue());
 
-            if (t.getTileClass() == ID.DINO){
-                tempFighter = new Fighter(new Sprite("terrain/dino/1"),
-                        t.getX(), t.getY(),
-                        new FighterMetrics("Dino", "BEAST"),
-                        this, null);
-                tempFighter.setPlayerClass(ID.DINO);
-                tempFighter.setPlayerClassName("dino");
-            }
-            else if (t.getTileClass() == ID.ROBO){
-                tempFighter = new Fighter(new Sprite("terrain/robo/1"),
-                        t.getX(), t.getY(),
-                        new FighterMetrics("Robo", "BEAST"),
-                        this, null);
-                tempFighter.setPlayerClass(ID.ROBO);
-                tempFighter.setPlayerClassName("robo");
-            }
-            else if (t.getTileClass() == ID.ZOMBO){
-                tempFighter = new Fighter(new Sprite("terrain/zombo/1"),
-                        t.getX(), t.getY(),
-                        new FighterMetrics("Zombo", "SCOURGE"),
-                        this, null);
-                tempFighter.setPlayerClass(ID.ZOMBO);
-                tempFighter.setPlayerClassName("zombo");
-            }
-            else if (t.getTileClass() == ID.NINJA){
-                tempFighter = new Fighter(new Sprite("terrain/ninja/1"),
-                        t.getX(), t.getY(),
-                        new FighterMetrics("Ninja", "NINPO"),
-                        this, null);
-                tempFighter.setPlayerClass(ID.NINJA);
-                tempFighter.setPlayerClassName("ninja");
-            }
+                    String parts[] = tempFighter.getMobileID().split("-");
+                    tempFighter.setX(Double.parseDouble(parts[0]));
+                    tempFighter.setY(Double.parseDouble(parts[1]));
 
-            if (tempFighter != null) {
-                tempFighter.setMobileID(idAssigner.next());
-                t.setMobileID(tempFighter.getMobileID());
-                if (t.isPlayer()){
-                    playerIndex = tiles.indexOf(t);
-                    player.setSprite(tempFighter.getSprite());
-                    player.setMobileID(tempFighter.getMobileID());
-                    player.setX(t.getX());
-                    player.setY(t.getY());
-                    player.setPlayer(true);
-                    fighters.add(player);
-                }
-                else {
-                    fighters.add(tempFighter);
-                    tempFighter.getFighterMetrics().getLevel().setExperience(player.getFighterMetrics().getLevel().getExperience());
+                    if (tempFighter != null) {
+                        if (tempFighter.getMobileID().equalsIgnoreCase(tileMapGenerator.getPlayerCoordinate())) {
+                            playerCoordinates = tileMapGenerator.getPlayerCoordinate();
+                            player.setSprite(tempFighter.getSprite());
+                            player.setMobileID(tempFighter.getMobileID());
+                            player.setX(tempFighter.getX());
+                            player.setX(tempFighter.getY());
+                            player.setPlayer(true);
+                            fighters.add(player);
+                        } else {
+                            fighters.add(tempFighter);
+                            tempFighter.getFighterMetrics().getLevel().setExperience(player.getFighterMetrics().getLevel().getExperience());
+                        }
+                    }
                 }
             }
         }
@@ -163,88 +140,104 @@ public class GameState extends Canvas implements State {
 
     public void enemyMove(){
 
-        for (Fighter p: fighters) {
-            if (p != player && p.isAlive()) {
-                ArrayList<String> directions = new ArrayList<>();
-                int originX = (Swingy.WIDTH - (tileMap.length * 32)) / 2;
-                int originY = (Swingy.HEIGHT - (tileMap.length * 32)) / 2;
-                int indexX = (int) ((p.getX() - originX));
-                int indexY = (int) ((p.getY() - originY));
+        String directions[] = {
+                "UP",
+                "DOWN",
+                "LEFT",
+                "RIGHT"
+        };
 
-                if (indexX > 0)
-                    indexX /= 32;
-                if (indexY > 0)
-                    indexY /= 32;
+        if (options == null){
+            for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
+                if (!t.getValue().getFigtherClassName().equalsIgnoreCase("")){
+                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                        if (tObject.getValue() != playerCoordinates){
+                            int seed = 0 + (int)(Math.random() * ((3 - 0) + 1));
+                            Tile groundTile = tileMap.get("GROUND");
+                            switch (directions[seed]){
+                                case "UP":
+                                    for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                                        if (coordinateCompare(tGround.getValue(), tObject.getValue(), 0, 32, 0, 0)){
+                                            //Swap Render Coordinates on adjacent tiles
+                                            String newPlayerCoordinate = coordinateMod(tObject.getValue(), 0, -32);
+                                            String newGroundCoordinate = tObject.getValue();
 
-                if (indexX + 1 < tileMap.length && indexX + 1 > -1 && indexY < tileMap.length && indexY > -1) {
-                    if (tileMap[indexY][indexX + 1].getTileClass() == ID.GROUND)
-                        directions.add("right");
+                                            t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
+                                            groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                }
-                if (indexX - 1 < tileMap.length && indexX - 1 > -1 && indexY < tileMap.length && indexY > -1) {
-                    if (tileMap[indexY][indexX - 1].getTileClass() == ID.GROUND)
-                        directions.add("left");
-                }
-                if (indexX < tileMap.length && indexX > -1 && indexY + 1 < tileMap.length && indexY + 1 > -1) {
-                    if (tileMap[indexY + 1][indexX].getTileClass() == ID.GROUND)
-                        directions.add("down");
-                }
-                if (indexX < tileMap.length && indexX > -1 && indexY - 1 < tileMap.length && indexY - 1 > -1) {
-                    if (tileMap[indexY - 1][indexX].getTileClass() == ID.GROUND)
-                        directions.add("up");
-                }
+                                            for (Fighter f : fighters){
+                                                if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
+                                                    f.setMobileID(newPlayerCoordinate);
+                                            }
 
-                double seed = Math.random();
-                double i = 0;
+                                            break ;
+                                        }
+                                    }
+                                    break ;
+                                case "DOWN":
+                                    for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                                        if (coordinateCompare(tGround.getValue(), tObject.getValue(), 0, -32, 0, 0)){
+                                            //Swap Render Coordinates on adjacent tiles
+                                            String newPlayerCoordinate = coordinateMod(tObject.getValue(), 0, 32);
+                                            String newGroundCoordinate = tObject.getValue();
 
-                for (String d : directions) {
-                    double probability = (++i/directions.size());
-                    if (seed < probability) {
-                        Tile tempTile;
-                        if (d == "left") {
-                            tempTile = tileMap[indexY][indexX - 1];
-                            tileMap[indexY][indexX - 1] = tileMap[indexY][indexX];
-                            tileMap[indexY][indexX] = tempTile;
+                                            t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
+                                            groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                            tileMap[indexY][indexX - 1].moveX(-32);
-                            tileMap[indexY][indexX].moveX(32);
+                                            for (Fighter f : fighters){
+                                                if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
+                                                    f.setMobileID(newPlayerCoordinate);
+                                            }
 
-                            p.moveX(-32);
-                        }  else if (d == "up") {
-                            tempTile = tileMap[indexY - 1][indexX];
-                            tileMap[indexY - 1][indexX] = tileMap[indexY][indexX];
-                            tileMap[indexY][indexX] = tempTile;
+                                            break ;
+                                        }
+                                    }
+                                    break ;
+                                case "LEFT":
+                                    for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                                        if (coordinateCompare(tGround.getValue(), tObject.getValue(), 32, 0, 0, 0)){
+                                            //Swap Render Coordinates on adjacent tiles
+                                            String newPlayerCoordinate = coordinateMod(tObject.getValue(), -32, 0);
+                                            String newGroundCoordinate = tObject.getValue();
 
-                            tileMap[indexY - 1][indexX].moveY(-32);
-                            tileMap[indexY][indexX].moveY(32);
+                                            t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
+                                            groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                            p.moveY(-32);
+                                            for (Fighter f : fighters){
+                                                if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
+                                                    f.setMobileID(newPlayerCoordinate);
+                                            }
+
+                                            break ;
+                                        }
+                                    }
+                                    break ;
+                                case "RIGHT":
+                                    for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                                        if (coordinateCompare(tGround.getValue(), tObject.getValue(), -32, 0, 0, 0)){
+                                            //Swap Render Coordinates on adjacent tiles
+                                            String newPlayerCoordinate = coordinateMod(tObject.getValue(), 32, 0);
+                                            String newGroundCoordinate = tObject.getValue();
+
+                                            t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
+                                            groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
+
+                                            for (Fighter f : fighters){
+                                                if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
+                                                    f.setMobileID(newPlayerCoordinate);
+                                            }
+
+                                            break ;
+                                        }
+                                    }
+                                    break ;
+                            }
                         }
-                        else if (d == "right") {
-                            tempTile = tileMap[indexY][indexX + 1];
-                            tileMap[indexY][indexX + 1] = tileMap[indexY][indexX];
-                            tileMap[indexY][indexX] = tempTile;
-
-                            tileMap[indexY][indexX + 1].moveX(32);
-                            tileMap[indexY][indexX].moveX(-32);
-
-                            p.moveX(32);
-                        }
-                        else {
-                            tempTile = tileMap[indexY + 1][indexX];
-                            tileMap[indexY + 1][indexX] = tileMap[indexY][indexX];
-                            tileMap[indexY][indexX] = tempTile;
-
-                            tileMap[indexY + 1][indexX].moveY(32);
-                            tileMap[indexY][indexX].moveY(-32);
-
-                            p.moveY(32);
-                        }
-                        break;
                     }
                 }
             }
         }
+
     }
 
     @Override
@@ -253,7 +246,6 @@ public class GameState extends Canvas implements State {
             isResume = false;
             entities.clear();
             fighters.clear();
-            tiles.clear();
             options = null;
         }
         if (!isResume)
@@ -269,7 +261,6 @@ public class GameState extends Canvas implements State {
             isResume = false;
             entities.clear();
             fighters.clear();
-            tiles.clear();
             options = null;
         }
         try {
@@ -295,31 +286,102 @@ public class GameState extends Canvas implements State {
             return artifacts[2];
     }
 
+    private boolean coordinateCompare(String str1, String str2, float modX1, float modY1, float modX2, float modY2){
+        double x1 = Double.parseDouble(str1.split("-")[0]) + modX1;
+        double y1 = Double.parseDouble(str1.split("-")[1]) + modY1;
+        double x2 = Double.parseDouble(str2.split("-")[0]) + modX2;
+        double y2 = Double.parseDouble(str2.split("-")[1]) + modY2;
+
+        if (x1 == x2 && y1 == y2)
+            return true;
+        return false;
+    }
+
+    private String coordinateMod(String str1, float modX, float modY){
+        double x1 = Double.parseDouble(str1.split("-")[0]) + modX;
+        double y1 = Double.parseDouble(str1.split("-")[1]) + modY;
+
+        return x1 + "-" + y1;
+    }
+
     @Override
     public void tick(StateManager stateManager) {
         this.stateManager = stateManager;
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             if (options == null) {
-                for (int i = 0; i < tileMap.length; i++) {
-                    for (int j = 0; j < tileMap.length; j++) {
-                        if (tileMap[i][j].isPlayer()) {
-                            if (i - 1 > -1) {
-                                if (tileMap[i - 1][j].getTileClass() == ID.GROUND) {
-                                    Tile tempTile = tileMap[i - 1][j];
-                                    tileMap[i - 1][j] = tileMap[i][j];
-                                    tileMap[i][j] = tempTile;
+                boolean moved = false;
+                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
+                        Tile groundTile = tileMap.get("GROUND");
+                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                            if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, 32, 0, 0)){
+                                //Swap Render Coordinates on adjacent tiles
+                                String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, -32);
+                                String newGroundCoordinate = playerCoordinates;
 
-                                    tileMap[i - 1][j].moveY(-32);
-                                    tileMap[i][j].moveY(32);
+                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                    player.moveY(-32);
-                                    j = tileMap.length;
-                                    i = tileMap.length;
+                                player.setMobileID(newPlayerCoordinate);
+                                playerCoordinates = newPlayerCoordinate;
 
-                                    moveLogic();
+                                if (item()){
+                                    String temp = calculateArtifact();
+                                    addArtifact(temp);
+                                }
+
+                                moved = true;
+                                enemyMove();
+
+
+                                break ;
+                            }
+                        }
+
+                        if (moved){
+                            for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
+                                if (t.getValue().getTileClassName() == "FIGHTER"
+                                        || t.getValue().getTileClassName() == "TRAP"
+                                        || t.getValue().getTileClassName() == "BORDER"){
+                                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                                        if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0)){
+                                            switch (t.getValue().getTileClassName()){
+                                                case "FIGHTER":
+                                                    setDefender(tObject.getValue());
+                                                    options = new Button[2];
+                                                    options[0] = new Button("Fight", (500 + 0 * 80),
+                                                            new Font("Arial", Font.PLAIN, 32),
+                                                            new Font("Arial", Font.BOLD, 48),
+                                                            Color.WHITE,
+                                                            Color.YELLOW);
+                                                    options[1] = new Button("Flee", (500 + 1 * 80),
+                                                            new Font("Arial", Font.PLAIN, 32),
+                                                            new Font("Arial", Font.BOLD, 48),
+                                                            Color.WHITE,
+                                                            Color.YELLOW);
+                                                    break;
+                                                case "TRAP":
+                                                    if (!item()) {
+                                                        player.setAlive(false);
+                                                        gameOver = true;
+                                                        stateManager.setState("menu", this);
+                                                    }
+                                                    break;
+                                                case "BORDER":
+                                                    if (escape())
+                                                        passMap();
+                                                    break;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
+                        break ;
                     }
                 }
             }
@@ -333,26 +395,78 @@ public class GameState extends Canvas implements State {
 
         if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)){
             if (options == null) {
-                for (int i = 0; i < tileMap.length; i++) {
-                    for (int j = 0; j < tileMap.length; j++) {
-                        if (tileMap[i][j].isPlayer()) {
-                            if (i + 1 < tileMap.length) {
-                                if (tileMap[i + 1][j].getTileClass() == ID.GROUND) {
-                                    Tile tempTile = tileMap[i + 1][j];
-                                    tileMap[i + 1][j] = tileMap[i][j];
-                                    tileMap[i][j] = tempTile;
+                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
+                        boolean moved = false;
+                        Tile groundTile = tileMap.get("GROUND");
+                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                            if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, -32, 0, 0)){
+                                //Swap Render Coordinates on adjacent tiles
+                                String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, 32);
+                                String newGroundCoordinate = playerCoordinates;
 
-                                    tileMap[i + 1][j].moveY(32);
-                                    tileMap[i][j].moveY(-32);
+                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                    player.moveY(32);
-                                    j = tileMap.length;
-                                    i = tileMap.length;
+                                player.setMobileID(newPlayerCoordinate);
+                                playerCoordinates = newPlayerCoordinate;
 
-                                    moveLogic();
+                                if (item()){
+                                    String temp = calculateArtifact();
+                                    addArtifact(temp);
+                                }
+
+                                moved = true;
+                                enemyMove();
+
+                                break ;
+                            }
+                        }
+
+                        if (moved){
+                            for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
+                                if (t.getValue().getTileClassName() == "FIGHTER"
+                                        || t.getValue().getTileClassName() == "TRAP"
+                                        || t.getValue().getTileClassName() == "BORDER"){
+                                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                                        if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0)){
+                                            switch (t.getValue().getTileClassName()){
+                                                case "FIGHTER":
+                                                    setDefender(tObject.getValue());
+                                                    options = new Button[2];
+                                                    options[0] = new Button("Fight", (500 + 0 * 80),
+                                                            new Font("Arial", Font.PLAIN, 32),
+                                                            new Font("Arial", Font.BOLD, 48),
+                                                            Color.WHITE,
+                                                            Color.YELLOW);
+                                                    options[1] = new Button("Flee", (500 + 1 * 80),
+                                                            new Font("Arial", Font.PLAIN, 32),
+                                                            new Font("Arial", Font.BOLD, 48),
+                                                            Color.WHITE,
+                                                            Color.YELLOW);
+                                                    break;
+                                                case "TRAP":
+                                                    if (!item()) {
+                                                        player.setAlive(false);
+                                                        gameOver = true;
+                                                        stateManager.setState("menu", this);
+                                                    }
+                                                    break;
+                                                case "BORDER":
+                                                    if (escape())
+                                                        passMap();
+                                                    break;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
+                        break ;
                     }
                 }
             }
@@ -366,26 +480,78 @@ public class GameState extends Canvas implements State {
 
         if (KeyInput.wasPressed(KeyEvent.VK_LEFT) || KeyInput.wasPressed(KeyEvent.VK_A)){
             if (options == null) {
-                for (int i = 0; i < tileMap.length; i++) {
-                    for (int j = 0; j < tileMap.length; j++) {
-                        if (tileMap[i][j].isPlayer()) {
-                            if (j - 1 > -1) {
-                                if (tileMap[i][j - 1].getTileClass() == ID.GROUND) {
-                                    Tile tempTile = tileMap[i][j - 1];
-                                    tileMap[i][j - 1] = tileMap[i][j];
-                                    tileMap[i][j] = tempTile;
+                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
+                        boolean moved = false;
+                        Tile groundTile = tileMap.get("GROUND");
+                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                            if (coordinateCompare(tGround.getValue(), playerCoordinates, 32, 0, 0, 0)){
+                                //Swap Render Coordinates on adjacent tiles
+                                String newPlayerCoordinate = coordinateMod(playerCoordinates, -32, 0);
+                                String newGroundCoordinate = playerCoordinates;
 
-                                    tileMap[i][j - 1].moveX(-32);
-                                    tileMap[i][j].moveX(32);
+                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                    player.moveX(-32);
-                                    j = tileMap.length;
-                                    i = tileMap.length;
+                                player.setMobileID(newPlayerCoordinate);
+                                playerCoordinates = newPlayerCoordinate;
 
-                                    moveLogic();
+                                if (item()){
+                                    String temp = calculateArtifact();
+                                    addArtifact(temp);
+                                }
+
+                                moved = true;
+                                enemyMove();
+
+                                break ;
+                            }
+                        }
+
+                        if (moved){
+                            for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
+                                if (t.getValue().getTileClassName() == "FIGHTER"
+                                        || t.getValue().getTileClassName() == "TRAP"
+                                        || t.getValue().getTileClassName() == "BORDER"){
+                                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                                        if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0)){
+                                            switch (t.getValue().getTileClassName()){
+                                                case "FIGHTER":
+                                                    setDefender(tObject.getValue());
+                                                    options = new Button[2];
+                                                    options[0] = new Button("Fight", (500 + 0 * 80),
+                                                            new Font("Arial", Font.PLAIN, 32),
+                                                            new Font("Arial", Font.BOLD, 48),
+                                                            Color.WHITE,
+                                                            Color.YELLOW);
+                                                    options[1] = new Button("Flee", (500 + 1 * 80),
+                                                            new Font("Arial", Font.PLAIN, 32),
+                                                            new Font("Arial", Font.BOLD, 48),
+                                                            Color.WHITE,
+                                                            Color.YELLOW);
+                                                    break;
+                                                case "TRAP":
+                                                    if (!item()) {
+                                                        player.setAlive(false);
+                                                        gameOver = true;
+                                                        stateManager.setState("menu", this);
+                                                    }
+                                                    break;
+                                                case "BORDER":
+                                                    if (escape())
+                                                        passMap();
+                                                    break;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
+                        break ;
                     }
                 }
             }
@@ -399,28 +565,80 @@ public class GameState extends Canvas implements State {
 
         if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) || KeyInput.wasPressed(KeyEvent.VK_D)){
             if(options == null) {
-                for (int i = 0; i < tileMap.length; i++) {
-                    for (int j = 0; j < tileMap.length; j++) {
-                        if (tileMap[i][j] != null) {
-                            if (tileMap[i][j].isPlayer()) {
-                                if (j + 1 < tileMap.length) {
-                                    if (tileMap[i][j + 1].getTileClass() == ID.GROUND) {
-                                        Tile tempTile = tileMap[i][j + 1];
-                                        tileMap[i][j + 1] = tileMap[i][j];
-                                        tileMap[i][j] = tempTile;
+                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
+                        boolean moved = false;
+                        Tile groundTile = tileMap.get("GROUND");
+                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                            if (coordinateCompare(tGround.getValue(), playerCoordinates, -32, 0, 0, 0)){
+                                //Swap Render Coordinates on adjacent tiles
+                                String newPlayerCoordinate = coordinateMod(playerCoordinates, 32, 0);
+                                String newGroundCoordinate = playerCoordinates;
 
-                                        tileMap[i][j + 1].moveX(32);
-                                        tileMap[i][j].moveX(-32);
+                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                        player.moveX(32);
-                                        j = tileMap.length;
-                                        i = tileMap.length;
+                                player.setMobileID(newPlayerCoordinate);
+                                playerCoordinates = newPlayerCoordinate;
 
-                                        moveLogic();
+                                if (item()){
+                                    String temp = calculateArtifact();
+                                    addArtifact(temp);
+                                }
+
+                                moved = true;
+                                enemyMove();
+
+                                break ;
+                            }
+                        }
+
+                        if (moved){
+                            for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
+                                if (t.getValue().getTileClassName() == "FIGHTER"
+                                        || t.getValue().getTileClassName() == "TRAP"
+                                        || t.getValue().getTileClassName() == "BORDER"){
+                                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                                        if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0)){
+                                            switch (t.getValue().getTileClassName()){
+                                                case "FIGHTER":
+                                                    setDefender(tObject.getValue());
+                                                    options = new Button[2];
+                                                    options[0] = new Button("Fight", (500 + 0 * 80),
+                                                            new Font("Arial", Font.PLAIN, 32),
+                                                            new Font("Arial", Font.BOLD, 48),
+                                                            Color.WHITE,
+                                                            Color.YELLOW);
+                                                    options[1] = new Button("Flee", (500 + 1 * 80),
+                                                            new Font("Arial", Font.PLAIN, 32),
+                                                            new Font("Arial", Font.BOLD, 48),
+                                                            Color.WHITE,
+                                                            Color.YELLOW);
+                                                    break;
+                                                case "TRAP":
+                                                    if (!item()) {
+                                                        player.setAlive(false);
+                                                        gameOver = true;
+                                                        stateManager.setState("menu", this);
+                                                    }
+                                                    else
+                                                        addArtifact(calculateArtifact());
+                                                    break;
+                                                 case "BORDER":
+                                                     if (escape())
+                                                         passMap();
+                                                    break;
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+                        break ;
                     }
                 }
             }
@@ -458,24 +676,17 @@ public class GameState extends Canvas implements State {
         switch (currentSelection){
             case 0 :
                 options = null;
-                stateManager.setState("battle", this);
+                if (defender != null)
+                    stateManager.setState("battle", this);
                 break ;
             case 1 :
                 options = null;
-                if (flee() == false);
-                    stateManager.setState("battle", this);
+                if (flee() == false) {
+                    if (defender != null)
+                        stateManager.setState("battle", this);
+                }
                 break ;
         }
-    }
-
-    private void moveLogic(){
-        if (item()){
-            String temp = calculateArtifact();
-            addArtifact(temp);
-        }
-        collision();
-        enemyMove();
-        collision();
     }
 
     @Override
@@ -484,18 +695,16 @@ public class GameState extends Canvas implements State {
         graphics.setColor(Color.WHITE);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Sprite background = new Sprite(new SpriteSheet(new Texture("background/3", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        Texture background = new Texture(new Texture("background/3", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
-        for (Entity e : entities)
-            e.render(graphics);
-
-        for (int i = 0; i < tileMap.length; i++){
-            for (int j = 0; j < tileMap.length; j++){
-                if (tileMap[i][j] != null)
-                    tileMap[i][j].render(graphics);
-            }
+        if (entities.size() > 0 && entities != null) {
+            for (Entity e : entities)
+                e.render(graphics);
         }
+
+        for(HashMap.Entry<String, Tile> t : tileMap.entrySet())
+            t.getValue().render(graphics);
 
         if (options != null) {
             for (int i = 0; i < options.length; i++) {
@@ -514,196 +723,34 @@ public class GameState extends Canvas implements State {
     }
 
     public boolean flee(){
-       /* int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
-        boolean possible[] = {true, true, true, true};*/
+        int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
+        boolean possible[] = {true, false, true, false};
 
-        /*if (possible[random] == true)
-            defender = null;*/
+        if (possible[random] == true)
+            defender = null;
 
-        return true;
+        return possible[random];
     }
 
     public boolean escape(){
         int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
-        boolean possible[] = {true, true, true, false};
+        boolean possible[] = {true, true, false, false};
 
         return possible[random];
     }
 
     public boolean item(){
-        int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
-        boolean possible[] = {false, true, false, false};
+        int random = 0 + (int)(Math.random() * ((8 - 0) + 1));
+        boolean possible[] = {false, true, false, false, false, false, false, false, false};
 
         return possible[random];
     }
 
-    public void setDefender(int id){
+    public void setDefender(String id){
         for (Fighter f : fighters) {
             if (f.getMobileID() == id)
                 defender = f;
         }
-    }
-
-    public boolean collision(){
-        for (int i =  0; i < tileMap.length; i++){
-            for (int j = 0; j < tileMap.length; j++) {
-                if (tileMap[i][j] != null) {
-                    if (tileMap[i][j].isPlayer()) {
-                        if (j + 1 < tileMap.length) {
-                            if (tileMap[i][j + 1].getTileClass() == ID.NINJA
-                                    || tileMap[i][j + 1].getTileClass() == ID.DINO
-                                    || tileMap[i][j + 1].getTileClass() == ID.ROBO
-                                    || tileMap[i][j + 1].getTileClass() == ID.ZOMBO) {
-
-                                setDefender(tileMap[i][j + 1].getMobileID());
-
-                                options = new Button[2];
-                                options[0] = new Button("Fight", (500 + 0 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                options[1] = new Button("Flee", (500 + 1 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-
-                                return true;
-                            } else if (tileMap[i][j + 1].getTileClass() == ID.LAVA
-                                    || tileMap[i][j + 1].getTileClass() == ID.PIT) {
-                                if (!item()) {
-                                    System.out.println("DEATH BY DEEP END");
-                                    player.setAlive(false);
-                                    gameOver = true;
-                                    stateManager.setState("menu", this);
-                                }
-                                else
-                                    addArtifact(calculateArtifact());
-                            }
-                            else if (tileMap[i][j + 1].getTileClass() == ID.BORDER) {
-                                System.out.println("PASSED LEVEL");
-                                if (escape())
-                                    passMap();
-                            }
-                        }
-                        if (j - 1 > -1) {
-                            if (tileMap[i][j - 1].getTileClass() == ID.NINJA
-                                    || tileMap[i][j - 1].getTileClass() == ID.DINO
-                                    || tileMap[i][j - 1].getTileClass() == ID.ROBO
-                                    || tileMap[i][j - 1].getTileClass() == ID.ZOMBO) {
-
-                                setDefender(tileMap[i][j - 1].getMobileID());
-
-                                options = new Button[2];
-                                options[0] = new Button("Fight", (500 + 0 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                options[1] = new Button("Flee", (500 + 1 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-
-                                return true;
-                            } else if (tileMap[i][j - 1].getTileClass() == ID.LAVA
-                                    || tileMap[i][j - 1].getTileClass() == ID.PIT) {
-                                if (!item()) {
-                                    System.out.println("DEATH BY DEEP END");
-                                    player.setAlive(false);
-                                    gameOver = true;
-                                    stateManager.setState("menu", this);
-                                }
-                                else
-                                    addArtifact(calculateArtifact());
-                            }
-                            else if (tileMap[i][j - 1].getTileClass() == ID.BORDER) {
-                                System.out.println("PASSED LEVEL");
-                                if (escape())
-                                    passMap();
-                            }
-                        }
-                        if (i + 1 < tileMap.length) {
-                            if (tileMap[i + 1][j].getTileClass() == ID.NINJA
-                                    || tileMap[i + 1][j].getTileClass() == ID.DINO
-                                    || tileMap[i + 1][j].getTileClass() == ID.ROBO
-                                    || tileMap[i + 1][j].getTileClass() == ID.ZOMBO) {
-
-                                setDefender(tileMap[i + 1][j].getMobileID());
-
-                                options = new Button[2];
-                                options[0] = new Button("Fight", (500 + 0 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                options[1] = new Button("Flee", (500 + 1 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                return true;
-                            } else if (tileMap[i + 1][j].getTileClass() == ID.LAVA
-                                    || tileMap[i + 1][j].getTileClass() == ID.PIT) {
-                                if (!item()) {
-                                    System.out.println("DEATH BY DEEP END");
-                                    player.setAlive(false);
-                                    gameOver = true;
-                                    stateManager.setState("menu", this);
-                                }
-                                else
-                                    addArtifact(calculateArtifact());
-                            }
-                            else if (tileMap[i + 1][j].getTileClass() == ID.BORDER) {
-                                System.out.println("PASSED LEVEL");
-                                if (escape())
-                                    passMap();
-                            }
-                        }
-                        if (i - 1 > -1) {
-                            if (tileMap[i - 1][j].getTileClass() == ID.NINJA
-                                    || tileMap[i - 1][j].getTileClass() == ID.DINO
-                                    || tileMap[i - 1][j].getTileClass() == ID.ROBO
-                                    || tileMap[i - 1][j].getTileClass() == ID.ZOMBO) {
-
-                                setDefender(tileMap[i - 1][j].getMobileID());
-
-                                options = new Button[2];
-                                options[0] = new Button("Fight", (500 + 0 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                options[1] = new Button("Flee", (500 + 1 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                return true;
-                            } else if (tileMap[i - 1][j].getTileClass() == ID.LAVA
-                                    || tileMap[i - 1][j].getTileClass() == ID.PIT) {
-                                if (!item()) {
-                                    System.out.println("DEATH BY DEEP END");
-                                    player.setAlive(false);
-                                    gameOver = true;
-                                    stateManager.setState("menu", this);
-                                }
-                                else
-                                    addArtifact(calculateArtifact());
-                            }
-                            else if (tileMap[i - 1][j].getTileClass() == ID.BORDER) {
-                                System.out.println("PASSED LEVEL");
-                                if (escape())
-                                    passMap();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     private void passMap(){
@@ -741,22 +788,22 @@ public class GameState extends Canvas implements State {
     }
 
     protected void removeFighter(Fighter fighter){
-        for (int i = 0; i < tileMap.length ;i++){
-            for (int j = 0; j < tileMap.length; j++){
-                if (tileMap[i][j].getMobileID() == fighter.getMobileID()) {
-                    tiles.remove(tileMap[i][j]);
+        defender = null;
+        tileMap.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), fighter.getMobileID());
 
-                    tileMap[i][j] = new Tile(tileMap[i][j].getX(), tileMap[i][j].getY(), new Sprite(new SpriteSheet(new Texture("terrain/ground", false), 32), 2, 2), ID.GROUND);
-                    tiles.add(tileMap[i][j]);
-
-                    fighters.remove(fighter);
-                    entities.remove(fighter);
-
-                    i = tileMap.length;
-                    j = tileMap.length;
+        for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
+            if (t.getValue().getFigtherClassName().equalsIgnoreCase(fighter.getPlayerClassName())){
+                for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                    if (tObject.getValue().equalsIgnoreCase(fighter.getMobileID())) {
+                        t.getValue().removeCoordinate(tObject.getKey());
+                        break ;
+                    }
                 }
+                break ;
             }
         }
+        fighters.remove(fighter);
+        entities.remove(fighter);
     }
 
     protected void gameOver(){

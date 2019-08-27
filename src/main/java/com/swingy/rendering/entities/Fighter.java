@@ -3,7 +3,7 @@ package com.swingy.rendering.entities;
 import com.swingy.battle.FighterMetrics;
 import com.swingy.id.ID;
 import com.swingy.rendering.textures.Animation;
-import com.swingy.rendering.textures.Sprite;
+import com.swingy.rendering.textures.Texture;
 import com.swingy.states.State;
 
 import java.awt.*;
@@ -16,7 +16,7 @@ public class Fighter extends Mobile{
     private boolean alive;
     private FighterMetrics fighterMetrics;
 
-    public Fighter(Sprite sprite, double x, double y, FighterMetrics fighterMetrics, State state, Animation animation) {
+    public Fighter(Texture sprite, double x, double y, FighterMetrics fighterMetrics, State state, Animation animation) {
         super(sprite, x, y, state, animation);
         alive = true;
         isPlayer = false;

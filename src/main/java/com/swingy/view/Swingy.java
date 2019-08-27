@@ -2,10 +2,8 @@ package com.swingy.view;
 
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
-import com.swingy.rendering.textures.Sprite;
-import com.swingy.rendering.textures.SpriteSheet;
-import com.swingy.rendering.textures.Texture;
 import com.swingy.states.*;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,41 +53,6 @@ public class Swingy extends Canvas implements Runnable{
     public void run() {
         requestFocus();
 
-
-
-
-
-        /*long lastTime = System.nanoTime();
-        double amountOfTicks = 60.0;
-        double ns = 1000000000 / amountOfTicks;
-        double delta = 0;
-        long timer = System.currentTimeMillis();
-        int frames = 0;
-        while(running) {
-            long now = System.nanoTime();
-            delta += (now - lastTime) / ns;
-            lastTime = now;
-            while(delta >= 1) {
-                tick();
-                delta--;
-            }
-            render();
-            frames++;
-
-            if(System.currentTimeMillis() - timer > 1000) {
-                timer += 1000;
-                System.out.printf("FPS: %d\n", frames);
-                frames = 0;
-            }
-        }*/
-
-
-
-
-
-
-
-
         //Game Loop
         double targetTicks = 60.0;
         double nanoSecondsPT = 100000000.0 / targetTicks;
@@ -119,11 +82,11 @@ public class Swingy extends Canvas implements Runnable{
                 canRender = false;
             }
 
-            /*try {
-                Thread.sleep(1);
+            try {
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }*/
+            }
 
             if (canRender){
                 render();
@@ -141,8 +104,15 @@ public class Swingy extends Canvas implements Runnable{
         System.exit(0);
     }
 
+    public static void rest(){
+        try {
+            Thread.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void start(){
-        stateManager.setState("menu", null);
         if (running)
             return;
         running = true;

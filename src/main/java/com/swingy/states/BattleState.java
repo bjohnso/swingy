@@ -10,8 +10,6 @@ import com.swingy.id.ID;
 
 import com.swingy.battle.objects.HUD;
 import com.swingy.rendering.entities.Fighter;
-import com.swingy.rendering.textures.Sprite;
-import com.swingy.rendering.textures.SpriteSheet;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.util.AnimationHelper;
 import com.swingy.util.Fonts;
@@ -50,7 +48,7 @@ public class BattleState extends Canvas implements State {
         Fighter tempFighter = null;
         switch (GameState.player.getPlayerClass()){
             case NINJA:
-                tempFighter = new Fighter(new Sprite("ninja/idle/1"),
+                tempFighter = new Fighter(new Texture("ninja/idle/1", false),
                         DEFAULT_WIDTH / 100 * 5,
                         DEFAULT_HEIGHT / 100 * 50,
                         GameState.player.getFighterMetrics(),
@@ -59,7 +57,7 @@ public class BattleState extends Canvas implements State {
                 tempFighter.setPlayerClassName("ninja");
                 break;
             case DINO:
-                tempFighter = new Fighter(new Sprite("dino/idle/1"),
+                tempFighter = new Fighter(new Texture("dino/idle/1", false),
                         DEFAULT_WIDTH / 100 * 5,
                         DEFAULT_HEIGHT / 100 * 60,
                         GameState.player.getFighterMetrics(),
@@ -68,7 +66,7 @@ public class BattleState extends Canvas implements State {
                 tempFighter.setPlayerClassName("dino");
                 break;
             case ROBO:
-                tempFighter = new Fighter(new Sprite("robo/idle/1"),
+                tempFighter = new Fighter(new Texture("robo/idle/1", false),
                         DEFAULT_WIDTH / 100 * 5,
                         DEFAULT_HEIGHT / 100 * 50,
                         GameState.player.getFighterMetrics(),
@@ -77,7 +75,7 @@ public class BattleState extends Canvas implements State {
                 tempFighter.setPlayerClassName("robo");
                 break;
             case ZOMBO:
-                tempFighter = new Fighter(new Sprite("zombo/idle/1"),
+                tempFighter = new Fighter(new Texture("zombo/idle/1", false),
                         DEFAULT_WIDTH / 100 * 5,
                         DEFAULT_HEIGHT / 100 * 50,
                         GameState.player.getFighterMetrics(),
@@ -93,7 +91,7 @@ public class BattleState extends Canvas implements State {
 
         switch (GameState.defender.getPlayerClass()){
             case NINJA:
-                tempFighter = new Fighter(new Sprite("ninja/idle/1"),
+                tempFighter = new Fighter(new Texture("ninja/idle/1", true),
                         DEFAULT_WIDTH / 100 * 70,
                         DEFAULT_HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
@@ -102,7 +100,7 @@ public class BattleState extends Canvas implements State {
                 tempFighter.setPlayerClassName("ninja");
                 break;
             case DINO:
-                tempFighter = new Fighter(new Sprite("dino/idle/1"),
+                tempFighter = new Fighter(new Texture("dino/idle/1", true),
                         DEFAULT_WIDTH / 100 * 60,
                         DEFAULT_HEIGHT / 100 * 60,
                         GameState.defender.getFighterMetrics(),
@@ -111,7 +109,7 @@ public class BattleState extends Canvas implements State {
                 tempFighter.setPlayerClassName("dino");
                 break;
             case ROBO:
-                tempFighter = new Fighter(new Sprite("robo/idle/1"),
+                tempFighter = new Fighter(new Texture("robo/idle/1", true),
                         DEFAULT_WIDTH / 100 * 70,
                         DEFAULT_HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
@@ -120,7 +118,7 @@ public class BattleState extends Canvas implements State {
                 tempFighter.setPlayerClassName("robo");
                 break;
             case ZOMBO:
-                tempFighter = new Fighter(new Sprite("zombo/idle/1"),
+                tempFighter = new Fighter(new Texture("zombo/idle/1", true),
                         DEFAULT_WIDTH / 100 * 70,
                         DEFAULT_HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
@@ -219,7 +217,7 @@ public class BattleState extends Canvas implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-        Sprite background = new Sprite(new SpriteSheet(new Texture("background/4", false), Swingy.WIDTH, Swingy.HEIGHT), 1, 1);
+        Texture background = new Texture(new Texture("background/4", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
         Font font = new Font("Arial", Font.PLAIN, 16);
@@ -237,11 +235,11 @@ public class BattleState extends Canvas implements State {
             //Artifacts
             j = 0;
             for (Artifact a : fighters.get(i).getFighterMetrics().getArtifacts()){
-                Sprite artifact;
+                Texture artifact;
                 if (a.getId() == ID.WEAPON)
-                    artifact = new Sprite(new SpriteSheet(new Texture("battle/"+ a.getType(), false), 16, 64), 1, 1);
+                    artifact = new Texture(new Texture("battle/"+ a.getType(), false),1, 1, 16, 64);
                 else
-                    artifact = new Sprite(new SpriteSheet(new Texture("battle/"+ a.getType(), false), 64, 64), 1, 1);
+                    artifact = new Texture(new Texture("battle/"+ a.getType(), false),1, 1, 64, 64);
                 artifact.render(graphics, (DEFAULT_WIDTH / 100 * 5) + (j * 50), DEFAULT_HEIGHT / 100 * 40);
                 j++;
             }

@@ -1,5 +1,6 @@
 package com.swingy.rendering.textures;
 
+import com.swingy.util.ImageTransformer;
 import com.swingy.util.TextureManager;
 
 import javax.imageio.ImageIO;
@@ -12,37 +13,56 @@ import java.util.Map;
 
 public class Texture {
 
-    private final static Map<String, TextureManager> textureMap = new HashMap<>();
-    private TextureManager manager;
-    private String fileName;
+    private final static Map<String, BufferedImage> textureMap = new HashMap<>();
     private BufferedImage image;
+    private String fileName;
+    private int width, height;
+    private boolean transform = false;
 
     public Texture(String fileName, boolean transform) {
         this.fileName = fileName;
-        TextureManager oldTexture = textureMap.get(fileName);
-        if (oldTexture != null) {
-            oldTexture.transform(transform);
-            manager = oldTexture;
-            manager.addReference();
+        BufferedImage oldImage = textureMap.get(fileName);
+        if (oldImage != null) {
+            this.image = oldImage;
         } else {
             try {
                 System.out.println("loading texture : " + fileName);
-                manager = new TextureManager(ImageIO.read(new File("./res/textures/" + fileName + ".png")), transform);
-                textureMap.put(fileName, manager);
+                this.image = ImageIO.read(new File("./res/textures/" + fileName + ".png"));
+                textureMap.put(fileName, this.image);
             } catch (IOException e){
                 e.printStackTrace();
             }
         }
-        image = manager.getImage();
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+        transform(transform);
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        if (manager.removeReference() && !fileName.isEmpty()) {
-            textureMap.remove(fileName);
-            System.out.println("removing texture from memory : " + fileName);
+    public Texture(Texture spritesheet, int x, int y, int width, int height){
+        this.width = width;
+        this.height = height;
+        String key = spritesheet.fileName + "_" + x + "_" + y;
+        BufferedImage oldImage = textureMap.get(key);
+        if (oldImage != null)
+            this.image = oldImage;
+        else {
+            this.image = spritesheet.image.getSubimage(
+                    x * width - width,
+                    y * height - height,
+                    width,
+                    height);
+            textureMap.put(key, this.image);
         }
-        super.finalize();
+    }
+
+    public Texture(Texture spritesheet, int x, int y, int size){
+        this(spritesheet, x, y, size, size);
+    }
+
+    private void transform(boolean transform){
+        if (this.transform != transform)
+            this.image = ImageTransformer.horImage(image);
+        this.transform = transform;
     }
 
     public void render (Graphics graphics, double x, double y){
@@ -51,5 +71,21 @@ public class Texture {
 
     public BufferedImage getImage(){
         return image;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 }
