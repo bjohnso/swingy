@@ -8,7 +8,6 @@ import com.swingy.id.MobileIDAssigner;
 import com.swingy.rendering.entities.Entity;
 import com.swingy.rendering.entities.Fighter;
 import com.swingy.id.ID;
-import com.swingy.id.IDAssigner;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.map.TileMapGenerator;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.swingy.database.SwingyDB.swingyDB;
+import static com.swingy.map.TileMapGenerator.groundIDAssigner;
 
 public class GameState extends Canvas implements State {
 
@@ -104,15 +104,15 @@ public class GameState extends Canvas implements State {
         fighters = new ArrayList<>();
 
         for(HashMap.Entry<String, Tile> t : tileMap.entrySet()){
-            if (t.getValue().getFigherClassName() != "" && t.getValue().getFigherClassName() != null){
+            if (t.getValue().getFigtherClassName() != "" && t.getValue().getFigtherClassName() != null){
                 for (HashMap.Entry<String, String> tObject: t.getValue().getCoordinates().entrySet()){
                     Fighter tempFighter = null;
-                    tempFighter = new Fighter(new Texture("terrain/" + t.getValue().getFigherClassName().toLowerCase() + "/1", false),
+                    tempFighter = new Fighter(new Texture("terrain/" + t.getValue().getFigtherClassName().toLowerCase() + "/1", false),
                             0, 0,
-                            new FighterMetrics(t.getValue().getTileClassName(), t.getValue().getFigherClassName()),
+                            new FighterMetrics(t.getValue().getTileClassName(), t.getValue().getFigtherClassName()),
                             this, null);
                     tempFighter.setPlayerClass(t.getValue().getTileClass());
-                    tempFighter.setPlayerClassName(t.getValue().getFigherClassName().toLowerCase());
+                    tempFighter.setPlayerClassName(t.getValue().getFigtherClassName().toLowerCase());
                     tempFighter.setMobileID(tObject.getValue());
 
                     String parts[] = tempFighter.getMobileID().split("-");
@@ -149,7 +149,7 @@ public class GameState extends Canvas implements State {
 
         if (options == null){
             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
-                if (!t.getValue().getFigherClassName().equalsIgnoreCase("")){
+                if (!t.getValue().getFigtherClassName().equalsIgnoreCase("")){
                     for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
                         if (tObject.getValue() != playerCoordinates){
                             int seed = 0 + (int)(Math.random() * ((3 - 0) + 1));
@@ -326,9 +326,15 @@ public class GameState extends Canvas implements State {
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
 
+                                if (item()){
+                                    String temp = calculateArtifact();
+                                    addArtifact(temp);
+                                }
+
                                 moved = true;
                                 enemyMove();
-                                //moveLogic();
+
+
                                 break ;
                             }
                         }
@@ -359,10 +365,15 @@ public class GameState extends Canvas implements State {
                                                             Color.YELLOW);
                                                     break;
                                                 case "TRAP":
-                                                    System.out.println("OUCH!!!");
+                                                    if (!item()) {
+                                                        player.setAlive(false);
+                                                        gameOver = true;
+                                                        stateManager.setState("menu", this);
+                                                    }
                                                     break;
                                                 case "BORDER":
-                                                    System.out.println("FREEDOM!!!");
+                                                    if (escape())
+                                                        passMap();
                                                     break;
                                             }
                                         }
@@ -401,9 +412,14 @@ public class GameState extends Canvas implements State {
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
 
+                                if (item()){
+                                    String temp = calculateArtifact();
+                                    addArtifact(temp);
+                                }
+
                                 moved = true;
                                 enemyMove();
-                                //moveLogic();
+
                                 break ;
                             }
                         }
@@ -434,10 +450,15 @@ public class GameState extends Canvas implements State {
                                                             Color.YELLOW);
                                                     break;
                                                 case "TRAP":
-                                                    System.out.println("OUCH!!!");
+                                                    if (!item()) {
+                                                        player.setAlive(false);
+                                                        gameOver = true;
+                                                        stateManager.setState("menu", this);
+                                                    }
                                                     break;
                                                 case "BORDER":
-                                                    System.out.println("FREEDOM!!!");
+                                                    if (escape())
+                                                        passMap();
                                                     break;
                                             }
                                         }
@@ -476,9 +497,14 @@ public class GameState extends Canvas implements State {
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
 
+                                if (item()){
+                                    String temp = calculateArtifact();
+                                    addArtifact(temp);
+                                }
+
                                 moved = true;
                                 enemyMove();
-                                //moveLogic();
+
                                 break ;
                             }
                         }
@@ -509,10 +535,15 @@ public class GameState extends Canvas implements State {
                                                             Color.YELLOW);
                                                     break;
                                                 case "TRAP":
-                                                    System.out.println("OUCH!!!");
+                                                    if (!item()) {
+                                                        player.setAlive(false);
+                                                        gameOver = true;
+                                                        stateManager.setState("menu", this);
+                                                    }
                                                     break;
                                                 case "BORDER":
-                                                    System.out.println("FREEDOM!!!");
+                                                    if (escape())
+                                                        passMap();
                                                     break;
                                             }
                                         }
@@ -551,9 +582,14 @@ public class GameState extends Canvas implements State {
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
 
+                                if (item()){
+                                    String temp = calculateArtifact();
+                                    addArtifact(temp);
+                                }
+
                                 moved = true;
                                 enemyMove();
-                                //moveLogic();
+
                                 break ;
                             }
                         }
@@ -584,10 +620,17 @@ public class GameState extends Canvas implements State {
                                                             Color.YELLOW);
                                                     break;
                                                 case "TRAP":
-                                                    System.out.println("OUCH!!!");
+                                                    if (!item()) {
+                                                        player.setAlive(false);
+                                                        gameOver = true;
+                                                        stateManager.setState("menu", this);
+                                                    }
+                                                    else
+                                                        addArtifact(calculateArtifact());
                                                     break;
                                                  case "BORDER":
-                                                     System.out.println("FREEDOM!!!");
+                                                     if (escape())
+                                                         passMap();
                                                     break;
                                             }
                                         }
@@ -633,24 +676,17 @@ public class GameState extends Canvas implements State {
         switch (currentSelection){
             case 0 :
                 options = null;
-                stateManager.setState("battle", this);
+                if (defender != null)
+                    stateManager.setState("battle", this);
                 break ;
             case 1 :
                 options = null;
-                if (flee() == false);
-                    stateManager.setState("battle", this);
+                if (flee() == false) {
+                    if (defender != null)
+                        stateManager.setState("battle", this);
+                }
                 break ;
         }
-    }
-
-    private void moveLogic(){
-        if (item()){
-            String temp = calculateArtifact();
-            addArtifact(temp);
-        }
-        collision();
-        enemyMove();
-        collision();
     }
 
     @Override
@@ -687,25 +723,25 @@ public class GameState extends Canvas implements State {
     }
 
     public boolean flee(){
-       /* int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
-        boolean possible[] = {true, true, true, true};*/
+        int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
+        boolean possible[] = {true, false, true, false};
 
-        /*if (possible[random] == true)
-            defender = null;*/
+        if (possible[random] == true)
+            defender = null;
 
-        return true;
+        return possible[random];
     }
 
     public boolean escape(){
         int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
-        boolean possible[] = {true, true, true, false};
+        boolean possible[] = {true, true, false, false};
 
         return possible[random];
     }
 
     public boolean item(){
-        int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
-        boolean possible[] = {false, true, false, false};
+        int random = 0 + (int)(Math.random() * ((8 - 0) + 1));
+        boolean possible[] = {false, true, false, false, false, false, false, false, false};
 
         return possible[random];
     }
@@ -715,169 +751,6 @@ public class GameState extends Canvas implements State {
             if (f.getMobileID() == id)
                 defender = f;
         }
-    }
-
-    public boolean collision(){
-
-        /*for (int i =  0; i < tileMap.length; i++){
-            for (int j = 0; j < tileMap.length; j++) {
-                if (tileMap[i][j] != null) {
-                    if (tileMap[i][j].isPlayer()) {
-                        if (j + 1 < tileMap.length) {
-                            if (tileMap[i][j + 1].getTileClass() == ID.NINJA
-                                    || tileMap[i][j + 1].getTileClass() == ID.DINO
-                                    || tileMap[i][j + 1].getTileClass() == ID.ROBO
-                                    || tileMap[i][j + 1].getTileClass() == ID.ZOMBO) {
-
-                                setDefender(tileMap[i][j + 1].getMobileID());
-
-                                options = new Button[2];
-                                options[0] = new Button("Fight", (500 + 0 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                options[1] = new Button("Flee", (500 + 1 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-
-                                return true;
-                            } else if (tileMap[i][j + 1].getTileClass() == ID.LAVA
-                                    || tileMap[i][j + 1].getTileClass() == ID.PIT) {
-                                if (!item()) {
-                                    System.out.println("DEATH BY DEEP END");
-                                    player.setAlive(false);
-                                    gameOver = true;
-                                    stateManager.setState("menu", this);
-                                }
-                                else
-                                    addArtifact(calculateArtifact());
-                            }
-                            else if (tileMap[i][j + 1].getTileClass() == ID.BORDER) {
-                                System.out.println("PASSED LEVEL");
-                                if (escape())
-                                    passMap();
-                            }
-                        }
-                        if (j - 1 > -1) {
-                            if (tileMap[i][j - 1].getTileClass() == ID.NINJA
-                                    || tileMap[i][j - 1].getTileClass() == ID.DINO
-                                    || tileMap[i][j - 1].getTileClass() == ID.ROBO
-                                    || tileMap[i][j - 1].getTileClass() == ID.ZOMBO) {
-
-                                setDefender(tileMap[i][j - 1].getMobileID());
-
-                                options = new Button[2];
-                                options[0] = new Button("Fight", (500 + 0 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                options[1] = new Button("Flee", (500 + 1 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-
-                                return true;
-                            } else if (tileMap[i][j - 1].getTileClass() == ID.LAVA
-                                    || tileMap[i][j - 1].getTileClass() == ID.PIT) {
-                                if (!item()) {
-                                    System.out.println("DEATH BY DEEP END");
-                                    player.setAlive(false);
-                                    gameOver = true;
-                                    stateManager.setState("menu", this);
-                                }
-                                else
-                                    addArtifact(calculateArtifact());
-                            }
-                            else if (tileMap[i][j - 1].getTileClass() == ID.BORDER) {
-                                System.out.println("PASSED LEVEL");
-                                if (escape())
-                                    passMap();
-                            }
-                        }
-                        if (i + 1 < tileMap.length) {
-                            if (tileMap[i + 1][j].getTileClass() == ID.NINJA
-                                    || tileMap[i + 1][j].getTileClass() == ID.DINO
-                                    || tileMap[i + 1][j].getTileClass() == ID.ROBO
-                                    || tileMap[i + 1][j].getTileClass() == ID.ZOMBO) {
-
-                                setDefender(tileMap[i + 1][j].getMobileID());
-
-                                options = new Button[2];
-                                options[0] = new Button("Fight", (500 + 0 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                options[1] = new Button("Flee", (500 + 1 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                return true;
-                            } else if (tileMap[i + 1][j].getTileClass() == ID.LAVA
-                                    || tileMap[i + 1][j].getTileClass() == ID.PIT) {
-                                if (!item()) {
-                                    System.out.println("DEATH BY DEEP END");
-                                    player.setAlive(false);
-                                    gameOver = true;
-                                    stateManager.setState("menu", this);
-                                }
-                                else
-                                    addArtifact(calculateArtifact());
-                            }
-                            else if (tileMap[i + 1][j].getTileClass() == ID.BORDER) {
-                                System.out.println("PASSED LEVEL");
-                                if (escape())
-                                    passMap();
-                            }
-                        }
-                        if (i - 1 > -1) {
-                            if (tileMap[i - 1][j].getTileClass() == ID.NINJA
-                                    || tileMap[i - 1][j].getTileClass() == ID.DINO
-                                    || tileMap[i - 1][j].getTileClass() == ID.ROBO
-                                    || tileMap[i - 1][j].getTileClass() == ID.ZOMBO) {
-
-                                setDefender(tileMap[i - 1][j].getMobileID());
-
-                                options = new Button[2];
-                                options[0] = new Button("Fight", (500 + 0 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                options[1] = new Button("Flee", (500 + 1 * 80),
-                                        new Font("Arial", Font.PLAIN, 32),
-                                        new Font("Arial", Font.BOLD, 48),
-                                        Color.WHITE,
-                                        Color.YELLOW);
-                                return true;
-                            } else if (tileMap[i - 1][j].getTileClass() == ID.LAVA
-                                    || tileMap[i - 1][j].getTileClass() == ID.PIT) {
-                                if (!item()) {
-                                    System.out.println("DEATH BY DEEP END");
-                                    player.setAlive(false);
-                                    gameOver = true;
-                                    stateManager.setState("menu", this);
-                                }
-                                else
-                                    addArtifact(calculateArtifact());
-                            }
-                            else if (tileMap[i - 1][j].getTileClass() == ID.BORDER) {
-                                System.out.println("PASSED LEVEL");
-                                if (escape())
-                                    passMap();
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
-        return false;
     }
 
     private void passMap(){
@@ -915,20 +788,22 @@ public class GameState extends Canvas implements State {
     }
 
     protected void removeFighter(Fighter fighter){
-        /*for (int i = 0; i < tileMap.length ;i++){
-            for (int j = 0; j < tileMap.length; j++){
-                if (tileMap[i][j].getMobileID() == fighter.getMobileID()) {
+        defender = null;
+        tileMap.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), fighter.getMobileID());
 
-                    tileMap[i][j] = new Tile(tileMap[i][j].getX(), tileMap[i][j].getY(), new Texture(new Texture("terrain/ground", false), 2, 2, 32), ID.GROUND);
-
-                    fighters.remove(fighter);
-                    entities.remove(fighter);
-
-                    i = tileMap.length;
-                    j = tileMap.length;
+        for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
+            if (t.getValue().getFigtherClassName().equalsIgnoreCase(fighter.getPlayerClassName())){
+                for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                    if (tObject.getValue().equalsIgnoreCase(fighter.getMobileID())) {
+                        t.getValue().removeCoordinate(tObject.getKey());
+                        break ;
+                    }
                 }
+                break ;
             }
-        }*/
+        }
+        fighters.remove(fighter);
+        entities.remove(fighter);
     }
 
     protected void gameOver(){

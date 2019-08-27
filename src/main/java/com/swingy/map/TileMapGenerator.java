@@ -22,7 +22,7 @@ public class TileMapGenerator {
     private HashMap<String, Tile> TILES;
 
     IDAssigner nonPlayeridAssigner = new IDAssigner(1);
-    IDAssigner groundIDAssigner = new IDAssigner(1);
+    public static IDAssigner groundIDAssigner = new IDAssigner(1);
 
     private String[] entities = {
             "LAVA",

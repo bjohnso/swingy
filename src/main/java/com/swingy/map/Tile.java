@@ -124,7 +124,7 @@ public class Tile {
         return tileClassName;
     }
 
-    public String getFigherClassName() {
+    public String getFigtherClassName() {
         return figherClassName;
     }
 
