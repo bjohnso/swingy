@@ -30,53 +30,60 @@ public class CharacterCreationState implements State {
 
     private Fighter[] characters;
     private int currentCharacterSelection;
-    private boolean stateResume;
 
     protected Fighter currentFighter;
 
     String userInput;
+
+    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
+    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
+    private int textX = Swingy.WIDTH / 100 * 10;
+    private int fontSize = Swingy.HEIGHT / 100 * 5;
+    private int fontBold = Swingy.HEIGHT / 100 * 6;
+    private int fontTitle = Swingy.HEIGHT / 100 * 10;
+    private int imageWidth = Swingy.WIDTH / 100 * 20;
+    private int imageHeight = Swingy.HEIGHT / 100 * 20;
 
     @Override
     public void init() {
 
         userInput = null;
         currentCharacterSelection = 0;
-        stateResume = false;
 
         entities = new ArrayList<>();
         options = new Button[3];
-        options[0] = new Button("Next", 50, (200 + 0 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[0] = new Button("Next", textX, (buttonBaseHeight + 0 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[1] = new Button("Play", 50, (200 + 3 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[1] = new Button("Play", textX, (buttonBaseHeight + 3 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[2] = new Button("Back", 50, (200 + 4 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[2] = new Button("Back", textX, (buttonBaseHeight + 4 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
 
         characters = new Fighter[4];
 
-        characters[0] = new Fighter(new Texture("ninja/idle/1", false),
-                (Swingy.WIDTH / 2), 100,
+        characters[0] = new Fighter(new Texture("ninja/idle/1", imageWidth, imageHeight, false),
+                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10),
                 new FighterMetrics("NINJA"),this, AnimationHelper.createAnimation("ninjaLarge"));
 
-        characters[1] = new Fighter(new Texture("dino/idle/1", false),
-                (Swingy.WIDTH / 2), 100,
+        characters[1] = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,false),
+                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10),
                 new FighterMetrics("DINO"),this, AnimationHelper.createAnimation("dinoLarge"));
 
-        characters[2] = new Fighter(new Texture("robo/idle/1", false),
-                (Swingy.WIDTH / 2), 50, new FighterMetrics("DINO"),
+        characters[2] = new Fighter(new Texture("robo/idle/1", imageWidth, imageHeight,false),
+                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10), new FighterMetrics("ROBO"),
                 this, AnimationHelper.createAnimation("roboLarge"));
 
-        characters[3] = new Fighter(new Texture("zombo/idle/1", false),
-                (Swingy.WIDTH / 2), 50, new FighterMetrics("ZOMBO"),
+        characters[3] = new Fighter(new Texture("zombo/idle/1", imageWidth, imageHeight,false),
+                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10), new FighterMetrics("ZOMBO"),
                 this, AnimationHelper.createAnimation("zomboLarge"));
 
         characters[0].setPlayerClass(ID.NINJA);
@@ -186,7 +193,7 @@ public class CharacterCreationState implements State {
         Texture background = new Texture(new Texture("background/2", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
-        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Create New Fighter", 72, false);
+        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, "Create New Fighter", fontTitle, false);
 
         if (options != null) {
             if (options.length > 0) {

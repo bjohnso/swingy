@@ -1,6 +1,5 @@
 package com.swingy.rendering.entities;
 
-import com.sun.org.apache.xerces.internal.xs.StringList;
 import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.states.State;

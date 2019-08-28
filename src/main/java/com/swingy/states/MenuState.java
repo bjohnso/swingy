@@ -22,6 +22,11 @@ public class MenuState implements State {
 
     private Button[] options;
     private int currentSelection;
+    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
+    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
+    private int fontSize = Swingy.HEIGHT / 100 * 5;
+    private int fontBold = Swingy.HEIGHT / 100 * 6;
+    private int fontTitle = Swingy.HEIGHT / 100 * 10;
 
     @Override
     public void init() {
@@ -37,24 +42,24 @@ public class MenuState implements State {
             e.printStackTrace();
         }
         options = new Button[4];
-        options[0] = new Button("New Game", (200 + 0 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[0] = new Button("New Game", (buttonBaseHeight + 0 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[1] = new Button("Load Game", (200 + 1 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[1] = new Button("Load Game", (buttonBaseHeight + 1 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[2] = new Button("Settings", (200 + 2 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[2] = new Button("Settings", (buttonBaseHeight + 2 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[3] = new Button("Exit", (200 + 3 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[3] = new Button("Exit", (buttonBaseHeight + 3 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
     }
@@ -140,7 +145,7 @@ public class MenuState implements State {
         Texture background = new Texture(new Texture("background/1", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
-        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, Swingy.TITLE, 80, false);
+        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, Swingy.TITLE, fontTitle, false);
 
         for (int i = 0; i < options.length; i++){
             if (i == currentSelection)

@@ -38,6 +38,25 @@ public class Texture {
         transform(transform);
     }
 
+    public Texture(String fileName, int width, int height, boolean transform) {
+        this.fileName = fileName;
+        this.width = width;
+        this.height = height;
+        BufferedImage oldImage = textureMap.get(fileName);
+        if (oldImage != null) {
+            this.image = oldImage;
+        } else {
+            try {
+                System.out.println("loading texture : " + fileName);
+                this.image = ImageIO.read(new File("./res/textures/" + fileName + ".png"));
+                textureMap.put(fileName, this.image);
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        transform(transform);
+    }
+
     public Texture(Texture spritesheet, int x, int y, int width, int height){
         this.width = width;
         this.height = height;
@@ -66,7 +85,8 @@ public class Texture {
     }
 
     public void render (Graphics graphics, double x, double y){
-        graphics.drawImage(image, (int)x, (int)y, null);
+        Image resize = image.getScaledInstance(width, height, Image.SCALE_FAST);
+        graphics.drawImage(resize, (int)x, (int)y, null);
     }
 
     public BufferedImage getImage(){

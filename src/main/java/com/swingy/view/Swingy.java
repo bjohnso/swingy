@@ -14,8 +14,9 @@ import java.awt.image.BufferStrategy;
 public class Swingy extends Canvas implements Runnable{
 
     public static final String TITLE = "Swingy";
-    public static final int WIDTH = 1920;
-    public static final int HEIGHT = WIDTH / 16 * 9;
+    public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public static final int WIDTH = screenSize.width / 2;
+    public static final int HEIGHT = screenSize.height / 2;
 
     private StateManager stateManager;
 
