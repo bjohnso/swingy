@@ -107,7 +107,7 @@ public class Swingy extends Canvas implements Runnable{
 
     public static void rest(){
         try {
-            Thread.sleep(2);
+            Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -53,12 +53,13 @@ public class SwingyDB{
     }
 
     public void createDB() throws SQLException {
+        createConnection();
         if (existDB()) {
             System.out.println("SwingDB Already Exists");
+            closeConnection();
             return;
         }
         else {
-            createConnection();
             connection.createStatement().execute(SQL_CREATE);
             System.out.println("SwingDB Successfully Created");
             closeConnection();
@@ -88,21 +89,20 @@ public class SwingyDB{
         preparedStatement.execute();
 
         //Get Generated ID
+        int toReturn = -1;
         ResultSet resultSet = preparedStatement.getGeneratedKeys();
         if (resultSet.next()){
             System.out.println("Record Successfully Inserted with ID: " + resultSet.getInt(1));
-            rest();
-            return resultSet.getInt(1);
+            toReturn = resultSet.getInt(1);
         }
-        else
-            return 0;
+        closeConnection();
+        return toReturn;
     }
 
     public void updatePlayer(@NotNull Fighter fighter) throws SQLException {
         createConnection();
         connection.createStatement().execute(SQL_UPDATE + " xp = " + fighter.getFighterMetrics().getLevel().getExperience() + " where id = " + fighter.getFighterMetrics().getID());
         closeConnection();
-        rest();
     }
 
     public ResultSet queryPlayer(long id) throws SQLException {
@@ -117,7 +117,6 @@ public class SwingyDB{
 
     public ResultSet queryAll() throws SQLException {
         createConnection();
-
         PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT,
                 ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
@@ -126,7 +125,6 @@ public class SwingyDB{
         rowCount = result.getRow();
         result.beforeFirst();
 
-        rest();
         return result;
     }
 
@@ -135,7 +133,6 @@ public class SwingyDB{
         connection.createStatement().execute(SQL_UPDATE + " active = true where id = " + id);
         System.out.println("Player with ID : " + id +" Successfully Set To Active");
         closeConnection();
-        rest();
     }
 
     public void deletePlayer(long id) throws SQLException {
@@ -170,7 +167,6 @@ public class SwingyDB{
         createConnection();
         connection.createStatement().execute(SQL_UPDATE + " active = false where active = true");
         closeConnection();
-        rest();
     }
 
     public int getRowCount() {

@@ -20,19 +20,24 @@ public class SettingsState implements State {
     private Button[] options;
     private  int currentButtonSelection;
 
+    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
+    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
+    private int fontSize = Swingy.HEIGHT / 100 * 5;
+    private int fontBold = Swingy.HEIGHT / 100 * 6;
+    private int fontTitle = Swingy.HEIGHT / 100 * 10;
 
     @Override
     public void init() {
         currentButtonSelection = 0;
         options = new Button[2];
-        options[0] = new Button("Reset Database", (200 + 0 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[0] = new Button("Reset Database", (buttonBaseHeight + 0 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[1] = new Button("Back", (200 + 1 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[1] = new Button("Back", (buttonBaseHeight + 1 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
     }
@@ -106,10 +111,10 @@ public class SettingsState implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Texture background = new Texture(new Texture("background/2", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
+        Texture background = new Texture(new Texture("background/2", Swingy.WIDTH, Swingy.HEIGHT, false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
-        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Settings", 72, false);
+        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, "Settings", fontTitle, false);
 
         if (options != null){
             for (int i = 0; i < options.length; i++) {

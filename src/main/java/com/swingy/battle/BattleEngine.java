@@ -1,14 +1,11 @@
 package com.swingy.battle;
 
-import com.swingy.artifacts.Artifact;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.util.NumberHelper;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
 
 public class BattleEngine implements Runnable{
 

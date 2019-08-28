@@ -32,12 +32,14 @@ public class MenuState implements State {
     public void init() {
         try {
             swingyDB.createDB();
+            Swingy.rest();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         currentSelection = 0;
         try {
             swingyDB.resetCurrentPlayer();
+            Swingy.rest();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -142,7 +144,7 @@ public class MenuState implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Texture background = new Texture(new Texture("background/1", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
+        Texture background = new Texture(new Texture("background/1", Swingy.WIDTH, Swingy.HEIGHT, false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, Swingy.TITLE, fontTitle, false);

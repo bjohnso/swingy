@@ -35,31 +35,41 @@ public class CharacterSelectionState implements State {
 
     private int numSaves;
 
+    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
+    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
+    private int textX = Swingy.WIDTH / 100 * 10;
+    private int fontSmall = Swingy.HEIGHT / 100 * 3;
+    private int fontSize = Swingy.HEIGHT / 100 * 5;
+    private int fontBold = Swingy.HEIGHT / 100 * 6;
+    private int fontTitle = Swingy.HEIGHT / 100 * 10;
+    private int imageWidth = Swingy.WIDTH / 100 * 20;
+    private int imageHeight = Swingy.HEIGHT / 100 * 20;
+
     @Override
     public void init() {
         currentButtonSelection = 0;
         entities = new ArrayList<>();
         currentCharacterSelection = 0;
         options = new Button[4];
-        options[0] = new Button("Next", 50, (200 + 0 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[0] = new Button("Next", textX, (buttonBaseHeight + 0 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[1] = new Button("Delete", 50, (200 + 1 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[1] = new Button("Delete", textX, (buttonBaseHeight + 1 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
 
-        options[2] = new Button("Play", 50, (200 + 4 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[2] = new Button("Play", textX, (buttonBaseHeight + 4 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[3] = new Button("Back", 50, (200 + 5 * 80),
-                new Font("Arial", Font.PLAIN, 32),
-                new Font("Arial", Font.BOLD, 48),
+        options[3] = new Button("Back", textX, (buttonBaseHeight + 5 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
 
@@ -72,27 +82,27 @@ public class CharacterSelectionState implements State {
                 if (!resultSet.next()) break;
                 switch(resultSet.getString(4)){
                     case "ninja":
-                        characters[count] = new Fighter(new Texture("ninja/idle/1", false),
+                        characters[count] = new Fighter(new Texture("ninja/idle/1", imageWidth, imageHeight,false),
                                 (Swingy.WIDTH / 2), 100,
                                 new FighterMetrics(resultSet.getString(2), "NINJA"),
                                 this, AnimationHelper.createAnimation("ninjaLarge"));
                         characters[count].setPlayerClass(ID.NINJA);
                         break;
                     case "dino":
-                        characters[count] = new Fighter(new Texture("dino/idle/1", false),
+                        characters[count] = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,false),
                                 (Swingy.WIDTH / 2), 100,
                                 new FighterMetrics(resultSet.getString(2), "DINO"),
                                 this, AnimationHelper.createAnimation("dinoLarge"));
                         characters[count].setPlayerClass(ID.DINO);
                         break;
                     case "robo":
-                        characters[count] = new Fighter(new Texture("robo/idle/1", false),
-                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "DINO"),
+                        characters[count] = new Fighter(new Texture("robo/idle/1", imageWidth, imageHeight,false),
+                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "ROBO"),
                                 this, AnimationHelper.createAnimation("roboLarge"));
                         characters[count].setPlayerClass(ID.ROBO);
                         break;
                     case "zombo":
-                        characters[count] = new Fighter(new Texture("zombo/idle/1", false),
+                        characters[count] = new Fighter(new Texture("zombo/idle/1", imageWidth, imageHeight,false),
                                 (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "ZOMBO"),
                                 this, AnimationHelper.createAnimation("zomboLarge"));
                         characters[count].setPlayerClass(ID.ZOMBO);
@@ -219,10 +229,10 @@ public class CharacterSelectionState implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Texture background = new Texture(new Texture("background/2", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
+        Texture background = new Texture(new Texture("background/2", Swingy.WIDTH, Swingy.HEIGHT, false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
-        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, 72), Color.GREEN, "Load Existing Fighter", 72, false);
+        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, "Load Existing Fighter", fontTitle, false);
 
         if (options != null) {
             for (int i = 0; i < options.length; i++) {
@@ -234,7 +244,7 @@ public class CharacterSelectionState implements State {
             }
         }
 
-        Font font = new Font("Arial", Font.PLAIN, 16);
+        Font font = new Font("Arial", Font.PLAIN, fontSmall);
         FontMetrics fontMetrics = graphics.getFontMetrics(font);
 
         //Draw Current Fighter Stats to Screen
@@ -242,7 +252,7 @@ public class CharacterSelectionState implements State {
             if (characters.length > currentCharacterSelection){
                 int j = 0;
                 for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
-                    Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH - fontMetrics.stringWidth("swingy") - 160)) + 10, (100 + (j * 100)));
+                    Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH / 6 * 5)), (buttonBaseHeight + j * buttonIncrement));
                     j++;
                 }
             }

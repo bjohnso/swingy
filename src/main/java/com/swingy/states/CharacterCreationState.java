@@ -173,7 +173,15 @@ public class CharacterCreationState implements State {
                 currentFighter = characters[currentCharacterSelection];
                 try {
                     currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
-                    swingyDB.setCurrentPlayer(currentFighter.getFighterMetrics().getID());
+                    Swingy.rest();
+                    if (currentFighter.getFighterMetrics().getID() >= 0) {
+                        swingyDB.setCurrentPlayer(currentFighter.getFighterMetrics().getID());
+                        Swingy.rest();
+                    }
+                    else {
+                        System.out.println("Character Creation Failed, Invalid ID");
+                        stateManager.setState("menu", this);
+                    }
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -190,7 +198,7 @@ public class CharacterCreationState implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Texture background = new Texture(new Texture("background/2", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
+        Texture background = new Texture(new Texture("background/2", Swingy.WIDTH, Swingy.HEIGHT, false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, "Create New Fighter", fontTitle, false);

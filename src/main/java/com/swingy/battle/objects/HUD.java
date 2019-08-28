@@ -2,13 +2,14 @@ package com.swingy.battle.objects;
 
 import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
+import com.swingy.view.Swingy;
 
 import java.awt.*;
 
 public class HUD extends BattleObject implements Renderable{
 
-    private static final int DEFAULT_WIDTH = 1200;
-    private static final int DEFAULT_HEIGHT = DEFAULT_WIDTH / 12 * 9;
+    private static final int DEFAULT_WIDTH = Swingy.WIDTH;
+    private static final int DEFAULT_HEIGHT = Swingy.HEIGHT;
     private double HEALTH = 100;
     private double hitPointCapacity;
     private double damage = 0;

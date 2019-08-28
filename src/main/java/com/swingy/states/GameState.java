@@ -56,6 +56,9 @@ public class GameState extends Canvas implements State {
             "ARMOR"
     };
 
+    private int fontSize = Swingy.HEIGHT / 100 * 5;
+    private int fontBold = Swingy.HEIGHT / 100 * 6;
+
     @Override
     public void init() {
 
@@ -352,17 +355,7 @@ public class GameState extends Canvas implements State {
                                             switch (t.getValue().getTileClassName()){
                                                 case "FIGHTER":
                                                     setDefender(tObject.getValue());
-                                                    options = new Button[2];
-                                                    options[0] = new Button("Fight", (500 + 0 * 80),
-                                                            new Font("Arial", Font.PLAIN, 32),
-                                                            new Font("Arial", Font.BOLD, 48),
-                                                            Color.WHITE,
-                                                            Color.YELLOW);
-                                                    options[1] = new Button("Flee", (500 + 1 * 80),
-                                                            new Font("Arial", Font.PLAIN, 32),
-                                                            new Font("Arial", Font.BOLD, 48),
-                                                            Color.WHITE,
-                                                            Color.YELLOW);
+                                                 createOptions();
                                                     break;
                                                 case "TRAP":
                                                     if (!item()) {
@@ -437,17 +430,7 @@ public class GameState extends Canvas implements State {
                                             switch (t.getValue().getTileClassName()){
                                                 case "FIGHTER":
                                                     setDefender(tObject.getValue());
-                                                    options = new Button[2];
-                                                    options[0] = new Button("Fight", (500 + 0 * 80),
-                                                            new Font("Arial", Font.PLAIN, 32),
-                                                            new Font("Arial", Font.BOLD, 48),
-                                                            Color.WHITE,
-                                                            Color.YELLOW);
-                                                    options[1] = new Button("Flee", (500 + 1 * 80),
-                                                            new Font("Arial", Font.PLAIN, 32),
-                                                            new Font("Arial", Font.BOLD, 48),
-                                                            Color.WHITE,
-                                                            Color.YELLOW);
+                                                    createOptions();
                                                     break;
                                                 case "TRAP":
                                                     if (!item()) {
@@ -522,17 +505,7 @@ public class GameState extends Canvas implements State {
                                             switch (t.getValue().getTileClassName()){
                                                 case "FIGHTER":
                                                     setDefender(tObject.getValue());
-                                                    options = new Button[2];
-                                                    options[0] = new Button("Fight", (500 + 0 * 80),
-                                                            new Font("Arial", Font.PLAIN, 32),
-                                                            new Font("Arial", Font.BOLD, 48),
-                                                            Color.WHITE,
-                                                            Color.YELLOW);
-                                                    options[1] = new Button("Flee", (500 + 1 * 80),
-                                                            new Font("Arial", Font.PLAIN, 32),
-                                                            new Font("Arial", Font.BOLD, 48),
-                                                            Color.WHITE,
-                                                            Color.YELLOW);
+                                                    createOptions();
                                                     break;
                                                 case "TRAP":
                                                     if (!item()) {
@@ -607,17 +580,7 @@ public class GameState extends Canvas implements State {
                                             switch (t.getValue().getTileClassName()){
                                                 case "FIGHTER":
                                                     setDefender(tObject.getValue());
-                                                    options = new Button[2];
-                                                    options[0] = new Button("Fight", (500 + 0 * 80),
-                                                            new Font("Arial", Font.PLAIN, 32),
-                                                            new Font("Arial", Font.BOLD, 48),
-                                                            Color.WHITE,
-                                                            Color.YELLOW);
-                                                    options[1] = new Button("Flee", (500 + 1 * 80),
-                                                            new Font("Arial", Font.PLAIN, 32),
-                                                            new Font("Arial", Font.BOLD, 48),
-                                                            Color.WHITE,
-                                                            Color.YELLOW);
+                                                    createOptions();
                                                     break;
                                                 case "TRAP":
                                                     if (!item()) {
@@ -687,6 +650,20 @@ public class GameState extends Canvas implements State {
                 }
                 break ;
         }
+    }
+
+    private void createOptions(){
+        options = new Button[2];
+        options[0] = new Button("Fight", (Swingy.HEIGHT / 6 * 2),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
+                Color.WHITE,
+                Color.YELLOW);
+        options[1] = new Button("Flee", (Swingy.HEIGHT / 6 * 4),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
+                Color.WHITE,
+                Color.YELLOW);
     }
 
     @Override
