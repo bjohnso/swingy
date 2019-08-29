@@ -47,7 +47,6 @@ public class Texture {
             this.image = oldImage;
         } else {
             try {
-                System.out.println("loading texture : " + fileName);
                 this.image = ImageIO.read(new File("./res/textures/" + fileName + ".png"));
                 textureMap.put(fileName, this.image);
             } catch (IOException e){

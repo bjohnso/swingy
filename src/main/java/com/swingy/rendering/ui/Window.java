@@ -44,6 +44,15 @@ public class Window extends Canvas {
     public Window(Swingy swingy){
         //Initialise Window
         requestFocus();
+
+        //Input Listeners
+        KeyInput keyInput = new KeyInput();
+        addKeyListener(keyInput);
+        MouseInput mouseInput = new MouseInput();
+        addMouseListener(mouseInput);
+        addMouseMotionListener(mouseInput);
+
+        //Frame
         frame = new JFrame(TITLE);
         frame.add(this);
         frame.setSize(WIDTH, HEIGHT);
@@ -59,12 +68,6 @@ public class Window extends Canvas {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.requestFocus();
-
-        //Input Listeners
-        addKeyListener(new KeyInput());
-        MouseInput mouseInput = new MouseInput();
-        addMouseListener(mouseInput);
-        addMouseMotionListener(mouseInput);
     }
 
 }

@@ -17,7 +17,7 @@ public class Swingy implements Runnable{
     }
 
     private void render(){
-        window.render(stateManager);
+        //window.render(stateManager);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class Swingy implements Runnable{
 
             if (System.currentTimeMillis() - 1000 > timer){
                 timer += 1000;
-                System.out.printf("FPS: %d | TPS: %d\n", fps, tps);
+                //System.out.printf("FPS: %d | TPS: %d\n", fps, tps);
                 fps = 0;
                 tps = 0;
             }
@@ -87,10 +87,12 @@ public class Swingy implements Runnable{
     }
 
     public Swingy(){
-        //Initialise Window
-        this.window = new Window(this);
-
         stateManager = new StateManager();
+        stateManager.setGui(false);
+
+        //Initialise Window
+        //this.window = new Window(this);
+
         stateManager.addState(new MenuState(this));
         stateManager.addState(new CharacterCreationState());
         stateManager.addState(new CharacterSelectionState());

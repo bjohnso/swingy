@@ -9,11 +9,15 @@ import com.swingy.util.Fonts;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+
+import com.swingy.console.Console;
+
 import java.sql.SQLException;
 
 import com.swingy.rendering.ui.Button;
 import com.swingy.game.Swingy;
 
+import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
 import com.swingy.rendering.ui.Window;
 
@@ -63,14 +67,9 @@ public class MenuState implements State {
                 new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-    }
 
-    public void dropDB(){
-        try {
-            swingyDB.dropDB();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        //Output console options and wait for userSelection
+        console.userSelection(this);
     }
 
     @Override
@@ -85,6 +84,15 @@ public class MenuState implements State {
 
     @Override
     public void tick(StateManager stateManager) {
+
+        if (console.getUserInput() != null){
+            System.out.println(console.getUserInput());
+            currentSelection = Integer.parseInt(console.getUserInput()) - 1;
+            select(stateManager);
+        }
+
+        console.tick();
+
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentSelection--;
             if (currentSelection < 0){
@@ -115,6 +123,7 @@ public class MenuState implements State {
     private void select(StateManager stateManager){
         switch (currentSelection){
             case 0 :
+                System.out.println("AHOOGAH!!!");
                 stateManager.setState("character-new", this);
                 break ;
             case 1 :

@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         /*if (args.length > 0){
-            if (args[0] == "-console") {
+            if (args[0] == "-Console") {
                 pool = new ThreadPool(4);
                 Swingy swingy = new Swingy();
             }
