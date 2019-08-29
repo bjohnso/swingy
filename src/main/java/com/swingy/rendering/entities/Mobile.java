@@ -55,7 +55,7 @@ public abstract class Mobile extends Entity {
     }
 
     public String[] getMobileIDArray(){
-        return mobileID.split("-");
+        return mobileID.split("\\|");
     }
 
     public double getX(){

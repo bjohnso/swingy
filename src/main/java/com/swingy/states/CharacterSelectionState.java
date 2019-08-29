@@ -229,7 +229,7 @@ public class CharacterSelectionState implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Texture background = new Texture(new Texture("background/2", Swingy.WIDTH, Swingy.HEIGHT, false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
+        Texture background = new Texture("background/2", Swingy.WIDTH, Swingy.HEIGHT, false);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, "Load Existing Fighter", fontTitle, false);

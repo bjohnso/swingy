@@ -32,7 +32,7 @@ public class Swingy extends Canvas implements Runnable{
     private void render(){
         BufferStrategy bufferStrategy = getBufferStrategy();
         if (bufferStrategy == null){
-            createBufferStrategy(2);
+            createBufferStrategy(3);
             return;
         }
 
@@ -84,7 +84,7 @@ public class Swingy extends Canvas implements Runnable{
             }
 
             try {
-                Thread.sleep(10);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -103,14 +103,6 @@ public class Swingy extends Canvas implements Runnable{
         }
 
         System.exit(0);
-    }
-
-    public static void rest(){
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private void start(){

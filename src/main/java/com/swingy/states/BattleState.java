@@ -224,7 +224,7 @@ public class BattleState extends Canvas implements State {
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Texture background = new Texture(new Texture("background/4", Swingy.WIDTH, Swingy.HEIGHT, false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
+        Texture background = new Texture("background/4", Swingy.WIDTH, Swingy.HEIGHT, false);
         background.render(graphics, 0, 0);
 
         Font font = new Font("Arial", Font.PLAIN, fontSmall);
@@ -244,10 +244,10 @@ public class BattleState extends Canvas implements State {
             for (Artifact a : fighters.get(i).getFighterMetrics().getArtifacts()){
                 Texture artifact;
                 if (a.getId() == ID.WEAPON)
-                    artifact = new Texture(new Texture("battle/"+ a.getType(), false),1, 1, Swingy.WIDTH / 100 * (5/4), Swingy.WIDTH / 100 * 5);
+                    artifact = new Texture("battle/"+ a.getType(), Swingy.WIDTH / 100 * (5/4), Swingy.WIDTH / 100 * 5, false);
                 else
-                    artifact = new Texture(new Texture("battle/"+ a.getType(), false),1, 1, Swingy.WIDTH / 100 * 5, Swingy.WIDTH / 100 * 5);
-                artifact.render(graphics, (Swingy.WIDTH / 100 * 5) + (j * buttonIncrement), Swingy.HEIGHT / 100 * 40);
+                    artifact = new Texture("battle/"+ a.getType(), Swingy.WIDTH / 100 * 5, Swingy.WIDTH / 100 * 5, false);
+                artifact.render(graphics, (0) + (j * buttonIncrement), Swingy.HEIGHT / 100 * 95);
                 j++;
             }
         }
@@ -255,9 +255,6 @@ public class BattleState extends Canvas implements State {
         gameObjectHandler.render(graphics);
         for(Entity e: entities)
             e.render(graphics);
-
-        for(Fighter f: fighters)
-            f.render(graphics);
 
         font = new Font("Arial", Font.BOLD, fontTitle);
         fontMetrics = graphics.getFontMetrics(font);

@@ -11,7 +11,6 @@ import java.util.HashMap;
 
 public class TileMapGenerator {
     private String map[][];
-    private Tile tileMap[][];
 
     private static int MAP_SIZE;
 
@@ -37,58 +36,54 @@ public class TileMapGenerator {
 
     public TileMapGenerator(Fighter fighter){
         this.fighter = fighter;
-        MAP_SIZE = (fighter.getFighterMetrics().getLevel().getLevel() - 1) * 5 + 10 - (fighter.getFighterMetrics().getLevel().getLevel() % 2);
-        //MAP_SIZE = (5 - 1) * 5 + 10 - (5 % 2);
+        //MAP_SIZE = (fighter.getFighterMetrics().getLevel().getLevel() - 1) * 5 + 10 - (fighter.getFighterMetrics().getLevel().getLevel() % 2);
+        MAP_SIZE = (5 - 1) * 5 + 10 - (5 % 2);
         map = new String[MAP_SIZE][MAP_SIZE];
-        tileMap = new Tile[MAP_SIZE][MAP_SIZE];
-
-        float y = (Swingy.HEIGHT - (MAP_SIZE * 32)) / 2;
-        float x = (Swingy.WIDTH - (MAP_SIZE * 32)) / 2;
 
         TILES = new HashMap<String, Tile>(){{
             //Corner Borders
-            put("BORDER-CORNER-NE", new Tile(new Texture(new Texture("terrain/ground", false), 1, 1, 32), ID.BORDER));
-            put("BORDER-CORNER-NW", new Tile(new Texture(new Texture("terrain/ground", false), 3, 1, 32), ID.BORDER));
-            put("BORDER-CORNER-SE", new Tile(new Texture(new Texture("terrain/ground", false), 1, 3, 32), ID.BORDER));
-            put("BORDER-CORNER-SW", new Tile(new Texture(new Texture("terrain/ground", false), 3, 3, 32), ID.BORDER));
+            put("BORDER-CORNER-NE", new Tile(new Texture(new Texture("terrain/ground", false), 1, 1, 32), MAP_SIZE, ID.BORDER));
+            put("BORDER-CORNER-NW", new Tile(new Texture(new Texture("terrain/ground", false), 3, 1, 32), MAP_SIZE, ID.BORDER));
+            put("BORDER-CORNER-SE", new Tile(new Texture(new Texture("terrain/ground", false), 1, 3, 32), MAP_SIZE, ID.BORDER));
+            put("BORDER-CORNER-SW", new Tile(new Texture(new Texture("terrain/ground", false), 3, 3, 32), MAP_SIZE, ID.BORDER));
             //Middle Borders
-            put("BORDER-N", new Tile(new Texture(new Texture("terrain/ground", false), 2, 1, 32), ID.BORDER));
-            put("BORDER-E", new Tile(new Texture(new Texture("terrain/ground", false), 1, 2, 32), ID.BORDER));
-            put("BORDER-W", new Tile(new Texture(new Texture("terrain/ground", false), 3, 2, 32), ID.BORDER));
-            put("BORDER-S", new Tile(new Texture(new Texture("terrain/ground", false), 2, 3, 32), ID.BORDER));
+            put("BORDER-N", new Tile(new Texture(new Texture("terrain/ground", false), 2, 1, 32), MAP_SIZE, ID.BORDER));
+            put("BORDER-E", new Tile(new Texture(new Texture("terrain/ground", false), 1, 2, 32), MAP_SIZE, ID.BORDER));
+            put("BORDER-W", new Tile(new Texture(new Texture("terrain/ground", false), 3, 2, 32), MAP_SIZE, ID.BORDER));
+            put("BORDER-S", new Tile(new Texture(new Texture("terrain/ground", false), 2, 3, 32), MAP_SIZE, ID.BORDER));
             //Ground
-            put("GROUND", new Tile(new Texture(new Texture("terrain/ground", false), 2, 2, 32), ID.GROUND));
+            put("GROUND", new Tile(new Texture(new Texture("terrain/ground", false), 2, 2, 32), MAP_SIZE, ID.GROUND));
             //Mushroom
-            put("MUSHROOM", new Tile(new Texture(new Texture("terrain/mushroom", false), 1, 1, 32), ID.MUSHROOM));
+            put("MUSHROOM", new Tile(new Texture(new Texture("terrain/mushroom", false), 1, 1, 32), MAP_SIZE, ID.MUSHROOM));
             //MOBS
-            put("DINO", new Tile(new Texture(new Texture("terrain/dino/1", false), 1, 1, 32), ID.DINO));
-            put("ROBO", new Tile(new Texture(new Texture("terrain/robo/1", false), 1, 1, 32), ID.ROBO));
-            put("ZOMBO", new Tile(new Texture(new Texture("terrain/zombo/1", false), 1, 1, 32), ID.ZOMBO));
-            put("NINJA", new Tile(new Texture(new Texture("terrain/ninja/1", false), 1, 1, 32), ID.NINJA));
+            put("DINO", new Tile(new Texture(new Texture("terrain/dino/1", false), 1, 1, 32), MAP_SIZE, ID.DINO));
+            put("ROBO", new Tile(new Texture(new Texture("terrain/robo/1", false), 1, 1, 32), MAP_SIZE, ID.ROBO));
+            put("ZOMBO", new Tile(new Texture(new Texture("terrain/zombo/1", false), 1, 1, 32), MAP_SIZE, ID.ZOMBO));
+            put("NINJA", new Tile(new Texture(new Texture("terrain/ninja/1", false), 1, 1, 32), MAP_SIZE, ID.NINJA));
             //Lava Corners
-            put("LAVA-CORNER-NE", new Tile(new Texture(new Texture("terrain/lava", false), 1, 1, 32), ID.LAVA));
-            put("LAVA-CORNER-NW", new Tile(new Texture(new Texture("terrain/lava", false), 3, 1, 32), ID.LAVA));
-            put("LAVA-CORNER-SE", new Tile(new Texture(new Texture("terrain/lava", false), 1, 3, 32), ID.LAVA));
-            put("LAVA-CORNER-SW", new Tile(new Texture(new Texture("terrain/lava", false), 3, 3, 32), ID.LAVA));
+            put("LAVA-CORNER-NE", new Tile(new Texture(new Texture("terrain/lava", false), 1, 1, 32), MAP_SIZE, ID.LAVA));
+            put("LAVA-CORNER-NW", new Tile(new Texture(new Texture("terrain/lava", false), 3, 1, 32), MAP_SIZE, ID.LAVA));
+            put("LAVA-CORNER-SE", new Tile(new Texture(new Texture("terrain/lava", false), 1, 3, 32), MAP_SIZE, ID.LAVA));
+            put("LAVA-CORNER-SW", new Tile(new Texture(new Texture("terrain/lava", false), 3, 3, 32), MAP_SIZE, ID.LAVA));
             //Middle Lava
-            put("LAVA-E", new Tile(new Texture(new Texture("terrain/lava", false), 1, 2, 32), ID.LAVA));
-            put("LAVA-W", new Tile(new Texture(new Texture("terrain/lava", false), 3, 2, 32), ID.LAVA));
-            put("LAVA-N", new Tile(new Texture(new Texture("terrain/lava", false), 2, 1, 32), ID.LAVA));
-            put("LAVA-S", new Tile(new Texture(new Texture("terrain/lava", false), 2, 3, 32), ID.LAVA));
+            put("LAVA-E", new Tile(new Texture(new Texture("terrain/lava", false), 1, 2, 32), MAP_SIZE, ID.LAVA));
+            put("LAVA-W", new Tile(new Texture(new Texture("terrain/lava", false), 3, 2, 32), MAP_SIZE, ID.LAVA));
+            put("LAVA-N", new Tile(new Texture(new Texture("terrain/lava", false), 2, 1, 32), MAP_SIZE, ID.LAVA));
+            put("LAVA-S", new Tile(new Texture(new Texture("terrain/lava", false), 2, 3, 32), MAP_SIZE, ID.LAVA));
             //Lava
-            put("LAVA", new Tile(new Texture(new Texture("terrain/lava", false), 2, 2, 32), ID.LAVA));
+            put("LAVA", new Tile(new Texture(new Texture("terrain/lava", false), 2, 2, 32), MAP_SIZE, ID.LAVA));
             //Pit Corners
-            put("PIT-CORNER-NE", new Tile(new Texture(new Texture("terrain/pit", false), 1, 1, 32), ID.PIT));
-            put("PIT-CORNER-NW", new Tile(new Texture(new Texture("terrain/pit", false), 3, 1, 32), ID.PIT));
-            put("PIT-CORNER-SE", new Tile(new Texture(new Texture("terrain/pit", false), 1, 3, 32), ID.PIT));
-            put("PIT-CORNER-SW", new Tile(new Texture(new Texture("terrain/pit", false), 3, 3, 32), ID.PIT));
+            put("PIT-CORNER-NE", new Tile(new Texture(new Texture("terrain/pit", false), 1, 1, 32), MAP_SIZE, ID.PIT));
+            put("PIT-CORNER-NW", new Tile(new Texture(new Texture("terrain/pit", false), 3, 1, 32), MAP_SIZE, ID.PIT));
+            put("PIT-CORNER-SE", new Tile(new Texture(new Texture("terrain/pit", false), 1, 3, 32), MAP_SIZE, ID.PIT));
+            put("PIT-CORNER-SW", new Tile(new Texture(new Texture("terrain/pit", false), 3, 3, 32), MAP_SIZE, ID.PIT));
             //Middle Pit
-            put("PIT-E", new Tile(new Texture(new Texture("terrain/pit", false), 1, 2, 32), ID.PIT));
-            put("PIT-W", new Tile(new Texture(new Texture("terrain/pit", false), 3, 2, 32), ID.PIT));
-            put("PIT-N", new Tile(new Texture(new Texture("terrain/pit", false), 2, 1, 32), ID.PIT));
-            put("PIT-S", new Tile(new Texture(new Texture("terrain/pit", false), 2, 3, 32), ID.PIT));
+            put("PIT-E", new Tile(new Texture(new Texture("terrain/pit", false), 1, 2, 32), MAP_SIZE, ID.PIT));
+            put("PIT-W", new Tile(new Texture(new Texture("terrain/pit", false), 3, 2, 32), MAP_SIZE, ID.PIT));
+            put("PIT-N", new Tile(new Texture(new Texture("terrain/pit", false), 2, 1, 32), MAP_SIZE, ID.PIT));
+            put("PIT-S", new Tile(new Texture(new Texture("terrain/pit", false), 2, 3, 32), MAP_SIZE, ID.PIT));
             //Pit
-            put("PIT", new Tile(new Texture(new Texture("terrain/pit", false), 2, 2, 32), ID.PIT));
+            put("PIT", new Tile(new Texture(new Texture("terrain/pit", false), 2, 2, 32), MAP_SIZE, ID.PIT));
         }};
     }
 
@@ -109,7 +104,7 @@ public class TileMapGenerator {
                 entity = null;
                 if (map[i][j] == "P") {
                     TILES.get(fighter.getPlayerClassName().toUpperCase()).addCoordinate("PLAYER", x, y);
-                    playerCoordinate = x + "-" + y;
+                    playerCoordinate = x + "|" + y;
                 }
                 else if (map[i][j] == "p")
                     TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), x, y);

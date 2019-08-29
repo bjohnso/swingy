@@ -2,9 +2,10 @@ package com.swingy.map;
 
 import com.swingy.id.ID;
 import com.swingy.rendering.textures.Texture;
+import com.swingy.states.GameState;
+import com.swingy.view.Swingy;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Tile {
@@ -15,50 +16,23 @@ public class Tile {
     protected ID tileClass;
     protected String tileClassName;
     protected int MobileID;
-    protected boolean isPlayer = false;
-    protected String figherClassName;
+    protected String fighterClassName;
+    protected int mapSize;
 
-    public Tile(float x, float y, Texture sprite){
-        this.sprite = sprite;
-        this.solid = true;
-    }
-
-    public Tile(float x, float y, Texture sprite, boolean isPlayer){
-        this.sprite = sprite;
-        this.solid = true;
-        this.isPlayer = isPlayer;
-    }
-
-    public Tile(float x, float y, Texture sprite, ID tileClass){
+    public Tile(Texture sprite, int mapSize, ID tileClass){
         this.sprite = sprite;
         this.solid = true;
         this.tileClass = tileClass;
-        setTileClassName();
-    }
-
-    public Tile(Texture sprite, boolean isPlayer){
-        this.sprite = sprite;
-        this.solid = true;
-        this.isPlayer = isPlayer;
-    }
-
-    public Tile(Texture sprite, ID tileClass){
-        this.sprite = sprite;
-        this.solid = true;
-        this.tileClass = tileClass;
+        this.mapSize = mapSize;
         setTileClassName();
     }
 
     public void addCoordinate(String key, float x, float y){
-        coordinates.put(key, x + "-" + y);
+        coordinates.put(key, x + "|" + y);
     }
 
     public void addCoordinate(String key, String coordinate){
         coordinates.put(key, coordinate);
-    }
-
-    public void removeCoordinate(float x, float y){
-        coordinates.remove(x + "-" + y);
     }
 
     public void replaceCoordinate(String key, String cooridinate ){
@@ -73,42 +47,43 @@ public class Tile {
         return coordinates;
     }
 
-    public String getCoordinate(String key) {
-        return coordinates.get(key);
-    }
-
-    /*public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void moveX(float x) {
-        this.x += x;
-    }
-
-    public void moveY(float y) {
-        this.y += y;
-    }*/
-
-    public void setTileClass(ID tileClass) {
-        this.tileClass = tileClass;
-    }
-
     public ID getTileClass(){
         return this.tileClass;
     }
 
-    public boolean isPlayer() {
-        return isPlayer;
-    }
 
     public void render(Graphics graphics) {
-        for (HashMap.Entry<String, String> s: coordinates.entrySet()) {
-            String parts[] = s.getValue().split("-");
-            sprite.render(graphics, Double.parseDouble(parts[0]), Double.parseDouble(parts[1]));
+
+        String parts[] = null;
+        //max - min = length
+        //center = (min + max) / 2
+        float cX = (((Swingy.WIDTH - (mapSize * 32)) / 2) + ((mapSize * 32) + ((Swingy.WIDTH - (mapSize * 32)) / 2))) / 2;
+        float cY = (((Swingy.HEIGHT- (mapSize * 32)) / 2) + ((mapSize * 32) + ((Swingy.HEIGHT - (mapSize * 32)) / 2))) / 2;
+
+        float pX = cX;
+        float pY = cY;
+
+        if (GameState.playerCoordinates != null) {
+            parts = GameState.playerCoordinates.split("\\|");
+            pX = (float) Double.parseDouble(parts[0]);
+            pY = (float) Double.parseDouble(parts[1]);
+        }
+
+        boolean hiddenMap = false;
+        if (mapSize * 32 > Swingy.WIDTH || mapSize * 32 > Swingy.HEIGHT)
+            hiddenMap = true;
+
+        for (HashMap.Entry<String, String> s : coordinates.entrySet()) {
+            parts = s.getValue().split("\\|");
+            float x = (float) Double.parseDouble(parts[0]);
+            float y = (float) Double.parseDouble(parts[1]);
+
+            //Check if cordinate is in bounds of window and render
+            if (!hiddenMap) {
+                sprite.render(graphics, x, y);
+            } else if (x + (cX - pX) >= 0 && x + (cX - pX) <= mapSize * 32 && y + (cY - pY) >= 0 && y + (cY - pY) <= mapSize * 32) {
+                sprite.render(graphics, x + (cX - pX), y + (cY - pY));
+            }
         }
     }
 
@@ -125,50 +100,50 @@ public class Tile {
     }
 
     public String getFigtherClassName() {
-        return figherClassName;
+        return fighterClassName;
     }
 
     public void setTileClassName(){
         switch (tileClass){
             case DINO:
-                figherClassName = "DINO";
+                fighterClassName = "DINO";
                 tileClassName = "FIGHTER";
                 break;
             case ROBO:
-                figherClassName = "ROBO";
+                fighterClassName = "ROBO";
                 tileClassName = "FIGHTER";
                 break;
             case ZOMBO:
-                figherClassName = "ZOMBO";
+                fighterClassName = "ZOMBO";
                 tileClassName = "FIGHTER";
                 break;
             case NINJA:
-                figherClassName = "NINJA";
+                fighterClassName = "NINJA";
                 tileClassName = "FIGHTER";
                 break;
             case BORDER:
-                figherClassName = "";
+                fighterClassName = "";
                 tileClassName = "BORDER";
                 break;
             case LAVA:
-                figherClassName = "";
+                fighterClassName = "";
                 tileClassName = "TRAP";
                 break;
             case PIT:
-                figherClassName = "";
+                fighterClassName = "";
                 tileClassName = "TRAP";
                 break;
             case GROUND:
-                figherClassName = "";
+                fighterClassName = "";
                 tileClassName = "GROUND";
                 break;
             case MUSHROOM:
-                figherClassName = "";
+                fighterClassName = "";
                 tileClassName = "OBSTRUCTION";
                 break;
             default:
                 tileClassName = "";
-                figherClassName = "";
+                fighterClassName = "";
         }
     }
 }

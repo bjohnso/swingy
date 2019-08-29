@@ -46,7 +46,7 @@ public class GameState extends Canvas implements State {
     protected static Fighter player;
     protected static Fighter defender;
 
-    protected String playerCoordinates;
+    public static String playerCoordinates;
 
     private StateManager stateManager = null;
 
@@ -110,25 +110,19 @@ public class GameState extends Canvas implements State {
             if (t.getValue().getFigtherClassName() != "" && t.getValue().getFigtherClassName() != null){
                 for (HashMap.Entry<String, String> tObject: t.getValue().getCoordinates().entrySet()){
                     Fighter tempFighter = null;
-                    tempFighter = new Fighter(new Texture("terrain/" + t.getValue().getFigtherClassName().toLowerCase() + "/1", false),
-                            0, 0,
-                            new FighterMetrics(t.getValue().getTileClassName(), t.getValue().getFigtherClassName()),
+                    tempFighter = new Fighter(new FighterMetrics(t.getValue().getTileClassName(), t.getValue().getFigtherClassName()),
                             this, null);
                     tempFighter.setPlayerClass(t.getValue().getTileClass());
                     tempFighter.setPlayerClassName(t.getValue().getFigtherClassName().toLowerCase());
                     tempFighter.setMobileID(tObject.getValue());
 
-                    String parts[] = tempFighter.getMobileID().split("-");
-                    tempFighter.setX(Double.parseDouble(parts[0]));
-                    tempFighter.setY(Double.parseDouble(parts[1]));
+                    String parts[] = tempFighter.getMobileID().split("\\|");
 
                     if (tempFighter != null) {
                         if (tempFighter.getMobileID().equalsIgnoreCase(tileMapGenerator.getPlayerCoordinate())) {
                             playerCoordinates = tileMapGenerator.getPlayerCoordinate();
                             player.setSprite(tempFighter.getSprite());
                             player.setMobileID(tempFighter.getMobileID());
-                            player.setX(tempFighter.getX());
-                            player.setX(tempFighter.getY());
                             player.setPlayer(true);
                             fighters.add(player);
                         } else {
@@ -290,10 +284,10 @@ public class GameState extends Canvas implements State {
     }
 
     private boolean coordinateCompare(String str1, String str2, float modX1, float modY1, float modX2, float modY2){
-        double x1 = Double.parseDouble(str1.split("-")[0]) + modX1;
-        double y1 = Double.parseDouble(str1.split("-")[1]) + modY1;
-        double x2 = Double.parseDouble(str2.split("-")[0]) + modX2;
-        double y2 = Double.parseDouble(str2.split("-")[1]) + modY2;
+        double x1 = Double.parseDouble(str1.split("\\|")[0]) + modX1;
+        double y1 = Double.parseDouble(str1.split("\\|")[1]) + modY1;
+        double x2 = Double.parseDouble(str2.split("\\|")[0]) + modX2;
+        double y2 = Double.parseDouble(str2.split("\\|")[1]) + modY2;
 
         if (x1 == x2 && y1 == y2)
             return true;
@@ -301,10 +295,10 @@ public class GameState extends Canvas implements State {
     }
 
     private String coordinateMod(String str1, float modX, float modY){
-        double x1 = Double.parseDouble(str1.split("-")[0]) + modX;
-        double y1 = Double.parseDouble(str1.split("-")[1]) + modY;
+        double x1 = Double.parseDouble(str1.split("\\|")[0]) + modX;
+        double y1 = Double.parseDouble(str1.split("\\|")[1]) + modY;
 
-        return x1 + "-" + y1;
+        return x1 + "|" + y1;
     }
 
     @Override
@@ -672,7 +666,7 @@ public class GameState extends Canvas implements State {
         graphics.setColor(Color.WHITE);
         graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
 
-        Texture background = new Texture(new Texture("background/3", false), 1, 1, Swingy.WIDTH, Swingy.HEIGHT);
+        Texture background = new Texture("background/3", Swingy.WIDTH, Swingy.HEIGHT, false);
         background.render(graphics, 0, 0);
 
         if (entities.size() > 0 && entities != null) {
