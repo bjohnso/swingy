@@ -5,8 +5,8 @@ import com.swingy.artifacts.Helm;
 import com.swingy.artifacts.Weapon;
 import com.swingy.battle.FighterMetrics;
 import com.swingy.id.MobileIDAssigner;
-import com.swingy.rendering.entities.Entity;
-import com.swingy.rendering.entities.Fighter;
+import com.swingy.game.entities.Entity;
+import com.swingy.game.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
@@ -14,7 +14,7 @@ import com.swingy.map.TileMapGenerator;
 import com.swingy.map.Tile;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
-import com.swingy.view.Swingy;
+import com.swingy.rendering.ui.Window;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -56,8 +56,8 @@ public class GameState extends Canvas implements State {
             "ARMOR"
     };
 
-    private int fontSize = Swingy.HEIGHT / 100 * 5;
-    private int fontBold = Swingy.HEIGHT / 100 * 6;
+    private int fontSize = Window.HEIGHT / 100 * 5;
+    private int fontBold = Window.HEIGHT / 100 * 6;
 
     @Override
     public void init() {
@@ -648,12 +648,12 @@ public class GameState extends Canvas implements State {
 
     private void createOptions(){
         options = new Button[2];
-        options[0] = new Button("Fight", (Swingy.HEIGHT / 6 * 2),
+        options[0] = new Button("Fight", (Window.HEIGHT / 6 * 2),
                 new Font("Arial", Font.PLAIN, fontSize),
                 new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[1] = new Button("Flee", (Swingy.HEIGHT / 6 * 4),
+        options[1] = new Button("Flee", (Window.HEIGHT / 6 * 4),
                 new Font("Arial", Font.PLAIN, fontSize),
                 new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
@@ -664,9 +664,9 @@ public class GameState extends Canvas implements State {
     public void render(Graphics graphics) {
 
         graphics.setColor(Color.WHITE);
-        graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+        graphics.fillRect(0, 0, Window.WIDTH, Window.HEIGHT);
 
-        Texture background = new Texture("background/3", Swingy.WIDTH, Swingy.HEIGHT, false);
+        Texture background = new Texture("background/3", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);
 
         if (entities.size() > 0 && entities != null) {

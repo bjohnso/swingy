@@ -1,8 +1,8 @@
 package com.swingy.util;
 
+import com.swingy.rendering.ui.Window;
 import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Texture;
-import com.swingy.view.Swingy;
 
 public class AnimationHelper {
 
@@ -12,8 +12,8 @@ public class AnimationHelper {
 
     private static int animationSpeedFast = 10;
     private static int animationSpeedSlow = 30;
-    private static int imageWidth = Swingy.WIDTH / 100 * 30;
-    private static int imageHeight = Swingy.HEIGHT / 100 * 60;
+    private static int imageWidth = Window.WIDTH / 100 * 30;
+    private static int imageHeight = Window.HEIGHT / 100 * 60;
 
     public static Animation createAnimation(String animation){
         Animation anime = null;

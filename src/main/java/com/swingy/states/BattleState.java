@@ -3,17 +3,17 @@ package com.swingy.states;
 import com.swingy.Main;
 import com.swingy.artifacts.Artifact;
 import com.swingy.battle.FighterManager;
-import com.swingy.rendering.entities.Entity;
+import com.swingy.game.entities.Entity;
 import com.swingy.battle.BattleEngine;
 import com.swingy.handlers.GameObjectHandler;
 import com.swingy.id.ID;
 
 import com.swingy.battle.objects.HUD;
-import com.swingy.rendering.entities.Fighter;
+import com.swingy.game.entities.Fighter;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.util.AnimationHelper;
 import com.swingy.util.Fonts;
-import com.swingy.view.Swingy;
+import com.swingy.rendering.ui.Window;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -34,15 +34,12 @@ public class BattleState extends Canvas implements State {
     private ArrayList<Entity> entities;
     private ArrayList<Fighter> fighters;
 
-    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
-    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
-    private int textX = Swingy.WIDTH / 100 * 10;
-    private int fontSmall = Swingy.HEIGHT / 100 * 3;
-    private int fontSize = Swingy.HEIGHT / 100 * 5;
-    private int fontBold = Swingy.HEIGHT / 100 * 6;
-    private int fontTitle = Swingy.HEIGHT / 100 * 10;
-    private int imageWidth = Swingy.WIDTH / 100 * 20;
-    private int imageHeight = Swingy.HEIGHT / 100 * 20;
+    private int buttonBaseHeight = Window.HEIGHT / 100 * 20;
+    private int buttonIncrement = Window.HEIGHT / 100 * 10;
+    private int fontSmall = Window.HEIGHT / 100 * 3;
+    private int fontTitle = Window.HEIGHT / 100 * 10;
+    private int imageWidth = Window.WIDTH / 100 * 20;
+    private int imageHeight = Window.HEIGHT / 100 * 20;
 
 
     @Override
@@ -56,8 +53,8 @@ public class BattleState extends Canvas implements State {
         switch (GameState.player.getPlayerClass()){
             case NINJA:
                 tempFighter = new Fighter(new Texture("ninja/idle/1", imageWidth, imageHeight, false),
-                        Swingy.WIDTH / 100 * 5,
-                        Swingy.HEIGHT / 100 * 50,
+                        Window.WIDTH / 100 * 5,
+                        Window.HEIGHT / 100 * 50,
                         GameState.player.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("ninjaLarge"));
                 tempFighter.setPlayerClass(ID.NINJA);
@@ -65,8 +62,8 @@ public class BattleState extends Canvas implements State {
                 break;
             case DINO:
                 tempFighter = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,false),
-                        Swingy.WIDTH / 100 * 5,
-                        Swingy.HEIGHT / 100 * 50,
+                        Window.WIDTH / 100 * 5,
+                        Window.HEIGHT / 100 * 50,
                         GameState.player.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("dinoLarge"));
                 tempFighter.setPlayerClass(ID.DINO);
@@ -74,8 +71,8 @@ public class BattleState extends Canvas implements State {
                 break;
             case ROBO:
                 tempFighter = new Fighter(new Texture("robo/idle/1", imageWidth, imageHeight,false),
-                        Swingy.WIDTH / 100 * 5,
-                        Swingy.HEIGHT / 100 * 50,
+                        Window.WIDTH / 100 * 5,
+                        Window.HEIGHT / 100 * 50,
                         GameState.player.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("roboLarge"));
                 tempFighter.setPlayerClass(ID.ROBO);
@@ -83,8 +80,8 @@ public class BattleState extends Canvas implements State {
                 break;
             case ZOMBO:
                 tempFighter = new Fighter(new Texture("zombo/idle/1", imageWidth, imageHeight,false),
-                        Swingy.WIDTH / 100 * 5,
-                        Swingy.HEIGHT / 100 * 50,
+                        Window.WIDTH / 100 * 5,
+                        Window.HEIGHT / 100 * 50,
                         GameState.player.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("zomboLarge"));
                 tempFighter.setPlayerClass(ID.ZOMBO);
@@ -99,8 +96,8 @@ public class BattleState extends Canvas implements State {
         switch (GameState.defender.getPlayerClass()){
             case NINJA:
                 tempFighter = new Fighter(new Texture("ninja/idle/1", imageWidth, imageHeight,true),
-                        Swingy.WIDTH / 100 * 70,
-                        Swingy.HEIGHT / 100 * 50,
+                        Window.WIDTH / 100 * 70,
+                        Window.HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("ninjaLargeRef"));
                 tempFighter.setPlayerClass(ID.NINJA);
@@ -108,8 +105,8 @@ public class BattleState extends Canvas implements State {
                 break;
             case DINO:
                 tempFighter = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,true),
-                        Swingy.WIDTH / 100 * 50,
-                        Swingy.HEIGHT / 100 * 50,
+                        Window.WIDTH / 100 * 50,
+                        Window.HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("dinoLargeRef"));
                 tempFighter.setPlayerClass(ID.DINO);
@@ -117,8 +114,8 @@ public class BattleState extends Canvas implements State {
                 break;
             case ROBO:
                 tempFighter = new Fighter(new Texture("robo/idle/1", imageWidth, imageHeight,true),
-                        Swingy.WIDTH / 100 * 70,
-                        Swingy.HEIGHT / 100 * 50,
+                        Window.WIDTH / 100 * 70,
+                        Window.HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("roboLargeRef"));
                 tempFighter.setPlayerClass(ID.ROBO);
@@ -126,8 +123,8 @@ public class BattleState extends Canvas implements State {
                 break;
             case ZOMBO:
                 tempFighter = new Fighter(new Texture("zombo/idle/1", imageWidth, imageHeight,true),
-                        Swingy.WIDTH / 100 * 70,
-                        Swingy.HEIGHT / 100 * 50,
+                        Window.WIDTH / 100 * 70,
+                        Window.HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("zomboLargeRef"));
                 tempFighter.setPlayerClass(ID.ZOMBO);
@@ -140,17 +137,17 @@ public class BattleState extends Canvas implements State {
 
         gameObjectHandler = new GameObjectHandler();
 
-        HUD challengerHUD = new HUD(Swingy.WIDTH / 100 * 5, Swingy.HEIGHT / 100 * 5, ID.ChallengerHUD);
-        HUD defenderHUD = new HUD(Swingy.WIDTH / 100 * 75, Swingy.HEIGHT / 100 * 5, ID.DefenderHUD);
+        HUD challengerHUD = new HUD(Window.WIDTH / 100 * 5, Window.HEIGHT / 100 * 5, ID.ChallengerHUD);
+        HUD defenderHUD = new HUD(Window.WIDTH / 100 * 75, Window.HEIGHT / 100 * 5, ID.DefenderHUD);
 
         //Initialising GameObject Handler And FighterManager
         for (Fighter f : fighters){
             if (f.isPlayer()) {
-                gameObjectHandler.addObject(new FighterManager(Swingy.WIDTH / 100 * 5, Swingy.HEIGHT / 100 * 40
+                gameObjectHandler.addObject(new FighterManager(Window.WIDTH / 100 * 5, Window.HEIGHT / 100 * 40
                         , ID.Challenger, true, challengerHUD, f, this));
             }
             else{
-                gameObjectHandler.addObject(new FighterManager(Swingy.WIDTH / 100 * 75,  Swingy.HEIGHT / 100 * 40
+                gameObjectHandler.addObject(new FighterManager(Window.WIDTH / 100 * 75,  Window.HEIGHT / 100 * 40
                         , ID.Defender, false, defenderHUD, (Fighter) f, this));
             }
         }
@@ -222,9 +219,9 @@ public class BattleState extends Canvas implements State {
     public void render(Graphics graphics) {
 
         graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+        graphics.fillRect(0, 0, Window.WIDTH, Window.HEIGHT);
 
-        Texture background = new Texture("background/4", Swingy.WIDTH, Swingy.HEIGHT, false);
+        Texture background = new Texture("background/4", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);
 
         Font font = new Font("Arial", Font.PLAIN, fontSmall);
@@ -236,7 +233,7 @@ public class BattleState extends Canvas implements State {
             //Fighter Stats
             int j = 0;
             for (String s : fighters.get(i).getFighterMetrics().toStringArray()) {
-                Fonts.drawString(graphics, font, Color.GREEN, s, (i * (Swingy.WIDTH / 6 * 5)), (buttonBaseHeight + (j * buttonIncrement)));
+                Fonts.drawString(graphics, font, Color.GREEN, s, (i * (Window.WIDTH / 6 * 5)), (buttonBaseHeight + (j * buttonIncrement)));
                 j++;
             }
             //Artifacts
@@ -244,10 +241,10 @@ public class BattleState extends Canvas implements State {
             for (Artifact a : fighters.get(i).getFighterMetrics().getArtifacts()){
                 Texture artifact;
                 if (a.getId() == ID.WEAPON)
-                    artifact = new Texture("battle/"+ a.getType(), Swingy.WIDTH / 100 * (5/4), Swingy.WIDTH / 100 * 5, false);
+                    artifact = new Texture("battle/"+ a.getType(), Window.WIDTH / 100 * (5/4), Window.WIDTH / 100 * 5, false);
                 else
-                    artifact = new Texture("battle/"+ a.getType(), Swingy.WIDTH / 100 * 5, Swingy.WIDTH / 100 * 5, false);
-                artifact.render(graphics, (0) + (j * buttonIncrement), Swingy.HEIGHT / 100 * 95);
+                    artifact = new Texture("battle/"+ a.getType(), Window.WIDTH / 100 * 5, Window.WIDTH / 100 * 5, false);
+                artifact.render(graphics, (0) + (j * buttonIncrement), Window.HEIGHT / 100 * 95);
                 j++;
             }
         }
@@ -258,7 +255,7 @@ public class BattleState extends Canvas implements State {
 
         font = new Font("Arial", Font.BOLD, fontTitle);
         fontMetrics = graphics.getFontMetrics(font);
-        Fonts.drawString(graphics, font, Color.GREEN, battleText, (Swingy.WIDTH - fontMetrics.stringWidth(battleText)) / 2, Swingy.HEIGHT / 2);
+        Fonts.drawString(graphics, font, Color.GREEN, battleText, (Window.WIDTH - fontMetrics.stringWidth(battleText)) / 2, Window.HEIGHT / 2);
 
         graphics.dispose();
     }

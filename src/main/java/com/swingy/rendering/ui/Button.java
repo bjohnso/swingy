@@ -1,7 +1,6 @@
 package com.swingy.rendering.ui;
 
 import com.swingy.util.Fonts;
-import com.swingy.view.Swingy;
 
 import java.awt.*;
 
@@ -41,9 +40,9 @@ public class Button extends Rectangle {
         FontMetrics fontMetrics = graphics.getFontMetrics(font);
 
         if(textX == -1)
-            this.x = (Swingy.WIDTH - fontMetrics.stringWidth(text)) / 2;
+            this.x = (Window.WIDTH - fontMetrics.stringWidth(text)) / 2;
         else {
-            this.x = (Swingy.WIDTH - fontMetrics.stringWidth(text)) / 4;
+            this.x = (Window.WIDTH - fontMetrics.stringWidth(text)) / 4;
             textX = this.x;
         }
 

@@ -1,17 +1,10 @@
 package com.swingy;
 
 import com.swingy.audio.MusicPlayer;
-import com.swingy.battle.BattleEngine;
-import com.swingy.battle.FighterMetrics;
-import com.swingy.database.SwingyDB;
 import com.swingy.handlers.ThreadPool;
-import com.swingy.rendering.entities.Fighter;
-import com.swingy.states.BattleState;
-import com.swingy.view.Swingy;
+import com.swingy.game.Swingy;
 
 import java.sql.SQLException;
-
-import static com.swingy.database.SwingyDB.swingyDB;
 
 public class Main {
 
@@ -19,13 +12,21 @@ public class Main {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        pool = new ThreadPool(4);
-        Swingy swingy = new Swingy();
-        MusicPlayer musicPlayer = new MusicPlayer("Battle");
+        /*if (args.length > 0){
+            if (args[0] == "-console") {
+                pool = new ThreadPool(4);
+                Swingy swingy = new Swingy();
+            }
 
-        pool.runTask(musicPlayer);
-        pool.runTask(swingy);
+        }
+        else {*/
+            pool = new ThreadPool(4);
+            Swingy swingy = new Swingy();
+            MusicPlayer musicPlayer = new MusicPlayer("Battle");
 
+            pool.runTask(musicPlayer);
+            pool.runTask(swingy);
+        //}
         /*FighterMetrics ninpo = new FighterMetrics("Asuna", "NINJA");
         FighterMetrics beast = new FighterMetrics("Rex", "DINO");
         FighterMetrics scourge = new FighterMetrics("Odesa", "ZOMBO");

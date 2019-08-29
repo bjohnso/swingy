@@ -1,15 +1,15 @@
 package com.swingy.states;
 
 import com.swingy.battle.FighterMetrics;
-import com.swingy.rendering.entities.Entity;
-import com.swingy.rendering.entities.Fighter;
+import com.swingy.game.entities.Entity;
+import com.swingy.game.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.util.AnimationHelper;
 import com.swingy.util.Fonts;
-import com.swingy.view.Swingy;
+import com.swingy.rendering.ui.Window;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -35,14 +35,14 @@ public class CharacterCreationState implements State {
 
     String userInput;
 
-    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
-    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
-    private int textX = Swingy.WIDTH / 100 * 10;
-    private int fontSize = Swingy.HEIGHT / 100 * 5;
-    private int fontBold = Swingy.HEIGHT / 100 * 6;
-    private int fontTitle = Swingy.HEIGHT / 100 * 10;
-    private int imageWidth = Swingy.WIDTH / 100 * 20;
-    private int imageHeight = Swingy.HEIGHT / 100 * 20;
+    private int buttonBaseHeight = Window.HEIGHT / 100 * 20;
+    private int buttonIncrement = Window.HEIGHT / 100 * 10;
+    private int textX = Window.WIDTH / 100 * 10;
+    private int fontSize = Window.HEIGHT / 100 * 5;
+    private int fontBold = Window.HEIGHT / 100 * 6;
+    private int fontTitle = Window.HEIGHT / 100 * 10;
+    private int imageWidth = Window.WIDTH / 100 * 20;
+    private int imageHeight = Window.HEIGHT / 100 * 20;
 
     @Override
     public void init() {
@@ -71,19 +71,19 @@ public class CharacterCreationState implements State {
         characters = new Fighter[4];
 
         characters[0] = new Fighter(new Texture("ninja/idle/1", imageWidth, imageHeight, false),
-                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10),
+                (Window.WIDTH / 2), (Window.HEIGHT / 10),
                 new FighterMetrics("NINJA"),this, AnimationHelper.createAnimation("ninjaLarge"));
 
         characters[1] = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,false),
-                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10),
+                (Window.WIDTH / 2), (Window.HEIGHT / 10),
                 new FighterMetrics("DINO"),this, AnimationHelper.createAnimation("dinoLarge"));
 
         characters[2] = new Fighter(new Texture("robo/idle/1", imageWidth, imageHeight,false),
-                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10), new FighterMetrics("ROBO"),
+                (Window.WIDTH / 2), (Window.HEIGHT / 10), new FighterMetrics("ROBO"),
                 this, AnimationHelper.createAnimation("roboLarge"));
 
         characters[3] = new Fighter(new Texture("zombo/idle/1", imageWidth, imageHeight,false),
-                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10), new FighterMetrics("ZOMBO"),
+                (Window.WIDTH / 2), (Window.HEIGHT / 10), new FighterMetrics("ZOMBO"),
                 this, AnimationHelper.createAnimation("zomboLarge"));
 
         characters[0].setPlayerClass(ID.NINJA);
@@ -194,9 +194,9 @@ public class CharacterCreationState implements State {
     @Override
     public void render(Graphics graphics) {
         graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+        graphics.fillRect(0, 0, Window.WIDTH, Window.HEIGHT);
 
-        Texture background = new Texture("background/2", Swingy.WIDTH, Swingy.HEIGHT, false);
+        Texture background = new Texture("background/2", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, "Create New Fighter", fontTitle, false);

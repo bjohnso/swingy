@@ -1,6 +1,6 @@
 package com.swingy.states;
 
-import com.swingy.rendering.entities.Entity;
+import com.swingy.game.entities.Entity;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Texture;
@@ -12,9 +12,10 @@ import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 
 import com.swingy.rendering.ui.Button;
-import com.swingy.view.Swingy;
+import com.swingy.game.Swingy;
 
 import static com.swingy.database.SwingyDB.swingyDB;
+import com.swingy.rendering.ui.Window;
 
 public class MenuState implements State {
 
@@ -22,11 +23,11 @@ public class MenuState implements State {
 
     private Button[] options;
     private int currentSelection;
-    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
-    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
-    private int fontSize = Swingy.HEIGHT / 100 * 5;
-    private int fontBold = Swingy.HEIGHT / 100 * 6;
-    private int fontTitle = Swingy.HEIGHT / 100 * 10;
+    private int buttonBaseHeight = Window.HEIGHT / 100 * 20;
+    private int buttonIncrement = Window.HEIGHT / 100 * 10;
+    private int fontSize = Window.HEIGHT / 100 * 5;
+    private int fontBold = Window.HEIGHT / 100 * 6;
+    private int fontTitle = Window.HEIGHT / 100 * 10;
 
     @Override
     public void init() {
@@ -140,12 +141,12 @@ public class MenuState implements State {
 
     public void render (Graphics graphics){
         graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+        graphics.fillRect(0, 0, Window.WIDTH, Window.HEIGHT);
 
-        Texture background = new Texture("background/1", Swingy.WIDTH, Swingy.HEIGHT, false);
+        Texture background = new Texture("background/1", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);
 
-        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, Swingy.TITLE, fontTitle, false);
+        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, Window.TITLE, fontTitle, false);
 
         for (int i = 0; i < options.length; i++){
             if (i == currentSelection)

@@ -1,12 +1,11 @@
 package com.swingy.map;
 
+import com.swingy.rendering.ui.Window;
 import com.swingy.id.IDAssigner;
-import com.swingy.rendering.entities.Fighter;
+import com.swingy.game.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.rendering.textures.Texture;
-import com.swingy.view.Swingy;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TileMapGenerator {
@@ -88,8 +87,8 @@ public class TileMapGenerator {
     }
 
     public void generate(){
-        float y = (Swingy.HEIGHT - (MAP_SIZE * 32)) / 2;
-        float x = (Swingy.WIDTH - (MAP_SIZE * 32)) / 2;
+        float y = (Window.HEIGHT - (MAP_SIZE * 32)) / 2;
+        float x = (Window.WIDTH - (MAP_SIZE * 32)) / 2;
 
         map[map.length / 2][map.length / 2] = "P";
         map[(map.length / 2) - 1][map.length / 2] = "p";
@@ -167,7 +166,7 @@ public class TileMapGenerator {
                 x += 32;
             }
             y += 32;
-            x = (Swingy.WIDTH - (MAP_SIZE * 32)) / 2;
+            x = (Window.WIDTH - (MAP_SIZE * 32)) / 2;
         }
     }
 
