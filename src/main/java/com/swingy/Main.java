@@ -5,6 +5,9 @@ import com.swingy.handlers.ThreadPool;
 import com.swingy.game.Swingy;
 
 import java.sql.SQLException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main {
 
@@ -20,12 +23,18 @@ public class Main {
 
         }
         else {*/
-            pool = new ThreadPool(4);
+            //pool = new ThreadPool(3);
             Swingy swingy = new Swingy();
             MusicPlayer musicPlayer = new MusicPlayer("Battle");
 
-            pool.runTask(musicPlayer);
-            pool.runTask(swingy);
+            ExecutorService swingyThread = Executors.newSingleThreadExecutor();
+            ExecutorService musicThread = Executors.newSingleThreadExecutor();
+
+            swingyThread.execute(swingy);
+            musicThread.execute(musicPlayer);
+
+            //pool.runTask(musicPlayer);
+            //pool.runTask(swingy);
         //}
         /*FighterMetrics ninpo = new FighterMetrics("Asuna", "NINJA");
         FighterMetrics beast = new FighterMetrics("Rex", "DINO");

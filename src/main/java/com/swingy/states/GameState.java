@@ -238,7 +238,7 @@ public class GameState extends Canvas implements State {
     }
 
     @Override
-    public State enterState(State callingState) {
+    public State enterState(StateManager stateManager, State callingState) {
         if (gameOver){
             isResume = false;
             entities.clear();
@@ -247,6 +247,7 @@ public class GameState extends Canvas implements State {
         }
         if (!isResume)
             init();
+        stateManager.setTick(true);
         return this;
     }
 

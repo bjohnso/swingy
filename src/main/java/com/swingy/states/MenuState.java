@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import com.swingy.console.Console;
 
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 
 import com.swingy.rendering.ui.Button;
 import com.swingy.game.Swingy;
@@ -73,8 +74,9 @@ public class MenuState implements State {
     }
 
     @Override
-    public State enterState(State callingState) {
+    public State enterState(StateManager stateManager, State callingState) {
         init();
+        stateManager.setTick(true);
         return this;
     }
 
@@ -85,13 +87,19 @@ public class MenuState implements State {
     @Override
     public void tick(StateManager stateManager) {
 
-        if (console.getUserInput() != null){
-            System.out.println(console.getUserInput());
-            currentSelection = Integer.parseInt(console.getUserInput()) - 1;
-            select(stateManager);
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        console.tick();
+        if (userInput != null){
+            currentSelection = Integer.parseInt(userInput) - 1;
+            select(stateManager);
+        }
 
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentSelection--;
@@ -123,7 +131,6 @@ public class MenuState implements State {
     private void select(StateManager stateManager){
         switch (currentSelection){
             case 0 :
-                System.out.println("AHOOGAH!!!");
                 stateManager.setState("character-new", this);
                 break ;
             case 1 :

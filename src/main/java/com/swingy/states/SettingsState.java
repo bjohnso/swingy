@@ -12,7 +12,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 
+import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
 
 public class SettingsState implements State {
@@ -40,11 +42,15 @@ public class SettingsState implements State {
                 new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
+
+        //Output console options and wait for userSelection
+        console.userSelection(this);
     }
 
     @Override
-    public State enterState(State callingState) {
+    public State enterState(StateManager stateManager, State callingState) {
         init();
+        stateManager.setTick(true);
         return this;
     }
 
@@ -60,6 +66,20 @@ public class SettingsState implements State {
 
     @Override
     public void tick(StateManager stateManager) {
+
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (userInput != null){
+            currentButtonSelection = Integer.parseInt(userInput) - 1;
+            select(stateManager);
+        }
 
 
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){

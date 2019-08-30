@@ -18,7 +18,9 @@ import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
+import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
 
 public class CharacterSelectionState implements State {
@@ -116,10 +118,14 @@ public class CharacterSelectionState implements State {
             }
             count++;
         }
+
+        //Output console options and wait for userSelection
+        console.userSelection(this);
+        System.out.print("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
     }
 
     @Override
-    public State enterState(State callingState) {
+    public State enterState(StateManager stateManager, State callingState) {
         try {
             resultSet = swingyDB.queryAll();
         } catch (SQLException e) {
@@ -132,7 +138,7 @@ public class CharacterSelectionState implements State {
             characters = null;
             options = null;
         }
-
+        stateManager.setTick(true);
         return this;
     }
 
@@ -155,6 +161,20 @@ public class CharacterSelectionState implements State {
 
     @Override
     public void tick(StateManager stateManager) {
+
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (userInput != null){
+            currentButtonSelection = Integer.parseInt(userInput) - 1;
+            select(stateManager);
+        }
 
         if(numSaves <= 0)
             stateManager.setState("menu", this);
@@ -199,6 +219,7 @@ public class CharacterSelectionState implements State {
                 currentCharacterSelection++;
                 if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
+                System.out.print("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
                 break ;
             case 1 :
                 currentFighter = characters[currentCharacterSelection];

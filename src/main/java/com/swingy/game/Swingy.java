@@ -41,8 +41,8 @@ public class Swingy implements Runnable{
                 tick();
 
                 //Update Input References
-                KeyInput.update();
-                MouseInput.update();
+                //KeyInput.update();
+               // MouseInput.update();
 
                 unprocessed--;
                 tps++;

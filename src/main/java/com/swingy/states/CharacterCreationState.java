@@ -16,9 +16,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import com.swingy.rendering.ui.Button;
 
+import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
 
 public class CharacterCreationState implements State {
@@ -100,17 +102,22 @@ public class CharacterCreationState implements State {
         characters[1].getFighterMetrics().getLevel().setExperience(1000);
         characters[2].getFighterMetrics().getLevel().setExperience(1000);
         characters[3].getFighterMetrics().getLevel().setExperience(1000);
+
+        //Output console options and wait for userSelection
+        console.userSelection(this);
     }
 
     @Override
-    public State enterState(State callingState) {
+    public State enterState(StateManager stateManager, State callingState) {
         init();
+        stateManager.setTick(true);
         return this;
     }
 
     @Override
     public void exitState() {
-        entities.clear();
+        if (entities != null)
+            entities.clear();
         characters = null;
         options = null;
         entities = null;
@@ -124,6 +131,21 @@ public class CharacterCreationState implements State {
 
     @Override
     public void tick(StateManager stateManager) {
+
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (userInput != null){
+            currentButtonSelection = Integer.parseInt(userInput) - 1;
+            select(stateManager);
+        }
+
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentButtonSelection--;
             if (currentButtonSelection < 0){

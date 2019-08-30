@@ -17,6 +17,8 @@ import com.swingy.rendering.ui.Window;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class BattleState extends Canvas implements State {
@@ -169,7 +171,10 @@ public class BattleState extends Canvas implements State {
 
         battleText = "FIGHT";
 
-        Main.pool.runTask(battleEngine);
+        //Main.pool.runTask(battleEngine);
+        ExecutorService battleThread = Executors.newSingleThreadExecutor();
+
+        battleThread.execute(battleEngine);
     }
 
     @Override
@@ -178,9 +183,10 @@ public class BattleState extends Canvas implements State {
     }
 
     @Override
-    public State enterState(State callingState) {
+    public State enterState(StateManager stateManager, State callingState) {
         init();
         gameState = (GameState)callingState;
+        stateManager.setTick(true);
         return this;
     }
 

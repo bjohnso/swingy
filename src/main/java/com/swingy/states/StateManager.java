@@ -9,6 +9,7 @@ public class StateManager {
     private Map<String, State> map;
     private State currentState;
     private boolean gui = false;
+    private boolean tick = true;
 
     public void setGui(boolean gui){
         this.gui = gui;
@@ -21,12 +22,13 @@ public class StateManager {
     public void addState(State state){
         map.put(state.getName().toUpperCase(), state);
         if (currentState == null){
-            state.enterState(state);
+            state.enterState(this, state);
             currentState = state;
         }
     }
 
     public State setState(String name, State callingState){
+        tick = false;
         State state = map.get(name.toUpperCase());
         if (state == null){
             System.err.println("State <" + name + "> does not exist");
@@ -35,11 +37,16 @@ public class StateManager {
         if (currentState != null)
             currentState.exitState();
         currentState = state;
-        return state.enterState(callingState);
+        return state.enterState(this, callingState);
+    }
+
+    public void setTick(boolean tick) {
+        this.tick = tick;
     }
 
     public void tick(){
-        currentState.tick(this);
+        if (tick)
+            currentState.tick(this);
     }
 
     public void render(Graphics graphics){
