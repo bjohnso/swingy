@@ -22,6 +22,7 @@ import com.swingy.rendering.ui.Button;
 
 import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
+import static com.swingy.states.MenuState.swingy;
 
 public class CharacterCreationState implements State {
 
@@ -107,6 +108,8 @@ public class CharacterCreationState implements State {
 
         //Output console options and wait for userSelection
         console.userSelection(this);
+
+        System.out.print("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
     }
 
     @Override
@@ -146,8 +149,21 @@ public class CharacterCreationState implements State {
         }
 
         if (userInput != null){
-            currentButtonSelection = Integer.parseInt(userInput) - 1;
-            select(stateManager);
+            if (userInput.equalsIgnoreCase("gui"))
+                swingy.setGui(true);
+            else{
+                try {
+                    int userOption = Integer.parseInt(userInput);
+                    if (userOption > 0 && userOption < 4) {
+                        currentButtonSelection = Integer.parseInt(userInput) - 1;
+                        select(stateManager);
+                    }
+                    else
+                        System.out.println("INVALID INPUT...");
+                }catch (NumberFormatException e){
+                    System.out.println("INVALID INPUT...");
+                }
+            }
         }
 
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
@@ -192,6 +208,7 @@ public class CharacterCreationState implements State {
                 currentCharacterSelection++;
                 if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
+                System.out.print("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
                 break;
             case 1:
                 userInput = characters[currentCharacterSelection].getPlayerClassName();

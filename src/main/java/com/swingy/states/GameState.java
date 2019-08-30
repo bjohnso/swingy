@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
 import static com.swingy.map.TileMapGenerator.groundIDAssigner;
+import static com.swingy.states.MenuState.swingy;
 
 public class GameState extends Canvas implements State {
 
@@ -38,11 +39,8 @@ public class GameState extends Canvas implements State {
     private String[][] charMap = null;
 
     private TileMapGenerator tileMapGenerator;
-    private int playerIndex;
     private Button[] options;
     private int currentSelection;
-
-    private MobileIDAssigner idAssigner;
 
     private boolean isResume = false;
     protected boolean gameOver;
@@ -369,6 +367,30 @@ public class GameState extends Canvas implements State {
 
         if (userInput == null)
             userInput = "0";
+
+        if (userInput != "0"){
+            if (userInput.equalsIgnoreCase("gui"))
+                swingy.setGui(true);
+            else{
+                try {
+                    int userOption = Integer.parseInt(userInput);
+                    if (userOption < 1 && userOption > 5) {
+                        userInput = "0";
+                        System.out.println("INVALID INPUT...");
+                    }
+                }catch (NumberFormatException e){
+                    System.out.println("INVALID INPUT...");
+                }
+            }
+        }
+
+
+        if (options != null && userInput != "0") {
+            currentSelection = Integer.parseInt(userInput) - 1;
+            select(stateManager);
+        }
+
+
 
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W) || userInput.equalsIgnoreCase("1")){
             if (options == null) {
@@ -704,11 +726,6 @@ public class GameState extends Canvas implements State {
             }
         }
 
-        if (options != null && userInput != "0") {
-            currentSelection = Integer.parseInt(userInput) - 1;
-            select(stateManager);
-        }
-
         if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
             select(stateManager);
 
@@ -748,6 +765,7 @@ public class GameState extends Canvas implements State {
                 new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
+        System.out.println("FIGHTER ENCOUNTERED\n1. FIGHT\n2. FLEE");
     }
 
     @Override

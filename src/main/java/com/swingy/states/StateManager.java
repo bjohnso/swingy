@@ -8,12 +8,7 @@ public class StateManager {
 
     private Map<String, State> map;
     private State currentState;
-    private boolean gui = false;
     private boolean tick = true;
-
-    public void setGui(boolean gui){
-        this.gui = gui;
-    }
 
     public StateManager(){
         map = new HashMap<String, State>();
@@ -49,8 +44,7 @@ public class StateManager {
     }
 
     public void render(Graphics graphics){
-        if (gui)
-            currentState.render(graphics);
+        currentState.render(graphics);
     }
 
 }

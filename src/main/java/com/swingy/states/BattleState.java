@@ -173,10 +173,10 @@ public class BattleState extends Canvas implements State {
 
         battleText = "FIGHT";
 
-        //Main.pool.runTask(battleEngine);
         ExecutorService battleThread = Executors.newSingleThreadExecutor();
 
         battleThread.execute(battleEngine);
+
     }
 
     @Override
@@ -217,10 +217,12 @@ public class BattleState extends Canvas implements State {
                     gameState.removeFighter(f);
             }
             if (battleText.equalsIgnoreCase("VICTORY")) {
+                System.out.println("VICTORY");
                 this.stateManager.setTick(false);
                 stateManager.setState("map", this);
             }
             else {
+                System.out.println("DEFEAT");
                 this.stateManager.setTick(false);
                 gameState.gameOver();
                 stateManager.setState("menu", this);

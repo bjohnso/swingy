@@ -10,14 +10,27 @@ public class Swingy implements Runnable{
     private StateManager stateManager;
     private Window window;
 
+    private boolean gui;
+
     private boolean running;
+
+
+    public void setGui(boolean gui) {
+        this.window.setFrameVisibile(gui);
+        this.gui = gui;
+    }
+
+    public boolean getGui(){
+        return this.gui;
+    }
 
     private void tick(){
         stateManager.tick();
     }
 
     private void render(){
-        //window.render(stateManager);
+        if (gui)
+            window.render(stateManager);
     }
 
     @Override
@@ -41,8 +54,8 @@ public class Swingy implements Runnable{
                 tick();
 
                 //Update Input References
-                //KeyInput.update();
-               // MouseInput.update();
+                KeyInput.update();
+                MouseInput.update();
 
                 unprocessed--;
                 tps++;
@@ -86,12 +99,12 @@ public class Swingy implements Runnable{
         running = false;
     }
 
-    public Swingy(){
+    public Swingy(boolean gui){
+        this.gui = gui;
         stateManager = new StateManager();
-        stateManager.setGui(false);
 
         //Initialise Window
-        //this.window = new Window(this);
+        this.window = new Window(this);
 
         stateManager.addState(new MenuState(this));
         stateManager.addState(new CharacterCreationState());

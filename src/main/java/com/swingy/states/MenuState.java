@@ -24,7 +24,7 @@ import com.swingy.rendering.ui.Window;
 
 public class MenuState implements State {
 
-    private Swingy swingy;
+    protected static Swingy swingy;
 
     private StateManager stateManager;
 
@@ -100,8 +100,21 @@ public class MenuState implements State {
         }
 
         if (userInput != null){
-            currentSelection = Integer.parseInt(userInput) - 1;
-            select(stateManager);
+            if (userInput.equalsIgnoreCase("gui"))
+                swingy.setGui(true);
+            else{
+                try {
+                    int userOption = Integer.parseInt(userInput);
+                    if (userOption > 0 && userOption < 5) {
+                        currentSelection = Integer.parseInt(userInput) - 1;
+                        select(stateManager);
+                    }
+                    else
+                        System.out.println("INVALID INPUT...");
+                }catch (NumberFormatException e){
+                    System.out.println("INVALID INPUT...");
+                }
+            }
         }
 
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
