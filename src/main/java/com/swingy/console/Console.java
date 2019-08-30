@@ -39,7 +39,7 @@ public class Console {
         switch (state.getName()){
             case "menu":
                 menuOptions();
-                break ;
+                break;
             case "character-new":
                 characterCreationOptions();
                 break;
@@ -49,12 +49,16 @@ public class Console {
             case "settings":
                 settings();
                 break;
+            case "map":
+                map();
+                break;
+            case "battle":
+                break;
         }
-
     }
 
     public void menuOptions(){
-        System.out.print("\nSWINGY\n1. NEW GAME\n2. LOAD GAME\n3. SETTINGS\n4. EXIT");
+        System.out.println("\nSWINGY\n1. NEW GAME\n2. LOAD GAME\n3. SETTINGS\n4. EXIT");
     }
 
     public void characterCreationOptions(){
@@ -65,6 +69,10 @@ public class Console {
 
     public void settings(){
         System.out.println("\nSETTINGS\n1. RESET DATABASE\n2. BACK");
+    }
+
+    public void map() {
+        System.out.println("\n1. UP\n2. DOWN\n3. LEFT\n4. RIGHT\n5. QUIT");
     }
 
 }

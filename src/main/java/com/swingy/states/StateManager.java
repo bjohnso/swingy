@@ -28,7 +28,6 @@ public class StateManager {
     }
 
     public State setState(String name, State callingState){
-        tick = false;
         State state = map.get(name.toUpperCase());
         if (state == null){
             System.err.println("State <" + name + "> does not exist");

@@ -25,6 +25,8 @@ import static com.swingy.database.SwingyDB.swingyDB;
 
 public class CharacterCreationState implements State {
 
+    private StateManager stateManager;
+
     private ArrayList<Entity> entities;
 
     private Button[] options;
@@ -109,6 +111,7 @@ public class CharacterCreationState implements State {
 
     @Override
     public State enterState(StateManager stateManager, State callingState) {
+        this.stateManager = stateManager;
         init();
         stateManager.setTick(true);
         return this;
@@ -116,6 +119,7 @@ public class CharacterCreationState implements State {
 
     @Override
     public void exitState() {
+        this.stateManager.setTick(false);
         if (entities != null)
             entities.clear();
         characters = null;
@@ -194,6 +198,7 @@ public class CharacterCreationState implements State {
                 characters[currentCharacterSelection].getFighterMetrics().setName(userInput);
                 currentFighter = characters[currentCharacterSelection];
                 try {
+                    this.stateManager.setTick(false);
                     currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
                     if (currentFighter.getFighterMetrics().getID() >= 0) {
                         swingyDB.setCurrentPlayer(currentFighter.getFighterMetrics().getID());
@@ -208,6 +213,7 @@ public class CharacterCreationState implements State {
                 }
                 break ;
             case 2 :
+                this.stateManager.setTick(false);
                 stateManager.setState("menu", this);
                 break ;
         }

@@ -15,6 +15,7 @@ import com.swingy.map.Tile;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
 import com.swingy.rendering.ui.Window;
+import com.swingy.util.NumberHelper;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -23,7 +24,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
+import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
 import static com.swingy.map.TileMapGenerator.groundIDAssigner;
 
@@ -32,6 +35,7 @@ public class GameState extends Canvas implements State {
     private ArrayList<Entity> entities;
     private ArrayList<Fighter> fighters;
     private HashMap<String, Tile> tileMap = null;
+    private String[][] charMap = null;
 
     private TileMapGenerator tileMapGenerator;
     private int playerIndex;
@@ -103,6 +107,7 @@ public class GameState extends Canvas implements State {
         tileMapGenerator = new TileMapGenerator(player);
         tileMapGenerator.generate();
         tileMap = tileMapGenerator.getTileMap();
+        charMap = tileMapGenerator.getCharMap();
 
         fighters = new ArrayList<>();
 
@@ -133,6 +138,10 @@ public class GameState extends Canvas implements State {
                 }
             }
         }
+
+        //Output console options and wait for userSelection
+        console.userSelection(this);
+        printCharMap();
     }
 
     public void enemyMove(){
@@ -162,6 +171,8 @@ public class GameState extends Canvas implements State {
                                             t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
                                             groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
+                                            swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+
                                             for (Fighter f : fighters){
                                                 if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
                                                     f.setMobileID(newPlayerCoordinate);
@@ -180,6 +191,8 @@ public class GameState extends Canvas implements State {
 
                                             t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
                                             groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
+
+                                            swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                             for (Fighter f : fighters){
                                                 if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
@@ -200,6 +213,8 @@ public class GameState extends Canvas implements State {
                                             t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
                                             groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
+                                            swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+
                                             for (Fighter f : fighters){
                                                 if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
                                                     f.setMobileID(newPlayerCoordinate);
@@ -218,6 +233,8 @@ public class GameState extends Canvas implements State {
 
                                             t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
                                             groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
+
+                                            swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                             for (Fighter f : fighters){
                                                 if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
@@ -239,6 +256,7 @@ public class GameState extends Canvas implements State {
 
     @Override
     public State enterState(StateManager stateManager, State callingState) {
+        this.stateManager = stateManager;
         if (gameOver){
             isResume = false;
             entities.clear();
@@ -247,12 +265,13 @@ public class GameState extends Canvas implements State {
         }
         if (!isResume)
             init();
-        stateManager.setTick(true);
+        this.stateManager.setTick(true);
         return this;
     }
 
     @Override
     public void exitState() {
+        this.stateManager.setTick(false);
         if (!gameOver)
             isResume = true;
         else if (gameOver){
@@ -302,10 +321,56 @@ public class GameState extends Canvas implements State {
         return x1 + "|" + y1;
     }
 
+    private void swapCharMapIndices(String coordinate1, String coordinate2){
+        //index = (pixelLength - pixelPadding) \ 32
+
+        double pixelLength = Double.parseDouble(coordinate1.split("\\|")[0]);
+        double pixelPaddding = (double)(Window.WIDTH - (TileMapGenerator.getMapSize() * 32)) / 2;
+        int x1 = (int)NumberHelper.round(((pixelLength - pixelPaddding) / 32), 0);
+
+        pixelLength = Double.parseDouble(coordinate1.split("\\|")[1]);
+        pixelPaddding = (double)(Window.HEIGHT - (TileMapGenerator.getMapSize() * 32)) / 2;
+        int y1 = (int)NumberHelper.round(((pixelLength - pixelPaddding) / 32), 0);
+
+        pixelLength = Double.parseDouble(coordinate2.split("\\|")[0]);
+        pixelPaddding = (double)(Window.WIDTH - (TileMapGenerator.getMapSize() * 32)) / 2;
+        int x2 = (int)NumberHelper.round(((pixelLength - pixelPaddding) / 32), 0);
+
+        pixelLength = Double.parseDouble(coordinate2.split("\\|")[1]);
+        pixelPaddding = (double)(Window.HEIGHT - (TileMapGenerator.getMapSize() * 32)) / 2;
+        int y2 = (int)NumberHelper.round(((pixelLength - pixelPaddding) / 32), 0);
+
+
+        String temp = charMap[y1][x1];
+        charMap[y1][x1] = charMap[y2][x2];
+        charMap[y2][x2] = temp;
+    }
+
+    public void printCharMap(){
+        for (int i = 0; i < charMap.length; i++){
+            for (int j = 0; j < charMap.length; j++){
+                System.out.print(charMap[i][j]);
+            }
+            System.out.print("\n");
+        }
+    }
+
     @Override
     public void tick(StateManager stateManager) {
-        this.stateManager = stateManager;
-        if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
+
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (userInput == null)
+            userInput = "0";
+
+        if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W) || userInput.equalsIgnoreCase("1")){
             if (options == null) {
                 boolean moved = false;
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
@@ -320,6 +385,8 @@ public class GameState extends Canvas implements State {
 
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
+
+                                swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
@@ -338,6 +405,7 @@ public class GameState extends Canvas implements State {
                         }
 
                         if (moved){
+                            printCharMap();
                             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
@@ -356,6 +424,7 @@ public class GameState extends Canvas implements State {
                                                     if (!item()) {
                                                         player.setAlive(false);
                                                         gameOver = true;
+                                                        this.stateManager.setTick(false);
                                                         stateManager.setState("menu", this);
                                                     }
                                                     break;
@@ -381,7 +450,7 @@ public class GameState extends Canvas implements State {
             }
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)){
+        if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S) || userInput.equalsIgnoreCase("2")){
             if (options == null) {
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
                 for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
@@ -397,6 +466,8 @@ public class GameState extends Canvas implements State {
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
+                                swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
 
@@ -413,6 +484,7 @@ public class GameState extends Canvas implements State {
                         }
 
                         if (moved){
+                            printCharMap();
                             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
@@ -431,6 +503,7 @@ public class GameState extends Canvas implements State {
                                                     if (!item()) {
                                                         player.setAlive(false);
                                                         gameOver = true;
+                                                        this.stateManager.setTick(false);
                                                         stateManager.setState("menu", this);
                                                     }
                                                     break;
@@ -456,7 +529,7 @@ public class GameState extends Canvas implements State {
             }
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_LEFT) || KeyInput.wasPressed(KeyEvent.VK_A)){
+        if (KeyInput.wasPressed(KeyEvent.VK_LEFT) || KeyInput.wasPressed(KeyEvent.VK_A) || userInput.equalsIgnoreCase("3")){
             if (options == null) {
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
                 for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
@@ -472,6 +545,8 @@ public class GameState extends Canvas implements State {
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
+                                swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
 
@@ -488,6 +563,7 @@ public class GameState extends Canvas implements State {
                         }
 
                         if (moved){
+                            printCharMap();
                             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
@@ -506,6 +582,7 @@ public class GameState extends Canvas implements State {
                                                     if (!item()) {
                                                         player.setAlive(false);
                                                         gameOver = true;
+                                                        this.stateManager.setTick(false);
                                                         stateManager.setState("menu", this);
                                                     }
                                                     break;
@@ -531,7 +608,7 @@ public class GameState extends Canvas implements State {
             }
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) || KeyInput.wasPressed(KeyEvent.VK_D)){
+        if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) || KeyInput.wasPressed(KeyEvent.VK_D) || userInput.equalsIgnoreCase("4")){
             if(options == null) {
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
                 for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
@@ -546,6 +623,8 @@ public class GameState extends Canvas implements State {
 
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
+
+                                swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
@@ -563,6 +642,7 @@ public class GameState extends Canvas implements State {
                         }
 
                         if (moved){
+                            printCharMap();
                             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
@@ -581,6 +661,7 @@ public class GameState extends Canvas implements State {
                                                     if (!item()) {
                                                         player.setAlive(false);
                                                         gameOver = true;
+                                                        this.stateManager.setTick(false);
                                                         stateManager.setState("menu", this);
                                                     }
                                                     else
@@ -608,7 +689,7 @@ public class GameState extends Canvas implements State {
             }
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_Q)){
+        if (KeyInput.wasPressed(KeyEvent.VK_Q) || userInput.equalsIgnoreCase("5")){
             quitMap();
         }
 
@@ -623,6 +704,11 @@ public class GameState extends Canvas implements State {
             }
         }
 
+        if (options != null && userInput != "0") {
+            currentSelection = Integer.parseInt(userInput) - 1;
+            select(stateManager);
+        }
+
         if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
             select(stateManager);
 
@@ -635,13 +721,16 @@ public class GameState extends Canvas implements State {
             case 0 :
                 options = null;
                 if (defender != null)
+                    this.stateManager.setTick(false);
                     stateManager.setState("battle", this);
                 break ;
             case 1 :
                 options = null;
                 if (flee() == false) {
-                    if (defender != null)
+                    if (defender != null) {
+                        this.stateManager.setTick(false);
                         stateManager.setState("battle", this);
+                    }
                 }
                 break ;
         }
@@ -742,6 +831,7 @@ public class GameState extends Canvas implements State {
             e.printStackTrace();
         }
         this.gameOver = true;
+        this.stateManager.setTick(false);
         stateManager.setState("menu", this);
     }
 

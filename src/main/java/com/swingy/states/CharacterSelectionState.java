@@ -24,6 +24,9 @@ import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
 
 public class CharacterSelectionState implements State {
+
+    private StateManager stateManager;
+
     private ArrayList<Entity> entities;
 
     private Button[] options;
@@ -126,6 +129,7 @@ public class CharacterSelectionState implements State {
 
     @Override
     public State enterState(StateManager stateManager, State callingState) {
+        this.stateManager = stateManager;
         try {
             resultSet = swingyDB.queryAll();
         } catch (SQLException e) {
@@ -144,6 +148,7 @@ public class CharacterSelectionState implements State {
 
     @Override
     public void exitState() {
+        this.stateManager.setTick(false);
         if (entities != null)
             entities.clear();
         entities = null;
@@ -176,8 +181,10 @@ public class CharacterSelectionState implements State {
             select(stateManager);
         }
 
-        if(numSaves <= 0)
+        if(numSaves <= 0) {
+            this.stateManager.setTick(false);
             stateManager.setState("menu", this);
+        }
 
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentButtonSelection--;
@@ -228,6 +235,7 @@ public class CharacterSelectionState implements State {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                this.stateManager.setTick(false);
                 stateManager.setState("character-load", this);
                 break ;
             case 2 :
@@ -237,9 +245,11 @@ public class CharacterSelectionState implements State {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                this.stateManager.setTick(false);
                 stateManager.setState("map", this);
                 break ;
             case 3 :
+                this.stateManager.setTick(false);
                 stateManager.setState("menu", this);
                 break ;
         }

@@ -26,6 +26,8 @@ public class MenuState implements State {
 
     private Swingy swingy;
 
+    private StateManager stateManager;
+
     private Button[] options;
     private int currentSelection;
     private int buttonBaseHeight = Window.HEIGHT / 100 * 20;
@@ -75,6 +77,7 @@ public class MenuState implements State {
 
     @Override
     public State enterState(StateManager stateManager, State callingState) {
+        this.stateManager = stateManager;
         init();
         stateManager.setTick(true);
         return this;
@@ -129,6 +132,7 @@ public class MenuState implements State {
     }
 
     private void select(StateManager stateManager){
+        stateManager.setTick(false);
         switch (currentSelection){
             case 0 :
                 stateManager.setState("character-new", this);
@@ -148,6 +152,7 @@ public class MenuState implements State {
 
     @Override
     public void exitState() {
+        this.stateManager.setTick(false);
     }
 
     @Override

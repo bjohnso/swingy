@@ -23,6 +23,8 @@ import java.util.concurrent.Executors;
 
 public class BattleState extends Canvas implements State {
 
+    private StateManager stateManager;
+
     private GameObjectHandler gameObjectHandler;
 
     private BattleEngine battleEngine;
@@ -184,6 +186,7 @@ public class BattleState extends Canvas implements State {
 
     @Override
     public State enterState(StateManager stateManager, State callingState) {
+        this.stateManager = stateManager;
         init();
         gameState = (GameState)callingState;
         stateManager.setTick(true);
@@ -192,6 +195,7 @@ public class BattleState extends Canvas implements State {
 
     @Override
     public void exitState() {
+        this.stateManager.setTick(false);
         fighters.clear();
         entities.clear();
         gameObjectHandler.clear();
@@ -212,9 +216,12 @@ public class BattleState extends Canvas implements State {
                 if (!f.isAlive())
                     gameState.removeFighter(f);
             }
-            if (battleText.equalsIgnoreCase("VICTORY"))
+            if (battleText.equalsIgnoreCase("VICTORY")) {
+                this.stateManager.setTick(false);
                 stateManager.setState("map", this);
+            }
             else {
+                this.stateManager.setTick(false);
                 gameState.gameOver();
                 stateManager.setState("menu", this);
             }

@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Fri Aug 30 10:15:01 SAST 2019:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-016c-e197-8a8c-000002f623d8 
-on database directory /home/nullfinder/JavaProjects/swingy/swingydb with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@2c13da15 
+Fri Aug 30 13:35:10 SAST 2019:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-016c-e24e-c986-000002f6e150 
+on database directory /home/nullfinder/JavaProjects/swingy/swingydb with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@512ddf17 
 Loaded from file:/home/nullfinder/.m2/repository/org/apache/derby/derby/10.12.1.1/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=11.0.3+12-LTS

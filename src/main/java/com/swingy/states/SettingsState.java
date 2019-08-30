@@ -19,6 +19,8 @@ import static com.swingy.database.SwingyDB.swingyDB;
 
 public class SettingsState implements State {
 
+    private StateManager stateManager;
+
     private Button[] options;
     private  int currentButtonSelection;
 
@@ -49,6 +51,7 @@ public class SettingsState implements State {
 
     @Override
     public State enterState(StateManager stateManager, State callingState) {
+        this.stateManager = stateManager;
         init();
         stateManager.setTick(true);
         return this;
@@ -56,6 +59,7 @@ public class SettingsState implements State {
 
     @Override
     public void exitState() {
+        this.stateManager.setTick(false);
         options = null;
     }
 
@@ -123,6 +127,7 @@ public class SettingsState implements State {
                 }
                 break;
         }
+        this.stateManager.setTick(false);
         stateManager.setState("menu", this);
     }
 
