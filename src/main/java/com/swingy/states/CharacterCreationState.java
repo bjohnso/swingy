@@ -101,6 +101,11 @@ public class CharacterCreationState implements State {
         characters[2].setPlayerClassName("robo");
         characters[3].setPlayerClassName("zombo");
 
+        characters[0].getFighterMetrics().setName("Ninja");
+        characters[1].getFighterMetrics().setName("Dino");
+        characters[2].getFighterMetrics().setName("Robo");
+        characters[3].getFighterMetrics().setName("Zombo");
+
         characters[0].getFighterMetrics().getLevel().setExperience(1000);
         characters[1].getFighterMetrics().getLevel().setExperience(1000);
         characters[2].getFighterMetrics().getLevel().setExperience(1000);
@@ -109,7 +114,7 @@ public class CharacterCreationState implements State {
         //Output console options and wait for userSelection
         console.userSelection(this);
 
-        System.out.print("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
+        System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
     }
 
     @Override
@@ -208,7 +213,7 @@ public class CharacterCreationState implements State {
                 currentCharacterSelection++;
                 if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
-                System.out.print("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
+                System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
                 break;
             case 1:
                 userInput = characters[currentCharacterSelection].getPlayerClassName();

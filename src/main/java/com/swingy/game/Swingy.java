@@ -25,6 +25,7 @@ public class Swingy implements Runnable{
     }
 
     private void tick(){
+        window.tick();
         stateManager.tick();
     }
 
@@ -52,10 +53,6 @@ public class Swingy implements Runnable{
 
             if (unprocessed >= 1){
                 tick();
-
-                //Update Input References
-                KeyInput.update();
-                MouseInput.update();
 
                 unprocessed--;
                 tps++;

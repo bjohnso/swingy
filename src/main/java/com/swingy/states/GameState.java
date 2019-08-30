@@ -813,7 +813,7 @@ public class GameState extends Canvas implements State {
 
     public boolean escape(){
         int random = 0 + (int)(Math.random() * ((3 - 0) + 1));
-        boolean possible[] = {true, true, false, false};
+        boolean possible[] = {true, true, true, true};
 
         return possible[random];
     }

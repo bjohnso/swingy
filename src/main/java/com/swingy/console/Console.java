@@ -68,7 +68,7 @@ public class Console {
     public void characterSelectionOptions(){ System.out.println("\nLOAD FIGHTER\n1. NEXT\n2. DELETE\n3. PLAY\n4. BACK"); }
 
     public void settings(){
-        System.out.println("\nSETTINGS\n1. RESET DATABASE\n2. BACK");
+        System.out.println("\nSETTINGS\n1. INCREASE MUSIC VOLUME\n2. DECREASE MUSIC VOLUME\n3. RESET DATABASE\n4. BACK");
     }
 
     public void map() {

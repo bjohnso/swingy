@@ -125,7 +125,7 @@ public class CharacterSelectionState implements State {
 
         //Output console options and wait for userSelection
         console.userSelection(this);
-        System.out.print("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
+        System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
     }
 
     @Override
@@ -240,7 +240,7 @@ public class CharacterSelectionState implements State {
                 currentCharacterSelection++;
                 if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
-                System.out.print("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
+                System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
                 break ;
             case 1 :
                 currentFighter = characters[currentCharacterSelection];

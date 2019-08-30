@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
+    public volatile static MusicPlayer musicPlayer;
+
     public static void main(String[] args) {
         boolean gui;
         if (args.length == 0)
@@ -21,7 +23,7 @@ public class Main {
             gui = false;
 
         Swingy swingy = new Swingy(gui);
-        MusicPlayer musicPlayer = new MusicPlayer("Battle");
+        musicPlayer = new MusicPlayer("1","2","3","4","5","6");
 
         ExecutorService swingyThread = Executors.newSingleThreadExecutor();
         ExecutorService musicThread = Executors.newSingleThreadExecutor();

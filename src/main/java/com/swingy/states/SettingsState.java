@@ -1,5 +1,6 @@
 package com.swingy.states;
 
+import com.swingy.Main;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.game.entities.Entity;
@@ -34,13 +35,23 @@ public class SettingsState implements State {
     @Override
     public void init() {
         currentButtonSelection = 0;
-        options = new Button[2];
-        options[0] = new Button("Reset Database", (buttonBaseHeight + 0 * buttonIncrement),
+        options = new Button[4];
+        options[0] = new Button("Increase Music Volume", (buttonBaseHeight + 0 * buttonIncrement),
                 new Font("Arial", Font.PLAIN, fontSize),
                 new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-        options[1] = new Button("Back", (buttonBaseHeight + 1 * buttonIncrement),
+        options[1] = new Button("Decrease Music Volume", (buttonBaseHeight + 1 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
+                Color.WHITE,
+                Color.YELLOW);
+        options[2] = new Button("Reset Database", (buttonBaseHeight + 2 * buttonIncrement),
+                new Font("Arial", Font.PLAIN, fontSize),
+                new Font("Arial", Font.BOLD, fontBold),
+                Color.WHITE,
+                Color.YELLOW);
+        options[3] = new Button("Back", (buttonBaseHeight + 3 * buttonIncrement),
                 new Font("Arial", Font.PLAIN, fontSize),
                 new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
@@ -87,7 +98,7 @@ public class SettingsState implements State {
             else{
                 try {
                     int userOption = Integer.parseInt(userInput);
-                    if (userOption > 0 && userOption < 3) {
+                    if (userOption > 0 && userOption < 5) {
                         currentButtonSelection = Integer.parseInt(userInput) - 1;
                         select(stateManager);
                     }
@@ -134,15 +145,25 @@ public class SettingsState implements State {
 
         switch (currentButtonSelection){
             case 0:
+                Main.musicPlayer.increaseVolume();
+                break;
+            case 1:
+                Main.musicPlayer.decreaseVolume();
+                break;
+            case 2:
                 try {
                     swingyDB.deleteAll();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                this.stateManager.setTick(false);
+                stateManager.setState("menu", this);
+                break;
+            case 3:
+                this.stateManager.setTick(false);
+                stateManager.setState("menu", this);
                 break;
         }
-        this.stateManager.setTick(false);
-        stateManager.setState("menu", this);
     }
 
     @Override

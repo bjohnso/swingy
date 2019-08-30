@@ -12,6 +12,10 @@ public class AudioFile implements LineListener{
     private FloatControl gainControl;
     private volatile boolean playing;
 
+    public void setVolume(int volumeMod) {
+        this.gainControl.setValue(volumeMod);
+    }
+
     public AudioFile(String fileName){
         soundFile = new File(fileName);
         try {
@@ -22,7 +26,6 @@ public class AudioFile implements LineListener{
             clip.addLineListener(this);
             clip.open(ais);
             gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            clip.start();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

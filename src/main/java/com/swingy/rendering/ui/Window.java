@@ -41,6 +41,12 @@ public class Window extends Canvas {
         bufferStrategy.show();
     }
 
+    public void tick(){
+        //Update Input References
+        KeyInput.update();
+        MouseInput.update();
+    }
+
     public void setFrameVisibile(boolean visibile){
         frame.setVisible(visibile);
     }

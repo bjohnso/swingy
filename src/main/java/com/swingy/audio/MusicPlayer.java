@@ -8,27 +8,40 @@ import java.util.ArrayList;
 
 public class MusicPlayer implements Runnable {
 
+    private String files[];
     private ArrayList<AudioFile> musicFiles;
-    private int currentSongIndex = 0;
     private boolean running;
+    private int volumeMod = -20;
 
     public MusicPlayer(String... files){
+        this.files = files;
         musicFiles = new ArrayList<AudioFile>();
         for(String file : files)
             musicFiles.add(new AudioFile("./res/audio/" + file + ".wav"));
     }
 
+    public void increaseVolume(){
+        volumeMod += 10;
+    }
+
+    public void decreaseVolume(){
+        volumeMod -= 10;
+    }
+
     @Override
     public void run() {
         running = true;
-        AudioFile audioFile = musicFiles.get(currentSongIndex);
+        AudioFile audioFile = musicFiles.get(shuffle());
         audioFile.play();
         while (running){
+            audioFile.setVolume(volumeMod);
             if (!audioFile.isPlaying()){
-                currentSongIndex++;
-                if (currentSongIndex >= musicFiles.size())
-                    currentSongIndex = 0;
-                audioFile = musicFiles.get(currentSongIndex);
+                musicFiles.remove(audioFile);
+                if (musicFiles.size() <= 0) {
+                    for(String file : files)
+                        musicFiles.add(new AudioFile("./res/audio/" + file + ".wav"));
+                }
+                audioFile = musicFiles.get(shuffle());
                 audioFile.play();
             }
 
@@ -38,5 +51,9 @@ public class MusicPlayer implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    private int shuffle(){
+        return  0 + (int)(Math.random() * ((musicFiles.size() - 1) + 1));
     }
 }
