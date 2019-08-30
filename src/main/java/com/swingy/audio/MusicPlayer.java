@@ -8,33 +8,35 @@ import java.util.ArrayList;
 
 public class MusicPlayer implements Runnable {
 
-    private ArrayList<String> musicFiles;
-    private int currentSongIndex;
+    private ArrayList<AudioFile> musicFiles;
+    private int currentSongIndex = 0;
+    private boolean running;
 
     public MusicPlayer(String... files){
-        musicFiles = new ArrayList<String>();
+        musicFiles = new ArrayList<AudioFile>();
         for(String file : files)
-            musicFiles.add("./res/audio/" + file + ".wav");
-    }
-
-    private void playSound(String fileName){
-        try{
-            File soundFile = new File(fileName);
-            AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
-            AudioFormat format = ais.getFormat();
-            DataLine.Info info = new DataLine.Info(Clip.class, format);
-            Clip clip = (Clip)AudioSystem.getLine(info);
-            clip.open(ais);
-            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(-20);
-            clip.start();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+            musicFiles.add(new AudioFile("./res/audio/" + file + ".wav"));
     }
 
     @Override
     public void run() {
-        playSound(musicFiles.get(currentSongIndex));
+        running = true;
+        AudioFile audioFile = musicFiles.get(currentSongIndex);
+        audioFile.play();
+        while (running){
+            if (!audioFile.isPlaying()){
+                currentSongIndex++;
+                if (currentSongIndex >= musicFiles.size())
+                    currentSongIndex = 0;
+                audioFile = musicFiles.get(currentSongIndex);
+                audioFile.play();
+            }
+
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
