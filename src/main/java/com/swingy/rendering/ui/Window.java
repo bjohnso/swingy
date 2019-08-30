@@ -41,10 +41,8 @@ public class Window extends Canvas {
         bufferStrategy.show();
     }
 
-    public void tick(){
-        //Update Input References
-        KeyInput.update();
-        MouseInput.update();
+    public JFrame getFrame() {
+        return frame;
     }
 
     public void setFrameVisibile(boolean visibile){
@@ -54,13 +52,6 @@ public class Window extends Canvas {
     public Window(Swingy swingy){
         //Initialise Window
         requestFocus();
-
-        //Input Listeners
-        KeyInput keyInput = new KeyInput();
-        addKeyListener(keyInput);
-        MouseInput mouseInput = new MouseInput();
-        addMouseListener(mouseInput);
-        addMouseMotionListener(mouseInput);
 
         //Frame
         frame = new JFrame(TITLE);
@@ -79,5 +70,4 @@ public class Window extends Canvas {
         frame.setVisible(swingy.getGui());
         frame.requestFocus();
     }
-
 }

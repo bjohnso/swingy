@@ -17,7 +17,6 @@ public class Swingy implements Runnable{
 
     public void setGui(boolean gui) {
         this.window.setFrameVisibile(gui);
-        this.gui = gui;
     }
 
     public boolean getGui(){
@@ -25,7 +24,16 @@ public class Swingy implements Runnable{
     }
 
     private void tick(){
-        window.tick();
+        if (!this.gui && window.isShowing()){
+            this.gui = true;
+            //Input Listeners
+            KeyInput keyInput = new KeyInput();
+            window.addKeyListener(keyInput);
+            window.getFrame().addKeyListener(keyInput);
+            MouseInput mouseInput = new MouseInput();
+            window.addMouseListener(mouseInput);
+            window.addMouseMotionListener(mouseInput);
+        }
         stateManager.tick();
     }
 
@@ -60,6 +68,9 @@ public class Swingy implements Runnable{
             } else {
                 canRender = false;
             }
+
+            KeyInput.update();
+            MouseInput.update();
 
             try {
                 Thread.sleep(1);

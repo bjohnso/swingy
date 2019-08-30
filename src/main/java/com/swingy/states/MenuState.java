@@ -90,33 +90,6 @@ public class MenuState implements State {
     @Override
     public void tick(StateManager stateManager) {
 
-        String userInput = null;
-        try {
-            userInput = console.tick();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (userInput != null){
-            if (userInput.equalsIgnoreCase("gui"))
-                swingy.setGui(true);
-            else{
-                try {
-                    int userOption = Integer.parseInt(userInput);
-                    if (userOption > 0 && userOption < 5) {
-                        currentSelection = Integer.parseInt(userInput) - 1;
-                        select(stateManager);
-                    }
-                    else
-                        System.out.println("INVALID INPUT...");
-                }catch (NumberFormatException e){
-                    System.out.println("INVALID INPUT...");
-                }
-            }
-        }
-
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentSelection--;
             if (currentSelection < 0){
@@ -142,6 +115,36 @@ public class MenuState implements State {
 
         if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
             select(stateManager);
+
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (userInput != null){
+            if (userInput.equalsIgnoreCase("gui")) {
+                swingy.setGui(true);
+                stateManager.setTick(false);
+                stateManager.setState("menu", this);
+            }
+            else{
+                try {
+                    int userOption = Integer.parseInt(userInput);
+                    if (userOption > 0 && userOption < 5) {
+                        currentSelection = Integer.parseInt(userInput) - 1;
+                        select(stateManager);
+                    }
+                    else
+                        System.out.println("INVALID INPUT...");
+                }catch (NumberFormatException e){
+                    System.out.println("INVALID INPUT...");
+                }
+            }
+        }
     }
 
     private void select(StateManager stateManager){

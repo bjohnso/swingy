@@ -154,8 +154,11 @@ public class CharacterCreationState implements State {
         }
 
         if (userInput != null){
-            if (userInput.equalsIgnoreCase("gui"))
+            if (userInput.equalsIgnoreCase("gui")) {
                 swingy.setGui(true);
+                stateManager.setTick(false);
+                stateManager.setState("character-new", this);
+            }
             else{
                 try {
                     int userOption = Integer.parseInt(userInput);

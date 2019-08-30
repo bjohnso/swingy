@@ -369,8 +369,11 @@ public class GameState extends Canvas implements State {
             userInput = "0";
 
         if (userInput != "0"){
-            if (userInput.equalsIgnoreCase("gui"))
+            if (userInput.equalsIgnoreCase("gui")) {
                 swingy.setGui(true);
+                stateManager.setTick(false);
+                stateManager.setState("map", this);
+            }
             else{
                 try {
                     int userOption = Integer.parseInt(userInput);

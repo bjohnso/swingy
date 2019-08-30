@@ -93,8 +93,11 @@ public class SettingsState implements State {
         }
 
         if (userInput != null){
-            if (userInput.equalsIgnoreCase("gui"))
+            if (userInput.equalsIgnoreCase("gui")) {
                 swingy.setGui(true);
+                stateManager.setTick(false);
+                stateManager.setState("settings", this);
+            }
             else{
                 try {
                     int userOption = Integer.parseInt(userInput);
