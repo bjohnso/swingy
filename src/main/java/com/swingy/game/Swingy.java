@@ -114,6 +114,9 @@ public class Swingy implements Runnable{
         //Initialise Window
         this.window = new Window(this);
 
+        if (gui)
+            this.setGui(gui);
+
         stateManager.addState(new MenuState(this));
         stateManager.addState(new CharacterCreationState());
         stateManager.addState(new CharacterSelectionState());

@@ -1,11 +1,8 @@
 package com.swingy;
 
 import com.swingy.audio.MusicPlayer;
-import com.swingy.handlers.ThreadPool;
 import com.swingy.game.Swingy;
 
-import java.sql.SQLException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

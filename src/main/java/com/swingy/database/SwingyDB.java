@@ -16,7 +16,7 @@ public class SwingyDB{
     private static final String SQL_DROP = "drop table players";
     private static final String SQL_UPDATE = "update players set";
     private Statement statement;
-    private Connection connection;
+    private Connection connection = null;
     private int rowCount;
 
     private boolean busy = false;
@@ -55,6 +55,8 @@ public class SwingyDB{
                 System.out.println("SwingDB Already Exists");
                 closeConnection();
             } else {
+                if(connection == null)
+                    createConnection();
                 connection.createStatement().execute(SQL_CREATE);
                 System.out.println("SwingDB Successfully Created");
                 closeConnection();
