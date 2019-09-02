@@ -3,10 +3,10 @@ package com.swingy.map;
 import com.swingy.id.ID;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.states.GameState;
-import com.swingy.view.Swingy;
 
 import java.awt.*;
 import java.util.HashMap;
+import com.swingy.rendering.ui.Window;
 
 public class Tile {
 
@@ -57,8 +57,8 @@ public class Tile {
         String parts[] = null;
         //max - min = length
         //center = (min + max) / 2
-        float cX = (((Swingy.WIDTH - (mapSize * 32)) / 2) + ((mapSize * 32) + ((Swingy.WIDTH - (mapSize * 32)) / 2))) / 2;
-        float cY = (((Swingy.HEIGHT- (mapSize * 32)) / 2) + ((mapSize * 32) + ((Swingy.HEIGHT - (mapSize * 32)) / 2))) / 2;
+        float cX = (((Window.WIDTH - (mapSize * 32)) / 2) + ((mapSize * 32) + ((Window.WIDTH - (mapSize * 32)) / 2))) / 2;
+        float cY = (((Window.HEIGHT- (mapSize * 32)) / 2) + ((mapSize * 32) + ((Window.HEIGHT - (mapSize * 32)) / 2))) / 2;
 
         float pX = cX;
         float pY = cY;
@@ -70,7 +70,7 @@ public class Tile {
         }
 
         boolean hiddenMap = false;
-        if (mapSize * 32 > Swingy.WIDTH || mapSize * 32 > Swingy.HEIGHT)
+        if (mapSize * 32 > Window.WIDTH || mapSize * 32 > Window.HEIGHT)
             hiddenMap = true;
 
         for (HashMap.Entry<String, String> s : coordinates.entrySet()) {

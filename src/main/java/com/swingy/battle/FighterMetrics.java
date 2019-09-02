@@ -2,7 +2,7 @@ package com.swingy.battle;
 
 import com.swingy.artifacts.Artifact;
 import com.swingy.interfaces.Fighter;
-import com.swingy.units.*;
+import com.swingy.metrics.*;
 import com.swingy.util.NumberHelper;
 
 import java.util.ArrayList;

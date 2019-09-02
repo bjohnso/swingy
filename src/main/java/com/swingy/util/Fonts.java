@@ -1,6 +1,6 @@
 package com.swingy.util;
 
-import com.swingy.view.Swingy;
+import com.swingy.rendering.ui.Window;
 
 import java.awt.*;
 
@@ -21,8 +21,8 @@ public class Fonts {
     public static void drawString(Graphics graphics, Font font, Color color, String text){
         FontMetrics fontMetrics = graphics.getFontMetrics(font);
 
-        int x = (Swingy.WIDTH - fontMetrics.stringWidth(text)) / 2; //Horizontal Center
-        int y = ((Swingy.HEIGHT - fontMetrics.getHeight()) / 2) + fontMetrics.getAscent(); //Vertical Center
+        int x = (Window.WIDTH - fontMetrics.stringWidth(text)) / 2; //Horizontal Center
+        int y = ((Window.HEIGHT - fontMetrics.getHeight()) / 2) + fontMetrics.getAscent(); //Vertical Center
 
         drawString(graphics, font, color, text, x, y);
     }
@@ -33,10 +33,10 @@ public class Fonts {
         int y;
         if (xY) {
             x = size;
-            y = ((Swingy.HEIGHT - fontMetrics.getHeight()) / 2) + fontMetrics.getAscent(); //Vertical
+            y = ((Window.HEIGHT - fontMetrics.getHeight()) / 2) + fontMetrics.getAscent(); //Vertical
         }
         else {
-            x = (Swingy.WIDTH - fontMetrics.stringWidth(text)) / 2; //Horizontal Center
+            x = (Window.WIDTH - fontMetrics.stringWidth(text)) / 2; //Horizontal Center
             y = size;
         }
         drawString(graphics, font, color, text, x, y);

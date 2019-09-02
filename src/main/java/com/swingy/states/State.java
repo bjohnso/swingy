@@ -1,12 +1,12 @@
 package com.swingy.states;
 
-import com.swingy.rendering.entities.Entity;
+import com.swingy.game.entities.Entity;
 
 import java.awt.*;
 
 public interface State{
     public void init();
-    public State enterState(State callingState);
+    public State enterState(StateManager stateManager, State callingState);
     public void exitState();
     public String getName();
     public void tick(StateManager stateManager);

@@ -4,13 +4,13 @@ import com.swingy.battle.FighterMetrics;
 import com.swingy.id.ID;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
-import com.swingy.rendering.entities.Entity;
-import com.swingy.rendering.entities.Fighter;
+import com.swingy.game.entities.Entity;
+import com.swingy.game.entities.Fighter;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
 import com.swingy.util.AnimationHelper;
 import com.swingy.util.Fonts;
-import com.swingy.view.Swingy;
+import com.swingy.rendering.ui.Window;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -18,10 +18,16 @@ import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
+import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
+import static com.swingy.states.MenuState.swingy;
 
 public class CharacterSelectionState implements State {
+
+    private StateManager stateManager;
+
     private ArrayList<Entity> entities;
 
     private Button[] options;
@@ -35,15 +41,15 @@ public class CharacterSelectionState implements State {
 
     private int numSaves;
 
-    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
-    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
-    private int textX = Swingy.WIDTH / 100 * 10;
-    private int fontSmall = Swingy.HEIGHT / 100 * 3;
-    private int fontSize = Swingy.HEIGHT / 100 * 5;
-    private int fontBold = Swingy.HEIGHT / 100 * 6;
-    private int fontTitle = Swingy.HEIGHT / 100 * 10;
-    private int imageWidth = Swingy.WIDTH / 100 * 20;
-    private int imageHeight = Swingy.HEIGHT / 100 * 20;
+    private int buttonBaseHeight = Window.HEIGHT / 100 * 20;
+    private int buttonIncrement = Window.HEIGHT / 100 * 10;
+    private int textX = Window.WIDTH / 100 * 10;
+    private int fontSmall = Window.HEIGHT / 100 * 3;
+    private int fontSize = Window.HEIGHT / 100 * 5;
+    private int fontBold = Window.HEIGHT / 100 * 6;
+    private int fontTitle = Window.HEIGHT / 100 * 10;
+    private int imageWidth = Window.WIDTH / 100 * 20;
+    private int imageHeight = Window.HEIGHT / 100 * 20;
 
     @Override
     public void init() {
@@ -83,27 +89,27 @@ public class CharacterSelectionState implements State {
                 switch(resultSet.getString(4)){
                     case "ninja":
                         characters[count] = new Fighter(new Texture("ninja/idle/1", imageWidth, imageHeight,false),
-                                (Swingy.WIDTH / 2), 100,
+                                (Window.WIDTH / 2), 100,
                                 new FighterMetrics(resultSet.getString(2), "NINJA"),
                                 this, AnimationHelper.createAnimation("ninjaLarge"));
                         characters[count].setPlayerClass(ID.NINJA);
                         break;
                     case "dino":
                         characters[count] = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,false),
-                                (Swingy.WIDTH / 2), 100,
+                                (Window.WIDTH / 2), 100,
                                 new FighterMetrics(resultSet.getString(2), "DINO"),
                                 this, AnimationHelper.createAnimation("dinoLarge"));
                         characters[count].setPlayerClass(ID.DINO);
                         break;
                     case "robo":
                         characters[count] = new Fighter(new Texture("robo/idle/1", imageWidth, imageHeight,false),
-                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "ROBO"),
+                                (Window.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "ROBO"),
                                 this, AnimationHelper.createAnimation("roboLarge"));
                         characters[count].setPlayerClass(ID.ROBO);
                         break;
                     case "zombo":
                         characters[count] = new Fighter(new Texture("zombo/idle/1", imageWidth, imageHeight,false),
-                                (Swingy.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "ZOMBO"),
+                                (Window.WIDTH / 2), 50, new FighterMetrics(resultSet.getString(2), "ZOMBO"),
                                 this, AnimationHelper.createAnimation("zomboLarge"));
                         characters[count].setPlayerClass(ID.ZOMBO);
                         break;
@@ -116,10 +122,15 @@ public class CharacterSelectionState implements State {
             }
             count++;
         }
+
+        //Output console options and wait for userSelection
+        console.userSelection(this);
+        System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
     }
 
     @Override
-    public State enterState(State callingState) {
+    public State enterState(StateManager stateManager, State callingState) {
+        this.stateManager = stateManager;
         try {
             resultSet = swingyDB.queryAll();
         } catch (SQLException e) {
@@ -132,12 +143,13 @@ public class CharacterSelectionState implements State {
             characters = null;
             options = null;
         }
-
+        stateManager.setTick(true);
         return this;
     }
 
     @Override
     public void exitState() {
+        this.stateManager.setTick(false);
         if (entities != null)
             entities.clear();
         entities = null;
@@ -156,8 +168,40 @@ public class CharacterSelectionState implements State {
     @Override
     public void tick(StateManager stateManager) {
 
-        if(numSaves <= 0)
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (userInput != null){
+            if (userInput.equalsIgnoreCase("gui")) {
+                swingy.setGui(true);
+                stateManager.setTick(false);
+                stateManager.setState("character-load", this);
+            }
+            else{
+                try {
+                    int userOption = Integer.parseInt(userInput);
+                    if (userOption > 0 && userOption < 5) {
+                        currentButtonSelection = Integer.parseInt(userInput) - 1;
+                        select(stateManager);
+                    }
+                    else
+                        System.out.println("INVALID INPUT...");
+                }catch (NumberFormatException e){
+                    System.out.println("INVALID INPUT...");
+                }
+            }
+        }
+
+        if(numSaves <= 0) {
+            this.stateManager.setTick(false);
             stateManager.setState("menu", this);
+        }
 
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentButtonSelection--;
@@ -199,6 +243,7 @@ public class CharacterSelectionState implements State {
                 currentCharacterSelection++;
                 if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
+                System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
                 break ;
             case 1 :
                 currentFighter = characters[currentCharacterSelection];
@@ -207,6 +252,7 @@ public class CharacterSelectionState implements State {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                this.stateManager.setTick(false);
                 stateManager.setState("character-load", this);
                 break ;
             case 2 :
@@ -216,9 +262,11 @@ public class CharacterSelectionState implements State {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+                this.stateManager.setTick(false);
                 stateManager.setState("map", this);
                 break ;
             case 3 :
+                this.stateManager.setTick(false);
                 stateManager.setState("menu", this);
                 break ;
         }
@@ -227,9 +275,9 @@ public class CharacterSelectionState implements State {
     @Override
     public void render(Graphics graphics) {
         graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+        graphics.fillRect(0, 0, Window.WIDTH, Window.HEIGHT);
 
-        Texture background = new Texture("background/2", Swingy.WIDTH, Swingy.HEIGHT, false);
+        Texture background = new Texture("background/2", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, "Load Existing Fighter", fontTitle, false);
@@ -252,7 +300,7 @@ public class CharacterSelectionState implements State {
             if (characters.length > currentCharacterSelection){
                 int j = 0;
                 for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
-                    Fonts.drawString(graphics, font, Color.GREEN, s, ((Swingy.WIDTH / 6 * 5)), (buttonBaseHeight + j * buttonIncrement));
+                    Fonts.drawString(graphics, font, Color.GREEN, s, ((Window.WIDTH / 6 * 5)), (buttonBaseHeight + j * buttonIncrement));
                     j++;
                 }
             }

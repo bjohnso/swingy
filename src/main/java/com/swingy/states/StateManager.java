@@ -8,6 +8,7 @@ public class StateManager {
 
     private Map<String, State> map;
     private State currentState;
+    private boolean tick = true;
 
     public StateManager(){
         map = new HashMap<String, State>();
@@ -16,7 +17,7 @@ public class StateManager {
     public void addState(State state){
         map.put(state.getName().toUpperCase(), state);
         if (currentState == null){
-            state.enterState(state);
+            state.enterState(this, state);
             currentState = state;
         }
     }
@@ -30,11 +31,16 @@ public class StateManager {
         if (currentState != null)
             currentState.exitState();
         currentState = state;
-        return state.enterState(callingState);
+        return state.enterState(this, callingState);
+    }
+
+    public void setTick(boolean tick) {
+        this.tick = tick;
     }
 
     public void tick(){
-        currentState.tick(this);
+        if (tick)
+            currentState.tick(this);
     }
 
     public void render(Graphics graphics){

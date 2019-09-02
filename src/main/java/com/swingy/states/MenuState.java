@@ -1,6 +1,6 @@
 package com.swingy.states;
 
-import com.swingy.rendering.entities.Entity;
+import com.swingy.game.entities.Entity;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Texture;
@@ -9,24 +9,32 @@ import com.swingy.util.Fonts;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+
+import com.swingy.console.Console;
+
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 
 import com.swingy.rendering.ui.Button;
-import com.swingy.view.Swingy;
+import com.swingy.game.Swingy;
 
+import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
+import com.swingy.rendering.ui.Window;
 
 public class MenuState implements State {
 
-    private Swingy swingy;
+    protected static Swingy swingy;
+
+    private StateManager stateManager;
 
     private Button[] options;
     private int currentSelection;
-    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
-    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
-    private int fontSize = Swingy.HEIGHT / 100 * 5;
-    private int fontBold = Swingy.HEIGHT / 100 * 6;
-    private int fontTitle = Swingy.HEIGHT / 100 * 10;
+    private int buttonBaseHeight = Window.HEIGHT / 100 * 20;
+    private int buttonIncrement = Window.HEIGHT / 100 * 10;
+    private int fontSize = Window.HEIGHT / 100 * 5;
+    private int fontBold = Window.HEIGHT / 100 * 6;
+    private int fontTitle = Window.HEIGHT / 100 * 10;
 
     @Override
     public void init() {
@@ -62,19 +70,16 @@ public class MenuState implements State {
                 new Font("Arial", Font.BOLD, fontBold),
                 Color.WHITE,
                 Color.YELLOW);
-    }
 
-    public void dropDB(){
-        try {
-            swingyDB.dropDB();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        //Output console options and wait for userSelection
+        console.userSelection(this);
     }
 
     @Override
-    public State enterState(State callingState) {
+    public State enterState(StateManager stateManager, State callingState) {
+        this.stateManager = stateManager;
         init();
+        stateManager.setTick(true);
         return this;
     }
 
@@ -84,6 +89,7 @@ public class MenuState implements State {
 
     @Override
     public void tick(StateManager stateManager) {
+
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentSelection--;
             if (currentSelection < 0){
@@ -109,9 +115,40 @@ public class MenuState implements State {
 
         if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
             select(stateManager);
+
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (userInput != null){
+            if (userInput.equalsIgnoreCase("gui")) {
+                swingy.setGui(true);
+                stateManager.setTick(false);
+                stateManager.setState("menu", this);
+            }
+            else{
+                try {
+                    int userOption = Integer.parseInt(userInput);
+                    if (userOption > 0 && userOption < 5) {
+                        currentSelection = Integer.parseInt(userInput) - 1;
+                        select(stateManager);
+                    }
+                    else
+                        System.out.println("INVALID INPUT...");
+                }catch (NumberFormatException e){
+                    System.out.println("INVALID INPUT...");
+                }
+            }
+        }
     }
 
     private void select(StateManager stateManager){
+        stateManager.setTick(false);
         switch (currentSelection){
             case 0 :
                 stateManager.setState("character-new", this);
@@ -131,6 +168,7 @@ public class MenuState implements State {
 
     @Override
     public void exitState() {
+        this.stateManager.setTick(false);
     }
 
     @Override
@@ -140,12 +178,12 @@ public class MenuState implements State {
 
     public void render (Graphics graphics){
         graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+        graphics.fillRect(0, 0, Window.WIDTH, Window.HEIGHT);
 
-        Texture background = new Texture("background/1", Swingy.WIDTH, Swingy.HEIGHT, false);
+        Texture background = new Texture("background/1", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);
 
-        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, Swingy.TITLE, fontTitle, false);
+        Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, Window.TITLE, fontTitle, false);
 
         for (int i = 0; i < options.length; i++){
             if (i == currentSelection)

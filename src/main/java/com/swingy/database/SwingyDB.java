@@ -1,12 +1,8 @@
 package com.swingy.database;
 
-import com.swingy.input.KeyInput;
-import com.swingy.rendering.entities.Fighter;
-import com.swingy.view.Swingy;
+import com.swingy.game.entities.Fighter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.management.Query;
-import javax.swing.*;
 import java.sql.*;
 
 public class SwingyDB{

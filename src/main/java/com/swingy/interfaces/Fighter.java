@@ -1,7 +1,7 @@
 package com.swingy.interfaces;
 
 import com.swingy.battle.FighterMetrics;
-import com.swingy.units.FighterBaseStats;
+import com.swingy.metrics.FighterBaseStats;
 
 public interface Fighter {
     boolean attack();

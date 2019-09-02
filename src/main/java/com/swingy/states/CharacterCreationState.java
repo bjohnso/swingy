@@ -1,27 +1,32 @@
 package com.swingy.states;
 
 import com.swingy.battle.FighterMetrics;
-import com.swingy.rendering.entities.Entity;
-import com.swingy.rendering.entities.Fighter;
+import com.swingy.game.entities.Entity;
+import com.swingy.game.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.util.AnimationHelper;
 import com.swingy.util.Fonts;
-import com.swingy.view.Swingy;
+import com.swingy.rendering.ui.Window;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import com.swingy.rendering.ui.Button;
 
+import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
+import static com.swingy.states.MenuState.swingy;
 
 public class CharacterCreationState implements State {
+
+    private StateManager stateManager;
 
     private ArrayList<Entity> entities;
 
@@ -35,14 +40,14 @@ public class CharacterCreationState implements State {
 
     String userInput;
 
-    private int buttonBaseHeight = Swingy.HEIGHT / 100 * 20;
-    private int buttonIncrement = Swingy.HEIGHT / 100 * 10;
-    private int textX = Swingy.WIDTH / 100 * 10;
-    private int fontSize = Swingy.HEIGHT / 100 * 5;
-    private int fontBold = Swingy.HEIGHT / 100 * 6;
-    private int fontTitle = Swingy.HEIGHT / 100 * 10;
-    private int imageWidth = Swingy.WIDTH / 100 * 20;
-    private int imageHeight = Swingy.HEIGHT / 100 * 20;
+    private int buttonBaseHeight = Window.HEIGHT / 100 * 20;
+    private int buttonIncrement = Window.HEIGHT / 100 * 10;
+    private int textX = Window.WIDTH / 100 * 10;
+    private int fontSize = Window.HEIGHT / 100 * 5;
+    private int fontBold = Window.HEIGHT / 100 * 6;
+    private int fontTitle = Window.HEIGHT / 100 * 10;
+    private int imageWidth = Window.WIDTH / 100 * 20;
+    private int imageHeight = Window.HEIGHT / 100 * 20;
 
     @Override
     public void init() {
@@ -71,19 +76,19 @@ public class CharacterCreationState implements State {
         characters = new Fighter[4];
 
         characters[0] = new Fighter(new Texture("ninja/idle/1", imageWidth, imageHeight, false),
-                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10),
+                (Window.WIDTH / 2), (Window.HEIGHT / 10),
                 new FighterMetrics("NINJA"),this, AnimationHelper.createAnimation("ninjaLarge"));
 
         characters[1] = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,false),
-                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10),
+                (Window.WIDTH / 2), (Window.HEIGHT / 10),
                 new FighterMetrics("DINO"),this, AnimationHelper.createAnimation("dinoLarge"));
 
         characters[2] = new Fighter(new Texture("robo/idle/1", imageWidth, imageHeight,false),
-                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10), new FighterMetrics("ROBO"),
+                (Window.WIDTH / 2), (Window.HEIGHT / 10), new FighterMetrics("ROBO"),
                 this, AnimationHelper.createAnimation("roboLarge"));
 
         characters[3] = new Fighter(new Texture("zombo/idle/1", imageWidth, imageHeight,false),
-                (Swingy.WIDTH / 2), (Swingy.HEIGHT / 10), new FighterMetrics("ZOMBO"),
+                (Window.WIDTH / 2), (Window.HEIGHT / 10), new FighterMetrics("ZOMBO"),
                 this, AnimationHelper.createAnimation("zomboLarge"));
 
         characters[0].setPlayerClass(ID.NINJA);
@@ -96,21 +101,35 @@ public class CharacterCreationState implements State {
         characters[2].setPlayerClassName("robo");
         characters[3].setPlayerClassName("zombo");
 
+        characters[0].getFighterMetrics().setName("Ninja");
+        characters[1].getFighterMetrics().setName("Dino");
+        characters[2].getFighterMetrics().setName("Robo");
+        characters[3].getFighterMetrics().setName("Zombo");
+
         characters[0].getFighterMetrics().getLevel().setExperience(1000);
         characters[1].getFighterMetrics().getLevel().setExperience(1000);
         characters[2].getFighterMetrics().getLevel().setExperience(1000);
         characters[3].getFighterMetrics().getLevel().setExperience(1000);
+
+        //Output console options and wait for userSelection
+        console.userSelection(this);
+
+        System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
     }
 
     @Override
-    public State enterState(State callingState) {
+    public State enterState(StateManager stateManager, State callingState) {
+        this.stateManager = stateManager;
         init();
+        stateManager.setTick(true);
         return this;
     }
 
     @Override
     public void exitState() {
-        entities.clear();
+        this.stateManager.setTick(false);
+        if (entities != null)
+            entities.clear();
         characters = null;
         options = null;
         entities = null;
@@ -124,6 +143,37 @@ public class CharacterCreationState implements State {
 
     @Override
     public void tick(StateManager stateManager) {
+
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (userInput != null){
+            if (userInput.equalsIgnoreCase("gui")) {
+                swingy.setGui(true);
+                stateManager.setTick(false);
+                stateManager.setState("character-new", this);
+            }
+            else{
+                try {
+                    int userOption = Integer.parseInt(userInput);
+                    if (userOption > 0 && userOption < 4) {
+                        currentButtonSelection = Integer.parseInt(userInput) - 1;
+                        select(stateManager);
+                    }
+                    else
+                        System.out.println("INVALID INPUT...");
+                }catch (NumberFormatException e){
+                    System.out.println("INVALID INPUT...");
+                }
+            }
+        }
+
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
             currentButtonSelection--;
             if (currentButtonSelection < 0){
@@ -166,12 +216,14 @@ public class CharacterCreationState implements State {
                 currentCharacterSelection++;
                 if (currentCharacterSelection >= characters.length)
                     currentCharacterSelection = 0;
+                System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
                 break;
             case 1:
                 userInput = characters[currentCharacterSelection].getPlayerClassName();
                 characters[currentCharacterSelection].getFighterMetrics().setName(userInput);
                 currentFighter = characters[currentCharacterSelection];
                 try {
+                    this.stateManager.setTick(false);
                     currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
                     if (currentFighter.getFighterMetrics().getID() >= 0) {
                         swingyDB.setCurrentPlayer(currentFighter.getFighterMetrics().getID());
@@ -186,6 +238,7 @@ public class CharacterCreationState implements State {
                 }
                 break ;
             case 2 :
+                this.stateManager.setTick(false);
                 stateManager.setState("menu", this);
                 break ;
         }
@@ -194,9 +247,9 @@ public class CharacterCreationState implements State {
     @Override
     public void render(Graphics graphics) {
         graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, Swingy.WIDTH, Swingy.HEIGHT);
+        graphics.fillRect(0, 0, Window.WIDTH, Window.HEIGHT);
 
-        Texture background = new Texture("background/2", Swingy.WIDTH, Swingy.HEIGHT, false);
+        Texture background = new Texture("background/2", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);
 
         Fonts.drawString(graphics, new Font("Arial", Font.BOLD, fontTitle), Color.GREEN, "Create New Fighter", fontTitle, false);

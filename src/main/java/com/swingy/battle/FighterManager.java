@@ -4,7 +4,7 @@ import com.swingy.battle.objects.BattleObject;
 import com.swingy.battle.objects.HUD;
 import com.swingy.id.ID;
 import com.swingy.interfaces.Renderable;
-import com.swingy.rendering.entities.Fighter;
+import com.swingy.game.entities.Fighter;
 import com.swingy.states.BattleState;
 import com.swingy.util.AnimationHelper;
 

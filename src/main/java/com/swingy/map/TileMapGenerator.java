@@ -1,12 +1,11 @@
 package com.swingy.map;
 
+import com.swingy.rendering.ui.Window;
 import com.swingy.id.IDAssigner;
-import com.swingy.rendering.entities.Fighter;
+import com.swingy.game.entities.Fighter;
 import com.swingy.id.ID;
 import com.swingy.rendering.textures.Texture;
-import com.swingy.view.Swingy;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TileMapGenerator {
@@ -36,8 +35,8 @@ public class TileMapGenerator {
 
     public TileMapGenerator(Fighter fighter){
         this.fighter = fighter;
-        //MAP_SIZE = (fighter.getFighterMetrics().getLevel().getLevel() - 1) * 5 + 10 - (fighter.getFighterMetrics().getLevel().getLevel() % 2);
-        MAP_SIZE = (5 - 1) * 5 + 10 - (5 % 2);
+        MAP_SIZE = (fighter.getFighterMetrics().getLevel().getLevel() - 1) * 5 + 10 - (fighter.getFighterMetrics().getLevel().getLevel() % 2);
+        //MAP_SIZE = (5 - 1) * 5 + 10 - (5 % 2);
         map = new String[MAP_SIZE][MAP_SIZE];
 
         TILES = new HashMap<String, Tile>(){{
@@ -88,8 +87,8 @@ public class TileMapGenerator {
     }
 
     public void generate(){
-        float y = (Swingy.HEIGHT - (MAP_SIZE * 32)) / 2;
-        float x = (Swingy.WIDTH - (MAP_SIZE * 32)) / 2;
+        float y = (Window.HEIGHT - (MAP_SIZE * 32)) / 2;
+        float x = (Window.WIDTH - (MAP_SIZE * 32)) / 2;
 
         map[map.length / 2][map.length / 2] = "P";
         map[(map.length / 2) - 1][map.length / 2] = "p";
@@ -106,60 +105,88 @@ public class TileMapGenerator {
                     TILES.get(fighter.getPlayerClassName().toUpperCase()).addCoordinate("PLAYER", x, y);
                     playerCoordinate = x + "|" + y;
                 }
-                else if (map[i][j] == "p")
+                else if (map[i][j] == "p") {
                     TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), x, y);
+                    map[i][j] = "*";
+                }
                 else if (map[i][j] != "!" && map[i][j] != "p"){
                         if (i == 0) {
-                            if (j == 0)
+                            if (j == 0) {
                                 TILES.get("BORDER-CORNER-NE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
-                            else if (j == MAP_SIZE - 1)
+                                map[i][j] = "-";
+                            }
+                            else if (j == MAP_SIZE - 1) {
                                 TILES.get("BORDER-CORNER-NW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
-                            else
+                                map[i][j] = "-";
+                            }
+                            else {
                                 TILES.get("BORDER-N").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                map[i][j] = "-";
+                            }
                         } else if (i == MAP_SIZE - 1) {
-                            if (j == 0)
+                            if (j == 0) {
                                 TILES.get("BORDER-CORNER-SE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
-                            else if (j == MAP_SIZE - 1)
+                                map[i][j] = "-";
+                            }
+                            else if (j == MAP_SIZE - 1) {
                                 TILES.get("BORDER-CORNER-SW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
-                            else
+                                map[i][j] = "-";
+                            }
+                            else {
                                 TILES.get("BORDER-S").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                map[i][j] = "-";
+                            }
                         } else {
-                            if (j == 0)
+                            if (j == 0) {
                                 TILES.get("BORDER-E").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
-                            else if (j == MAP_SIZE - 1)
+                                map[i][j] = "|";
+                            }
+                            else if (j == MAP_SIZE - 1) {
                                 TILES.get("BORDER-W").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                map[i][j] = "|";
+                            }
                             else {
                                 entity = calculateEntity();
                                 switch (entity) {
                                     case "LAVA":
                                         if (i + 2 < MAP_SIZE - 1 && j + 2 < MAP_SIZE - 1 && !checkNineByNine("!", j, i))
                                             generateNineByNine("LAVA", j, i, x, y);
-                                        else
+                                        else {
                                             TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), x, y);
+                                            map[i][j] = "*";
+                                        }
                                         break;
                                     case "PIT":
                                         if (i + 2 < MAP_SIZE - 1 && j + 2 < MAP_SIZE - 1 && !checkNineByNine("!", j, i))
                                             generateNineByNine("PIT", j, i, x, y);
-                                        else
+                                        else {
                                             TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), x, y);
+                                            map[i][j] = "*";
+                                        }
                                         break;
                                     case "MUSHROOM":
                                         TILES.get("MUSHROOM").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        map[i][j] = "$";
                                         break;
                                     case "DINO":
                                         TILES.get("DINO").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        map[i][j] = "D";
                                         break;
                                     case "ROBO":
                                         TILES.get("ROBO").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        map[i][j] = "R";
                                         break;
                                     case "ZOMBO":
                                         TILES.get("ZOMBO").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        map[i][j] = "Z";
                                         break;
                                     case "NINJA":
                                         TILES.get("NINJA").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        map[i][j] = "N";
                                         break;
                                     default:
                                         TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), x, y);
+                                        map[i][j] = "*";
                                 }
                             }
                         }
@@ -167,7 +194,7 @@ public class TileMapGenerator {
                 x += 32;
             }
             y += 32;
-            x = (Swingy.WIDTH - (MAP_SIZE * 32)) / 2;
+            x = (Window.WIDTH - (MAP_SIZE * 32)) / 2;
         }
     }
 
@@ -238,6 +265,14 @@ public class TileMapGenerator {
 
     public HashMap<String, Tile> getTileMap() {
         return TILES;
+    }
+
+    public String[][] getCharMap() {
+        return map;
+    }
+
+    public static int getMapSize() {
+        return MAP_SIZE;
     }
 
     public String getPlayerCoordinate() {
