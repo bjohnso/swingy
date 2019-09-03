@@ -443,7 +443,8 @@ public class GameState extends Canvas implements State {
                                             switch (t.getValue().getTileClassName()){
                                                 case "FIGHTER":
                                                     setDefender(tObject.getValue());
-                                                 createOptions();
+                                                    if(defender != null)
+                                                        createOptions();
                                                     break;
                                                 case "TRAP":
                                                     if (!item()) {
@@ -522,7 +523,8 @@ public class GameState extends Canvas implements State {
                                             switch (t.getValue().getTileClassName()){
                                                 case "FIGHTER":
                                                     setDefender(tObject.getValue());
-                                                    createOptions();
+                                                    if(defender != null)
+                                                        createOptions();
                                                     break;
                                                 case "TRAP":
                                                     if (!item()) {
@@ -601,7 +603,8 @@ public class GameState extends Canvas implements State {
                                             switch (t.getValue().getTileClassName()){
                                                 case "FIGHTER":
                                                     setDefender(tObject.getValue());
-                                                    createOptions();
+                                                    if(defender != null)
+                                                        createOptions();
                                                     break;
                                                 case "TRAP":
                                                     if (!item()) {
@@ -680,7 +683,8 @@ public class GameState extends Canvas implements State {
                                             switch (t.getValue().getTileClassName()){
                                                 case "FIGHTER":
                                                     setDefender(tObject.getValue());
-                                                    createOptions();
+                                                    if(defender != null)
+                                                        createOptions();
                                                     break;
                                                 case "TRAP":
                                                     if (!item()) {
@@ -729,7 +733,7 @@ public class GameState extends Canvas implements State {
             }
         }
 
-        if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
+        if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER) && options != null)
             select(stateManager);
 
         for (Entity e : entities)

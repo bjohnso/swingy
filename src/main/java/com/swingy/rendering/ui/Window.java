@@ -47,12 +47,10 @@ public class Window extends Canvas {
 
     public void setFrameVisibile(boolean visibile){
         frame.setVisible(visibile);
+        frame.requestFocus();
     }
 
     public Window(Swingy swingy){
-        //Initialise Window
-        requestFocus();
-
         //Frame
         frame = new JFrame(TITLE);
         frame.add(this);
@@ -68,6 +66,5 @@ public class Window extends Canvas {
         });
         frame.setLocationRelativeTo(null);
         frame.setVisible(swingy.getGui());
-        frame.requestFocus();
     }
 }

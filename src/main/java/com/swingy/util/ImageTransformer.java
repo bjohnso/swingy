@@ -1,5 +1,6 @@
 package com.swingy.util;
 
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -28,6 +29,15 @@ public class ImageTransformer {
         tx.translate(-image.getWidth(null), -image.getHeight(null));
         AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         return image = op.filter(image, null);
+    }
+
+    public static BufferedImage resize(BufferedImage img, int width, int height) {
+        Image tmp = img.getScaledInstance(width, height, Image.SCALE_FAST);
+        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+        return resized;
     }
 
 }

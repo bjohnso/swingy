@@ -73,7 +73,7 @@ public class Swingy implements Runnable{
             MouseInput.update();
 
             try {
-                Thread.sleep(1);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -85,7 +85,7 @@ public class Swingy implements Runnable{
 
             if (System.currentTimeMillis() - 1000 > timer){
                 timer += 1000;
-                //System.out.printf("FPS: %d | TPS: %d\n", fps, tps);
+                System.out.printf("FPS: %d | TPS: %d\n", fps, tps);
                 fps = 0;
                 tps = 0;
             }
@@ -114,8 +114,14 @@ public class Swingy implements Runnable{
         //Initialise Window
         this.window = new Window(this);
 
-        if (gui)
-            this.setGui(gui);
+        if (gui){
+            KeyInput keyInput = new KeyInput();
+            window.addKeyListener(keyInput);
+            window.getFrame().addKeyListener(keyInput);
+            MouseInput mouseInput = new MouseInput();
+            window.addMouseListener(mouseInput);
+            window.addMouseMotionListener(mouseInput);
+        }
 
         stateManager.addState(new MenuState(this));
         stateManager.addState(new CharacterCreationState());

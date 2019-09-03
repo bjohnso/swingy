@@ -1,7 +1,6 @@
 package com.swingy.rendering.textures;
 
 import com.swingy.util.ImageTransformer;
-import com.swingy.util.TextureManager;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -46,7 +45,8 @@ public class Texture {
             this.image = oldImage;
         } else {
             try {
-                this.image = ImageIO.read(new File("./res/textures/" + fileName + ".png"));
+                BufferedImage image = ImageIO.read(new File("./res/textures/" + fileName + ".png"));
+                this.image = ImageTransformer.resize(image, width, height);
                 textureMap.put(fileName, this.image);
             } catch (IOException e){
                 e.printStackTrace();
@@ -83,8 +83,7 @@ public class Texture {
     }
 
     public void render (Graphics graphics, double x, double y){
-        Image resize = image.getScaledInstance(width, height, Image.SCALE_FAST);
-        graphics.drawImage(resize, (int)x, (int)y, null);
+        graphics.drawImage(this.image, (int)x, (int)y, null);
     }
 
     public BufferedImage getImage(){
