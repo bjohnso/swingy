@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Tue Sep 03 20:11:58 SAST 2019:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-016c-f853-81dc-00000ad6ff20 
+Tue Sep 03 20:32:54 SAST 2019:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-016c-f866-aadf-00000ad6ffa8 
 on database directory /home/nullfinder/JavaProjects/swingy/swingydb with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@4b85612c 
 Loaded from file:/home/nullfinder/JavaProjects/swingy/target/swingy-jar-with-dependencies.jar
 java.vendor=Ubuntu

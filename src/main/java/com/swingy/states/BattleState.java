@@ -66,7 +66,7 @@ public class BattleState extends Canvas implements State {
                 break;
             case DINO:
                 tempFighter = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,false),
-                        Window.WIDTH / 100 * 5,
+                        Window.WIDTH / 100 * 3,
                         Window.HEIGHT / 100 * 50,
                         GameState.player.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("dinoLarge"));
@@ -109,7 +109,7 @@ public class BattleState extends Canvas implements State {
                 break;
             case DINO:
                 tempFighter = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,true),
-                        Window.WIDTH / 100 * 50,
+                        Window.WIDTH / 100 * 55,
                         Window.HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("dinoLargeRef"));
