@@ -207,6 +207,7 @@ public class SwingyDB{
             busy = true;
             createConnection();
             connection.createStatement().execute(SQL_UPDATE + " active = false where active = true");
+            System.out.println("Active players reset");
             closeConnection();
             busy = false;
         }

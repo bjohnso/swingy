@@ -73,7 +73,7 @@ public class Swingy implements Runnable{
             MouseInput.update();
 
             try {
-                Thread.sleep(10);
+                Thread.sleep(15);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -85,7 +85,7 @@ public class Swingy implements Runnable{
 
             if (System.currentTimeMillis() - 1000 > timer){
                 timer += 1000;
-                System.out.printf("FPS: %d | TPS: %d\n", fps, tps);
+                //System.out.printf("FPS: %d | TPS: %d\n", fps, tps);
                 fps = 0;
                 tps = 0;
             }

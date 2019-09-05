@@ -71,32 +71,34 @@ public class GameState extends Canvas implements State {
 
         try {
             ResultSet resultSet = swingyDB.queryPlayer();
-            if (resultSet.next()){
-                switch(resultSet.getString(4)){
-                    case "ninja":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINJA"),
-                                this, null);
-                        player.setPlayerClass(ID.NINJA);
-                        break;
-                    case "dino":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
-                                this, null);
-                        player.setPlayerClass(ID.DINO);
-                        break;
-                    case "robo":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ROBO"),
-                                this, null);
-                        player.setPlayerClass(ID.ROBO);
-                        break;
-                    case "zombo":
-                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ZOMBO"),
-                                this, null);
-                        player.setPlayerClass(ID.ZOMBO);
-                        break;
+            if (resultSet != null) {
+                if (resultSet.next()) {
+                    switch (resultSet.getString(4)) {
+                        case "ninja":
+                            player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINJA"),
+                                    this, null);
+                            player.setPlayerClass(ID.NINJA);
+                            break;
+                        case "dino":
+                            player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
+                                    this, null);
+                            player.setPlayerClass(ID.DINO);
+                            break;
+                        case "robo":
+                            player = new Fighter(new FighterMetrics(resultSet.getString(2), "ROBO"),
+                                    this, null);
+                            player.setPlayerClass(ID.ROBO);
+                            break;
+                        case "zombo":
+                            player = new Fighter(new FighterMetrics(resultSet.getString(2), "ZOMBO"),
+                                    this, null);
+                            player.setPlayerClass(ID.ZOMBO);
+                            break;
+                    }
+                    player.getFighterMetrics().setID(resultSet.getInt(1));
+                    player.setPlayerClassName(resultSet.getString(4));
+                    player.getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
                 }
-                player.getFighterMetrics().setID(resultSet.getInt(1));
-                player.setPlayerClassName(resultSet.getString(4));
-                player.getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -393,8 +395,6 @@ public class GameState extends Canvas implements State {
             select(stateManager);
         }
 
-
-
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W) || userInput.equalsIgnoreCase("1")){
             if (options == null) {
                 boolean moved = false;
@@ -424,7 +424,6 @@ public class GameState extends Canvas implements State {
                                 moved = true;
                                 enemyMove();
 
-
                                 break ;
                             }
                         }
@@ -439,27 +438,8 @@ public class GameState extends Canvas implements State {
                                         if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0)){
-                                            switch (t.getValue().getTileClassName()){
-                                                case "FIGHTER":
-                                                    setDefender(tObject.getValue());
-                                                    if(defender != null)
-                                                        createOptions();
-                                                    break;
-                                                case "TRAP":
-                                                    if (!item()) {
-                                                        player.setAlive(false);
-                                                        gameOver = true;
-                                                        this.stateManager.setTick(false);
-                                                        stateManager.setState("menu", this);
-                                                    }
-                                                    break;
-                                                case "BORDER":
-                                                    if (escape())
-                                                        passMap();
-                                                    break;
-                                            }
-                                        }
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
+                                            collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
                                     }
                                 }
                             }
@@ -519,27 +499,8 @@ public class GameState extends Canvas implements State {
                                         if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0)){
-                                            switch (t.getValue().getTileClassName()){
-                                                case "FIGHTER":
-                                                    setDefender(tObject.getValue());
-                                                    if(defender != null)
-                                                        createOptions();
-                                                    break;
-                                                case "TRAP":
-                                                    if (!item()) {
-                                                        player.setAlive(false);
-                                                        gameOver = true;
-                                                        this.stateManager.setTick(false);
-                                                        stateManager.setState("menu", this);
-                                                    }
-                                                    break;
-                                                case "BORDER":
-                                                    if (escape())
-                                                        passMap();
-                                                    break;
-                                            }
-                                        }
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
+                                            collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
                                     }
                                 }
                             }
@@ -599,27 +560,8 @@ public class GameState extends Canvas implements State {
                                         if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0)){
-                                            switch (t.getValue().getTileClassName()){
-                                                case "FIGHTER":
-                                                    setDefender(tObject.getValue());
-                                                    if(defender != null)
-                                                        createOptions();
-                                                    break;
-                                                case "TRAP":
-                                                    if (!item()) {
-                                                        player.setAlive(false);
-                                                        gameOver = true;
-                                                        this.stateManager.setTick(false);
-                                                        stateManager.setState("menu", this);
-                                                    }
-                                                    break;
-                                                case "BORDER":
-                                                    if (escape())
-                                                        passMap();
-                                                    break;
-                                            }
-                                        }
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
+                                            collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
                                     }
                                 }
                             }
@@ -679,29 +621,8 @@ public class GameState extends Canvas implements State {
                                         if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0)){
-                                            switch (t.getValue().getTileClassName()){
-                                                case "FIGHTER":
-                                                    setDefender(tObject.getValue());
-                                                    if(defender != null)
-                                                        createOptions();
-                                                    break;
-                                                case "TRAP":
-                                                    if (!item()) {
-                                                        player.setAlive(false);
-                                                        gameOver = true;
-                                                        this.stateManager.setTick(false);
-                                                        stateManager.setState("menu", this);
-                                                    }
-                                                    else
-                                                        addArtifact(calculateArtifact());
-                                                    break;
-                                                 case "BORDER":
-                                                     if (escape())
-                                                         passMap();
-                                                    break;
-                                            }
-                                        }
+                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
+                                            collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
                                     }
                                 }
                             }
@@ -833,9 +754,37 @@ public class GameState extends Canvas implements State {
     }
 
     public void setDefender(String id){
+        defender = null;
         for (Fighter f : fighters) {
             if (f.getMobileID() == id)
                 defender = f;
+        }
+    }
+
+    private void collision(String coordinate, String tileClassName, Tile tile){
+        System.out.println(tileClassName);
+        switch (tileClassName){
+            case "FIGHTER":
+                //System.out.println(tile.getFigtherClassName());
+                //System.out.printf("PLAYER COORDINATE %s | ENEMY COORDINATE %s\n", playerCoordinates, coordinate);
+                setDefender(coordinate);
+                if(defender != null)
+                    createOptions();
+                break;
+            case "TRAP":
+                if (!item()) {
+                    player.setAlive(false);
+                    gameOver = true;
+                    this.stateManager.setTick(false);
+                    stateManager.setState("menu", this);
+                }
+                else
+                    addArtifact(calculateArtifact());
+                break;
+            case "BORDER":
+                if (escape())
+                    passMap();
+                break;
         }
     }
 
