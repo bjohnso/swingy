@@ -2,7 +2,12 @@ package com.swingy.input;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class KeyInput extends KeyAdapter {
 
@@ -10,15 +15,34 @@ public class KeyInput extends KeyAdapter {
 
     private static final boolean keys[] = new boolean[NUM_KEYS];
     private static final boolean lastKeys[] = new boolean[NUM_KEYS];
+    private boolean timer = false;
+
+    private InputTimer inputTimer = new InputTimer();
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private Future<Object> future;
 
     @Override
     public void keyPressed(KeyEvent e) {
-        keys[e.getKeyCode()] = true;
+        if (timer){
+            if (future.isDone()){
+                timer = true;
+                future = executorService.submit(inputTimer);
+                keys[e.getKeyCode()] = true;
+                System.out.println("KEY PRESSED");
+            }
+        }
+        else {
+            timer = true;
+            future = executorService.submit(inputTimer);
+            keys[e.getKeyCode()] = true;
+            System.out.println("KEY PRESSED");
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         keys[e.getKeyCode()] = false;
+        System.out.println("KEY RELEASED");
     }
 
     public static void update(){

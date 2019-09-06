@@ -18,6 +18,7 @@ import com.swingy.rendering.ui.Window;
 import com.swingy.util.NumberHelper;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
@@ -50,6 +51,8 @@ public class GameState extends Canvas implements State {
 
     public static String playerCoordinates;
 
+   private int init_count = 0;
+
     private StateManager stateManager = null;
 
     private String[] artifacts = {
@@ -63,6 +66,8 @@ public class GameState extends Canvas implements State {
 
     @Override
     public void init() {
+        init_count++;
+        System.out.println("GAME STATE!!! AHOOOGAH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         gameOver = false;
         isResume = true;
@@ -99,6 +104,7 @@ public class GameState extends Canvas implements State {
                     player.setPlayerClassName(resultSet.getString(4));
                     player.getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
                 }
+                resultSet.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -263,7 +269,7 @@ public class GameState extends Canvas implements State {
             fighters.clear();
             options = null;
         }
-        if (!isResume)
+        if (!isResume && init_count < 1)
             init();
         this.stateManager.setTick(true);
         return this;
@@ -272,8 +278,10 @@ public class GameState extends Canvas implements State {
     @Override
     public void exitState() {
         this.stateManager.setTick(false);
-        if (!gameOver)
+        if (!gameOver) {
             isResume = true;
+            init_count = 0;
+        }
         else if (gameOver){
             isResume = false;
             entities.clear();
@@ -396,6 +404,7 @@ public class GameState extends Canvas implements State {
         }
 
         if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W) || userInput.equalsIgnoreCase("1")){
+            System.out.println("Up Pressed!!!!!!");
             if (options == null) {
                 boolean moved = false;
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
@@ -429,7 +438,8 @@ public class GameState extends Canvas implements State {
                         }
 
                         if (moved){
-                            printCharMap();
+                            System.out.println("Moved UP!!!!!!");
+                            //printCharMap();
                             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
@@ -455,8 +465,8 @@ public class GameState extends Canvas implements State {
                 }
             }
         }
-
-        if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S) || userInput.equalsIgnoreCase("2")){
+        else if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S) || userInput.equalsIgnoreCase("2")){
+            System.out.println("Down Pressed!!!!!!");
             if (options == null) {
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
                 for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
@@ -490,7 +500,8 @@ public class GameState extends Canvas implements State {
                         }
 
                         if (moved){
-                            printCharMap();
+                            System.out.println("Moved Down!!!!!!");
+                            //printCharMap();
                             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
@@ -517,7 +528,8 @@ public class GameState extends Canvas implements State {
             }
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_LEFT) || KeyInput.wasPressed(KeyEvent.VK_A) || userInput.equalsIgnoreCase("3")){
+        else if (KeyInput.wasPressed(KeyEvent.VK_LEFT) || KeyInput.wasPressed(KeyEvent.VK_A) || userInput.equalsIgnoreCase("3")){
+            System.out.println("Left Pressed!!!!!!");
             if (options == null) {
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
                 for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
@@ -551,7 +563,8 @@ public class GameState extends Canvas implements State {
                         }
 
                         if (moved){
-                            printCharMap();
+                            System.out.println("Moved Left!!!!!!");
+                            //printCharMap();
                             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
@@ -578,7 +591,8 @@ public class GameState extends Canvas implements State {
             }
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) || KeyInput.wasPressed(KeyEvent.VK_D) || userInput.equalsIgnoreCase("4")){
+        else if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) || KeyInput.wasPressed(KeyEvent.VK_D) || userInput.equalsIgnoreCase("4")){
+            System.out.println("Right Pressed!!!!!!");
             if(options == null) {
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
                 for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
@@ -612,7 +626,8 @@ public class GameState extends Canvas implements State {
                         }
 
                         if (moved){
-                            printCharMap();
+                            System.out.println("Moved Right!!!!!!");
+                            //printCharMap();
                             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
@@ -639,7 +654,7 @@ public class GameState extends Canvas implements State {
             }
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_Q) || userInput.equalsIgnoreCase("5")){
+        else if (KeyInput.wasPressed(KeyEvent.VK_Q) || userInput.equalsIgnoreCase("5")){
             quitMap();
         }
 

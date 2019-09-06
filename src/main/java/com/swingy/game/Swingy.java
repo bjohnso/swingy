@@ -61,7 +61,6 @@ public class Swingy implements Runnable{
 
             if (unprocessed >= 1){
                 tick();
-
                 unprocessed--;
                 tps++;
                 canRender = true;
@@ -73,7 +72,7 @@ public class Swingy implements Runnable{
             MouseInput.update();
 
             try {
-                Thread.sleep(15);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

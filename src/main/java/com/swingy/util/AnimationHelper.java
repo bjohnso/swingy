@@ -13,7 +13,7 @@ public class AnimationHelper {
     private static int animationSpeedFast = 10;
     private static int animationSpeedSlow = 30;
     private static int imageWidth = Window.WIDTH / 100 * 30;
-    private static int imageHeight = Window.HEIGHT / 100 * 60;
+    private static int imageHeight = Window.HEIGHT / 100 * 40;
 
     public static Animation createAnimation(String animation){
         Animation anime = null;

@@ -36,7 +36,7 @@ public class CharacterCreationState implements State {
     private Fighter[] characters;
     private int currentCharacterSelection;
 
-    protected Fighter currentFighter;
+    public Fighter currentFighter;
 
     String userInput;
 

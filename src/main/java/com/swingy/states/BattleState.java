@@ -100,7 +100,7 @@ public class BattleState extends Canvas implements State {
         switch (GameState.defender.getPlayerClass()){
             case NINJA:
                 tempFighter = new Fighter(new Texture("ninja/idle/1", imageWidth, imageHeight,true),
-                        Window.WIDTH / 100 * 70,
+                        Window.WIDTH / 100 * 60,
                         Window.HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("ninjaLargeRef"));
@@ -109,7 +109,7 @@ public class BattleState extends Canvas implements State {
                 break;
             case DINO:
                 tempFighter = new Fighter(new Texture("dino/idle/1", imageWidth, imageHeight,true),
-                        Window.WIDTH / 100 * 55,
+                        Window.WIDTH / 100 * 50,
                         Window.HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("dinoLargeRef"));
@@ -118,7 +118,7 @@ public class BattleState extends Canvas implements State {
                 break;
             case ROBO:
                 tempFighter = new Fighter(new Texture("robo/idle/1", imageWidth, imageHeight,true),
-                        Window.WIDTH / 100 * 70,
+                        Window.WIDTH / 100 * 60,
                         Window.HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("roboLargeRef"));
@@ -127,7 +127,7 @@ public class BattleState extends Canvas implements State {
                 break;
             case ZOMBO:
                 tempFighter = new Fighter(new Texture("zombo/idle/1", imageWidth, imageHeight,true),
-                        Window.WIDTH / 100 * 70,
+                        Window.WIDTH / 100 * 60,
                         Window.HEIGHT / 100 * 50,
                         GameState.defender.getFighterMetrics(),
                         this, AnimationHelper.createAnimation("zomboLargeRef"));
@@ -259,7 +259,7 @@ public class BattleState extends Canvas implements State {
                     artifact = new Texture("battle/"+ a.getType(), Window.WIDTH / 100 * (5/4), Window.WIDTH / 100 * 5, false);
                 else
                     artifact = new Texture("battle/"+ a.getType(), Window.WIDTH / 100 * 5, Window.WIDTH / 100 * 5, false);
-                artifact.render(graphics, (0) + (j * buttonIncrement), Window.HEIGHT / 100 * 95);
+                artifact.render(graphics, (0) + (j * buttonIncrement), Window.HEIGHT / 100 * 90);
                 j++;
             }
         }
