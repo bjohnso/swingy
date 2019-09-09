@@ -34,6 +34,8 @@ public class TileMapGenerator {
     };
 
     public TileMapGenerator(Fighter fighter){
+        if (fighter == null)
+            System.out.println("NULLL FIGHTER");
         this.fighter = fighter;
         MAP_SIZE = (fighter.getFighterMetrics().getLevel().getLevel() - 1) * 5 + 10 - (fighter.getFighterMetrics().getLevel().getLevel() % 2);
         //MAP_SIZE = (5 - 1) * 5 + 10 - (5 % 2);
@@ -87,6 +89,7 @@ public class TileMapGenerator {
     }
 
     public void generate(){
+        System.out.println("MAP GENERATED");
         float y = (Window.HEIGHT - (MAP_SIZE * 32)) / 2;
         float x = (Window.WIDTH - (MAP_SIZE * 32)) / 2;
 
@@ -102,6 +105,7 @@ public class TileMapGenerator {
             for (int j = 0; j < map[i].length; j++) {
                 entity = null;
                 if (map[i][j] == "P") {
+                    System.out.println("PLAYER GENERATED");
                     TILES.get(fighter.getPlayerClassName().toUpperCase()).addCoordinate("PLAYER", x, y);
                     playerCoordinate = x + "|" + y;
                 }

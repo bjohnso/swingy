@@ -23,7 +23,7 @@ public class Window extends Canvas {
     public void render(StateManager stateManager){
         BufferStrategy bufferStrategy = getBufferStrategy();
         if (bufferStrategy == null){
-            createBufferStrategy(3);
+            createBufferStrategy(2);
             return;
         }
 

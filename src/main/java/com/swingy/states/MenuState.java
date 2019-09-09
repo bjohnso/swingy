@@ -14,6 +14,9 @@ import com.swingy.console.Console;
 
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import com.swingy.rendering.ui.Button;
 import com.swingy.game.Swingy;
@@ -36,19 +39,28 @@ public class MenuState implements State {
     private int fontBold = Window.HEIGHT / 100 * 6;
     private int fontTitle = Window.HEIGHT / 100 * 10;
 
+    private ExecutorService executorService;
+    private Future<Void> future;
+
     @Override
     public void init() {
-        try {
-            swingyDB.createDB();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        //DATABASE CALLS
+        executorService = Executors.newSingleThreadExecutor();
+        swingyDB.setAction("CREATE");
+        future = executorService.submit(swingyDB);
+
+        while (true){
+            if (future.isDone())
+                break;
         }
-        currentSelection = 0;
-        try {
-            swingyDB.resetCurrentPlayer();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        swingyDB.setAction("RESET");
+        future = executorService.submit(swingyDB);
+        while (true){
+            if (future.isDone())
+                break;
         }
+
+
         options = new Button[4];
         options[0] = new Button("New Game", (buttonBaseHeight + 0 * buttonIncrement),
                 new Font("Arial", Font.PLAIN, fontSize),

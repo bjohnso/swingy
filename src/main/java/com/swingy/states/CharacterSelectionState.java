@@ -19,6 +19,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
@@ -50,6 +53,9 @@ public class CharacterSelectionState implements State {
     private int fontTitle = Window.HEIGHT / 100 * 10;
     private int imageWidth = Window.WIDTH / 100 * 20;
     private int imageHeight = Window.HEIGHT / 100 * 20;
+
+    ExecutorService executorService;
+    Future<Object> future;
 
     @Override
     public void init() {
@@ -152,6 +158,8 @@ public class CharacterSelectionState implements State {
         this.stateManager.setTick(false);
         if (entities != null)
             entities.clear();
+        currentFighter = null;
+        characters = null;
         entities = null;
         try {
             swingyDB.closeConnection();
@@ -246,23 +254,22 @@ public class CharacterSelectionState implements State {
                 System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
                 break ;
             case 1 :
-                currentFighter = characters[currentCharacterSelection];
-                try {
-                    swingyDB.deletePlayer(currentFighter.getFighterMetrics().getID());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
                 this.stateManager.setTick(false);
+                currentFighter = characters[currentCharacterSelection];
+                executorService = Executors.newSingleThreadExecutor();
+                swingyDB.setFighter(currentFighter);
+                swingyDB.setAction("DELETE");
+                future = executorService.submit(swingyDB);
+                while (true){
+                    if(future.isDone())
+                        break ;
+                }
                 stateManager.setState("character-load", this);
                 break ;
             case 2 :
-                currentFighter = characters[currentCharacterSelection];
-                try {
-                    swingyDB.setCurrentPlayer(currentFighter.getFighterMetrics().getID());
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
                 this.stateManager.setTick(false);
+                currentFighter = characters[currentCharacterSelection];
+                swingyDB.setFighter(currentFighter);
                 stateManager.setState("map", this);
                 break ;
             case 3 :
@@ -296,12 +303,14 @@ public class CharacterSelectionState implements State {
         FontMetrics fontMetrics = graphics.getFontMetrics(font);
 
         //Draw Current Fighter Stats to Screen
-        if (characters != null) {
+        if (characters != null && currentCharacterSelection >= 0) {
             if (characters.length > currentCharacterSelection){
                 int j = 0;
-                for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
-                    Fonts.drawString(graphics, font, Color.GREEN, s, ((Window.WIDTH / 6 * 5)), (buttonBaseHeight + j * buttonIncrement));
-                    j++;
+                if (characters[currentCharacterSelection] != null) {
+                    for (String s : characters[currentCharacterSelection].getFighterMetrics().toStringArray()) {
+                        Fonts.drawString(graphics, font, Color.GREEN, s, ((Window.WIDTH / 6 * 5)), (buttonBaseHeight + j * buttonIncrement));
+                        j++;
+                    }
                 }
             }
         }

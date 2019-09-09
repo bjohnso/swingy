@@ -1,11 +1,17 @@
 package com.swingy.database;
 
+import com.swingy.battle.FighterMetrics;
 import com.swingy.game.entities.Fighter;
+import com.swingy.id.ID;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
+import java.util.concurrent.Callable;
 
-public class SwingyDB{
+public class SwingyDB implements Callable {
+
+    private String action = "CREATE";
+    private Fighter fighter;
 
     private static final String DB_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
     private static final String JDBC_URL = "jdbc:derby:swingydb;create=true";
@@ -22,6 +28,19 @@ public class SwingyDB{
     private boolean busy = false;
 
     public static SwingyDB swingyDB;
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public void setFighter(Fighter fighter) {
+        this.fighter = fighter;
+    }
+
+    public Fighter getFighter() {
+        return this.fighter;
+    }
+
 
     static {
         try {
@@ -53,7 +72,6 @@ public class SwingyDB{
             createConnection();
             if (existDB()) {
                 System.out.println("SwingDB Already Exists");
-                closeConnection();
             } else {
                 if(connection == null)
                     createConnection();
@@ -81,7 +99,7 @@ public class SwingyDB{
     }
 
     public long insertPlayer(@NotNull Fighter fighter) throws SQLException {
-        int toReturn = -1;
+        long id = -1;
         if (!busy) {
             busy = true;
             createConnection();
@@ -98,12 +116,13 @@ public class SwingyDB{
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
                 System.out.println("Record Successfully Inserted with ID: " + resultSet.getInt(1));
-                toReturn = resultSet.getInt(1);
+                id = resultSet.getInt(1);
             }
             closeConnection();
             busy = false;
         }
-        return toReturn;
+        this.fighter.getFighterMetrics().setID(id);
+        return id;
     }
 
     public void updatePlayer(@NotNull Fighter fighter) throws SQLException {
@@ -116,26 +135,93 @@ public class SwingyDB{
         }
     }
 
-    public ResultSet queryPlayer(long id) throws SQLException {
+    public Fighter queryPlayer(long id) throws SQLException {
         ResultSet resultSet = null;
+        Fighter player = null;
         if (!busy) {
             busy = true;
             createConnection();
             resultSet = statement.executeQuery(SQL_SELECT + " where id = " + id);
             busy = false;
         }
-        return resultSet;
+        if (resultSet != null) {
+            if (resultSet.next()) {
+                switch (resultSet.getString(4)) {
+                    case "ninja":
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINJA"),
+                                null, null);
+                        player.setPlayerClass(ID.NINJA);
+                        break;
+
+                    case "dino":
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
+                                null, null);
+                        player.setPlayerClass(ID.DINO);
+                        break;
+
+                    case "robo":
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ROBO"),
+                                null, null);
+                        player.setPlayerClass(ID.ROBO);
+                        break;
+
+                    case "zombo":
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ZOMBO"),
+                                null, null);
+                        player.setPlayerClass(ID.ZOMBO);
+                        break;
+                }
+                player.getFighterMetrics().setID(resultSet.getInt(1));
+                player.setPlayerClassName(resultSet.getString(4));
+                player.getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
+            }
+        }
+        return player;
     }
 
-    public ResultSet queryPlayer() throws SQLException {
+    public Fighter queryPlayer() throws SQLException {
         ResultSet resultSet = null;
+        Fighter player = null;
         if (!busy) {
             busy = true;
             createConnection();
             resultSet = statement.executeQuery(SQL_SELECT + " where active = true");
             busy = false;
         }
-        return resultSet;
+
+        if (resultSet != null) {
+            if (resultSet.next()) {
+                switch (resultSet.getString(4)) {
+                    case "ninja":
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINJA"),
+                                null, null);
+                        player.setPlayerClass(ID.NINJA);
+                        break;
+
+                    case "dino":
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
+                                null, null);
+                        player.setPlayerClass(ID.DINO);
+                        break;
+
+                    case "robo":
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ROBO"),
+                                null, null);
+                        player.setPlayerClass(ID.ROBO);
+                        break;
+
+                    case "zombo":
+                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ZOMBO"),
+                                null, null);
+                        player.setPlayerClass(ID.ZOMBO);
+                        break;
+                }
+                player.getFighterMetrics().setID(resultSet.getInt(1));
+                player.setPlayerClassName(resultSet.getString(4));
+                player.getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
+            }
+        }
+        return player;
     }
 
     public ResultSet queryAll() throws SQLException {
@@ -215,5 +301,37 @@ public class SwingyDB{
 
     public int getRowCount() {
         return rowCount;
+    }
+
+    @Override
+    public Object call() throws Exception {
+        switch (action){
+            case "CREATE":
+                createDB();
+                break;
+            case "DROP":
+                dropDB();
+                break;
+            case "INSERT":
+                if (fighter != null)
+                    return insertPlayer(fighter);
+                break;
+            case "DELETE":
+                if (this.fighter != null)
+                    deletePlayer(fighter.getFighterMetrics().getID());
+                break;
+            case "FETCH":
+                return queryPlayer();
+            case "ALL":
+                return queryAll();
+            case "RESET":
+                resetCurrentPlayer();
+                break;
+            case "SET":
+                if (this.fighter != null)
+                    setCurrentPlayer(fighter.getFighterMetrics().getID());
+                break;
+        }
+        return null;
     }
 }

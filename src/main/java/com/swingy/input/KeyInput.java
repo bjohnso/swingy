@@ -1,5 +1,6 @@
 package com.swingy.input;
 
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Date;
@@ -28,21 +29,18 @@ public class KeyInput extends KeyAdapter {
                 timer = true;
                 future = executorService.submit(inputTimer);
                 keys[e.getKeyCode()] = true;
-                System.out.println("KEY PRESSED");
             }
         }
         else {
             timer = true;
             future = executorService.submit(inputTimer);
             keys[e.getKeyCode()] = true;
-            System.out.println("KEY PRESSED");
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         keys[e.getKeyCode()] = false;
-        System.out.println("KEY RELEASED");
     }
 
     public static void update(){

@@ -16,13 +16,14 @@ public class StateManager {
 
     public void addState(State state){
         map.put(state.getName().toUpperCase(), state);
-        if (currentState == null){
+        /*if (currentState == null){
             state.enterState(this, state);
             currentState = state;
-        }
+        }*/
     }
 
     public State setState(String name, State callingState){
+        setTick(false);
         State state = map.get(name.toUpperCase());
         if (state == null){
             System.err.println("State <" + name + "> does not exist");

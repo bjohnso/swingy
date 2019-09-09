@@ -26,6 +26,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
@@ -34,7 +37,6 @@ import static com.swingy.states.MenuState.swingy;
 
 public class GameState extends Canvas implements State {
 
-    private ArrayList<Entity> entities;
     private ArrayList<Fighter> fighters;
     private HashMap<String, Tile> tileMap = null;
     private String[][] charMap = null;
@@ -49,9 +51,11 @@ public class GameState extends Canvas implements State {
     protected static Fighter player;
     protected static Fighter defender;
 
-    public static String playerCoordinates;
+    private ExecutorService executorService;
+    private Future<Long> futureInsert;
+    private Future<ResultSet> futureFetch;
 
-   private int init_count = 0;
+    public static String playerCoordinates;
 
     private StateManager stateManager = null;
 
@@ -66,49 +70,61 @@ public class GameState extends Canvas implements State {
 
     @Override
     public void init() {
-        init_count++;
         System.out.println("GAME STATE!!! AHOOOGAH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         gameOver = false;
         isResume = true;
-        entities = new ArrayList<Entity>();
         currentSelection = 0;
 
-        try {
-            ResultSet resultSet = swingyDB.queryPlayer();
-            if (resultSet != null) {
-                if (resultSet.next()) {
-                    switch (resultSet.getString(4)) {
-                        case "ninja":
-                            player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINJA"),
-                                    this, null);
-                            player.setPlayerClass(ID.NINJA);
-                            break;
-                        case "dino":
-                            player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
-                                    this, null);
-                            player.setPlayerClass(ID.DINO);
-                            break;
-                        case "robo":
-                            player = new Fighter(new FighterMetrics(resultSet.getString(2), "ROBO"),
-                                    this, null);
-                            player.setPlayerClass(ID.ROBO);
-                            break;
-                        case "zombo":
-                            player = new Fighter(new FighterMetrics(resultSet.getString(2), "ZOMBO"),
-                                    this, null);
-                            player.setPlayerClass(ID.ZOMBO);
-                            break;
+
+        player = swingyDB.getFighter();
+
+
+        /*swingyDB.setAction("FETCH");
+        futureFetch = executorService.submit(swingyDB);
+
+        while (true){
+            if (futureFetch.isDone()) {
+                try {
+                    ResultSet resultSet = futureFetch.get();
+                    if (resultSet != null) {
+                        if (resultSet.next()) {
+                            switch (resultSet.getString(4)) {
+                                case "ninja":
+                                    player = new Fighter(new FighterMetrics(resultSet.getString(2), "NINJA"),
+                                            this, null);
+                                    player.setPlayerClass(ID.NINJA);
+                                    break;
+
+                                    case "dino":
+                                    player = new Fighter(new FighterMetrics(resultSet.getString(2), "DINO"),
+                                            this, null);
+                                    player.setPlayerClass(ID.DINO);
+                                    break;
+
+                                    case "robo":
+                                        player = new Fighter(new FighterMetrics(resultSet.getString(2), "ROBO"),
+                                                this, null);
+                                        player.setPlayerClass(ID.ROBO);
+                                        break;
+
+                                        case "zombo":
+                                            player = new Fighter(new FighterMetrics(resultSet.getString(2), "ZOMBO"),
+                                                    this, null);
+                                            player.setPlayerClass(ID.ZOMBO);
+                                            break;
+                            }
+                            player.getFighterMetrics().setID(resultSet.getInt(1));
+                            player.setPlayerClassName(resultSet.getString(4));
+                            player.getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
+                        }
                     }
-                    player.getFighterMetrics().setID(resultSet.getInt(1));
-                    player.setPlayerClassName(resultSet.getString(4));
-                    player.getFighterMetrics().getLevel().setExperience(resultSet.getInt(3));
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
-                resultSet.close();
+                break;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        }*/
 
         tileMapGenerator = new TileMapGenerator(player);
         tileMapGenerator.generate();
@@ -120,6 +136,7 @@ public class GameState extends Canvas implements State {
         for(HashMap.Entry<String, Tile> t : tileMap.entrySet()){
             if (t.getValue().getFigtherClassName() != "" && t.getValue().getFigtherClassName() != null){
                 for (HashMap.Entry<String, String> tObject: t.getValue().getCoordinates().entrySet()){
+                    System.out.printf("KEY: %S | VALUE %S\n",tObject.getKey(), tObject.getValue());
                     Fighter tempFighter = null;
                     tempFighter = new Fighter(new FighterMetrics(t.getValue().getTileClassName(), t.getValue().getFigtherClassName()),
                             this, null);
@@ -131,14 +148,15 @@ public class GameState extends Canvas implements State {
 
                     if (tempFighter != null) {
                         if (tempFighter.getMobileID().equalsIgnoreCase(tileMapGenerator.getPlayerCoordinate())) {
+                            System.out.println("PLAYER COORDINATE ASSIGNED");
                             playerCoordinates = tileMapGenerator.getPlayerCoordinate();
                             player.setSprite(tempFighter.getSprite());
                             player.setMobileID(tempFighter.getMobileID());
                             player.setPlayer(true);
                             fighters.add(player);
                         } else {
-                            fighters.add(tempFighter);
                             tempFighter.getFighterMetrics().getLevel().setExperience(player.getFighterMetrics().getLevel().getExperience());
+                            fighters.add(tempFighter);
                         }
                     }
                 }
@@ -265,11 +283,10 @@ public class GameState extends Canvas implements State {
         this.stateManager = stateManager;
         if (gameOver){
             isResume = false;
-            entities.clear();
             fighters.clear();
             options = null;
         }
-        if (!isResume && init_count < 1)
+        if (!isResume)
             init();
         this.stateManager.setTick(true);
         return this;
@@ -280,11 +297,9 @@ public class GameState extends Canvas implements State {
         this.stateManager.setTick(false);
         if (!gameOver) {
             isResume = true;
-            init_count = 0;
         }
         else if (gameOver){
             isResume = false;
-            entities.clear();
             fighters.clear();
             options = null;
         }
@@ -420,7 +435,7 @@ public class GameState extends Canvas implements State {
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
@@ -431,7 +446,7 @@ public class GameState extends Canvas implements State {
                                 }
 
                                 moved = true;
-                                enemyMove();
+                                //enemyMove();
 
                                 break ;
                             }
@@ -482,7 +497,7 @@ public class GameState extends Canvas implements State {
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
@@ -493,7 +508,7 @@ public class GameState extends Canvas implements State {
                                 }
 
                                 moved = true;
-                                enemyMove();
+                                //enemyMove();
 
                                 break ;
                             }
@@ -545,7 +560,7 @@ public class GameState extends Canvas implements State {
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
@@ -556,7 +571,7 @@ public class GameState extends Canvas implements State {
                                 }
 
                                 moved = true;
-                                enemyMove();
+                                //enemyMove();
 
                                 break ;
                             }
@@ -608,7 +623,7 @@ public class GameState extends Canvas implements State {
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                 player.setMobileID(newPlayerCoordinate);
                                 playerCoordinates = newPlayerCoordinate;
@@ -619,7 +634,7 @@ public class GameState extends Canvas implements State {
                                 }
 
                                 moved = true;
-                                enemyMove();
+                                //enemyMove();
 
                                 break ;
                             }
@@ -672,8 +687,8 @@ public class GameState extends Canvas implements State {
         if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER) && options != null)
             select(stateManager);
 
-        for (Entity e : entities)
-            e.tick();
+        for (Fighter f : fighters)
+            f.tick();
     }
 
     private void select(StateManager stateManager){
@@ -714,16 +729,8 @@ public class GameState extends Canvas implements State {
     @Override
     public void render(Graphics graphics) {
 
-        graphics.setColor(Color.WHITE);
-        graphics.fillRect(0, 0, Window.WIDTH, Window.HEIGHT);
-
         Texture background = new Texture("background/3", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);
-
-        if (entities.size() > 0 && entities != null) {
-            for (Entity e : entities)
-                e.render(graphics);
-        }
 
         for(HashMap.Entry<String, Tile> t : tileMap.entrySet())
             t.getValue().render(graphics);
@@ -741,7 +748,7 @@ public class GameState extends Canvas implements State {
 
     @Override
     public void addEntity(Entity entity){
-        entities.add(entity);
+
     }
 
     public boolean flee(){
@@ -780,8 +787,6 @@ public class GameState extends Canvas implements State {
         System.out.println(tileClassName);
         switch (tileClassName){
             case "FIGHTER":
-                //System.out.println(tile.getFigtherClassName());
-                //System.out.printf("PLAYER COORDINATE %s | ENEMY COORDINATE %s\n", playerCoordinates, coordinate);
                 setDefender(coordinate);
                 if(defender != null)
                     createOptions();
@@ -854,7 +859,6 @@ public class GameState extends Canvas implements State {
             }
         }
         fighters.remove(fighter);
-        entities.remove(fighter);
     }
 
     protected void gameOver(){

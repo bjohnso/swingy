@@ -17,6 +17,9 @@ import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import com.swingy.rendering.ui.Button;
 
@@ -36,7 +39,7 @@ public class CharacterCreationState implements State {
     private Fighter[] characters;
     private int currentCharacterSelection;
 
-    public Fighter currentFighter;
+    private Fighter currentFighter;
 
     String userInput;
 
@@ -48,6 +51,9 @@ public class CharacterCreationState implements State {
     private int fontTitle = Window.HEIGHT / 100 * 10;
     private int imageWidth = Window.WIDTH / 100 * 20;
     private int imageHeight = Window.HEIGHT / 100 * 20;
+
+    ExecutorService executorService;
+    Future<Long> future;
 
     @Override
     public void init() {
@@ -130,10 +136,14 @@ public class CharacterCreationState implements State {
         this.stateManager.setTick(false);
         if (entities != null)
             entities.clear();
+        currentFighter = null;
         characters = null;
-        options = null;
         entities = null;
-        currentButtonSelection = -1;
+        try {
+            swingyDB.closeConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -219,22 +229,32 @@ public class CharacterCreationState implements State {
                 System.out.println("\n" + characters[currentCharacterSelection].getFighterMetrics().toString());
                 break;
             case 1:
+                this.stateManager.setTick(false);
                 userInput = characters[currentCharacterSelection].getPlayerClassName();
                 characters[currentCharacterSelection].getFighterMetrics().setName(userInput);
                 currentFighter = characters[currentCharacterSelection];
-                try {
-                    this.stateManager.setTick(false);
-                    currentFighter.getFighterMetrics().setID(swingyDB.insertPlayer(currentFighter));
-                    if (currentFighter.getFighterMetrics().getID() >= 0) {
-                        swingyDB.setCurrentPlayer(currentFighter.getFighterMetrics().getID());
-                        stateManager.setState("map", this);
+
+                executorService = Executors.newSingleThreadExecutor();
+                swingyDB.setFighter(currentFighter);
+                swingyDB.setAction("INSERT");
+                future = executorService.submit(swingyDB);
+
+                while (true){
+                    if (future.isDone()) {
+                        try {
+                            long playerId = future.get();
+                            if (playerId < 0) {
+                                System.out.println("Character Creation Failed, Invalid ID");
+                                stateManager.setState("menu", this);
+                            }
+                            else {
+                                stateManager.setState("map", this);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
                     }
-                    else {
-                        System.out.println("Character Creation Failed, Invalid ID");
-                        stateManager.setState("menu", this);
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 }
                 break ;
             case 2 :
