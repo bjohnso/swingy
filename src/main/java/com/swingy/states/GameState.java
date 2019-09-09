@@ -12,6 +12,7 @@ import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.map.TileMapGenerator;
 import com.swingy.map.Tile;
+import com.swingy.metrics.Coordinate;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.rendering.ui.Button;
 import com.swingy.rendering.ui.Window;
@@ -55,7 +56,7 @@ public class GameState extends Canvas implements State {
     private Future<Long> futureInsert;
     private Future<ResultSet> futureFetch;
 
-    public static String playerCoordinates;
+    public static Coordinate playerCoordinates;
 
     private StateManager stateManager = null;
 
@@ -76,9 +77,7 @@ public class GameState extends Canvas implements State {
         isResume = true;
         currentSelection = 0;
 
-
         player = swingyDB.getFighter();
-
 
         /*swingyDB.setAction("FETCH");
         futureFetch = executorService.submit(swingyDB);
@@ -135,7 +134,7 @@ public class GameState extends Canvas implements State {
 
         for(HashMap.Entry<String, Tile> t : tileMap.entrySet()){
             if (t.getValue().getFigtherClassName() != "" && t.getValue().getFigtherClassName() != null){
-                for (HashMap.Entry<String, String> tObject: t.getValue().getCoordinates().entrySet()){
+                for (HashMap.Entry<String, Coordinate> tObject: t.getValue().getCoordinates().entrySet()){
                     System.out.printf("KEY: %S | VALUE %S\n",tObject.getKey(), tObject.getValue());
                     Fighter tempFighter = null;
                     tempFighter = new Fighter(new FighterMetrics(t.getValue().getTileClassName(), t.getValue().getFigtherClassName()),
@@ -144,10 +143,8 @@ public class GameState extends Canvas implements State {
                     tempFighter.setPlayerClassName(t.getValue().getFigtherClassName().toLowerCase());
                     tempFighter.setMobileID(tObject.getValue());
 
-                    String parts[] = tempFighter.getMobileID().split("\\|");
-
                     if (tempFighter != null) {
-                        if (tempFighter.getMobileID().equalsIgnoreCase(tileMapGenerator.getPlayerCoordinate())) {
+                        if (tempFighter.getMobileID() == tileMapGenerator.getPlayerCoordinate()) {
                             System.out.println("PLAYER COORDINATE ASSIGNED");
                             playerCoordinates = tileMapGenerator.getPlayerCoordinate();
                             player.setSprite(tempFighter.getSprite());
@@ -180,25 +177,26 @@ public class GameState extends Canvas implements State {
         if (options == null){
             for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
                 if (!t.getValue().getFigtherClassName().equalsIgnoreCase("")){
-                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                    for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
                         if (tObject.getValue() != playerCoordinates){
                             int seed = 0 + (int)(Math.random() * ((3 - 0) + 1));
                             Tile groundTile = tileMap.get("GROUND");
                             switch (directions[seed]){
                                 case "UP":
-                                    for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                                    for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                                         if (coordinateCompare(tGround.getValue(), tObject.getValue(), 0, 32, 0, 0)){
                                             //Swap Render Coordinates on adjacent tiles
-                                            String newPlayerCoordinate = coordinateMod(tObject.getValue(), 0, -32);
-                                            String newGroundCoordinate = tObject.getValue();
+                                            //Coordinate newPlayerCoordinate = coordinateMod(tObject.getValue(), 0, -32);
+                                            Coordinate newPlayerCoordinate = tGround.getValue();
+                                            Coordinate newGroundCoordinate = tObject.getValue();
 
                                             t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
                                             groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                            swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                            //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                             for (Fighter f : fighters){
-                                                if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
+                                                if (f.getMobileID() == newGroundCoordinate)
                                                     f.setMobileID(newPlayerCoordinate);
                                             }
 
@@ -207,19 +205,20 @@ public class GameState extends Canvas implements State {
                                     }
                                     break ;
                                 case "DOWN":
-                                    for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                                    for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                                         if (coordinateCompare(tGround.getValue(), tObject.getValue(), 0, -32, 0, 0)){
                                             //Swap Render Coordinates on adjacent tiles
-                                            String newPlayerCoordinate = coordinateMod(tObject.getValue(), 0, 32);
-                                            String newGroundCoordinate = tObject.getValue();
+                                            //Coordinate newPlayerCoordinate = coordinateMod(tObject.getValue(), 0, 32);
+                                            Coordinate newPlayerCoordinate = tGround.getValue();
+                                            Coordinate newGroundCoordinate = tObject.getValue();
 
                                             t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
                                             groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                            swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                            //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                             for (Fighter f : fighters){
-                                                if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
+                                                if (f.getMobileID() == newGroundCoordinate)
                                                     f.setMobileID(newPlayerCoordinate);
                                             }
 
@@ -228,19 +227,20 @@ public class GameState extends Canvas implements State {
                                     }
                                     break ;
                                 case "LEFT":
-                                    for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                                    for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                                         if (coordinateCompare(tGround.getValue(), tObject.getValue(), 32, 0, 0, 0)){
                                             //Swap Render Coordinates on adjacent tiles
-                                            String newPlayerCoordinate = coordinateMod(tObject.getValue(), -32, 0);
-                                            String newGroundCoordinate = tObject.getValue();
+                                            //Coordinate newPlayerCoordinate = coordinateMod(tObject.getValue(), -32, 0);
+                                            Coordinate newPlayerCoordinate = tGround.getValue();
+                                            Coordinate newGroundCoordinate = tObject.getValue();
 
                                             t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
                                             groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                            swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                            //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                             for (Fighter f : fighters){
-                                                if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
+                                                if (f.getMobileID() == newGroundCoordinate)
                                                     f.setMobileID(newPlayerCoordinate);
                                             }
 
@@ -249,19 +249,20 @@ public class GameState extends Canvas implements State {
                                     }
                                     break ;
                                 case "RIGHT":
-                                    for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                                    for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                                         if (coordinateCompare(tGround.getValue(), tObject.getValue(), -32, 0, 0, 0)){
                                             //Swap Render Coordinates on adjacent tiles
-                                            String newPlayerCoordinate = coordinateMod(tObject.getValue(), 32, 0);
-                                            String newGroundCoordinate = tObject.getValue();
+                                            //Coordinate newPlayerCoordinate = coordinateMod(tObject.getValue(), 32, 0);
+                                            Coordinate newPlayerCoordinate = tGround.getValue();
+                                            Coordinate newGroundCoordinate = tObject.getValue();
 
                                             t.getValue().replaceCoordinate(tObject.getKey(), newPlayerCoordinate);
                                             groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                            swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                            //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
                                             for (Fighter f : fighters){
-                                                if (f.getMobileID().equalsIgnoreCase(newGroundCoordinate))
+                                                if (f.getMobileID() == newGroundCoordinate)
                                                     f.setMobileID(newPlayerCoordinate);
                                             }
 
@@ -326,23 +327,23 @@ public class GameState extends Canvas implements State {
             return artifacts[2];
     }
 
-    private boolean coordinateCompare(String str1, String str2, float modX1, float modY1, float modX2, float modY2){
-        double x1 = Double.parseDouble(str1.split("\\|")[0]) + modX1;
-        double y1 = Double.parseDouble(str1.split("\\|")[1]) + modY1;
-        double x2 = Double.parseDouble(str2.split("\\|")[0]) + modX2;
-        double y2 = Double.parseDouble(str2.split("\\|")[1]) + modY2;
+    private boolean coordinateCompare(Coordinate c1, Coordinate c2, float modX1, float modY1, float modX2, float modY2){
+        double x1 = c1.getAxisX() + modX1;
+        double y1 = c1.getAxisY() + modY1;
+        double x2 = c2.getAxisX() + modX2;
+        double y2 = c2.getAxisY() + modY2;
 
         if (x1 == x2 && y1 == y2)
             return true;
         return false;
     }
 
-    private String coordinateMod(String str1, float modX, float modY){
+    /*private Coordinate coordinateMod(String str1, float modX, float modY){
         double x1 = Double.parseDouble(str1.split("\\|")[0]) + modX;
         double y1 = Double.parseDouble(str1.split("\\|")[1]) + modY;
 
         return x1 + "|" + y1;
-    }
+    }*/
 
     private void swapCharMapIndices(String coordinate1, String coordinate2){
         //index = (pixelLength - pixelPadding) \ 32
@@ -423,14 +424,15 @@ public class GameState extends Canvas implements State {
             if (options == null) {
                 boolean moved = false;
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
-                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()){
                     if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
                         Tile groundTile = tileMap.get("GROUND");
-                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                        for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                             if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, 32, 0, 0)){
                                 //Swap Render Coordinates on adjacent tiles
-                                String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, -32);
-                                String newGroundCoordinate = playerCoordinates;
+                                //String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, -32);
+                                Coordinate newPlayerCoordinate = tGround.getValue();
+                                Coordinate newGroundCoordinate = tPlayer.getValue();
 
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
@@ -459,7 +461,7 @@ public class GameState extends Canvas implements State {
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
                                         || t.getValue().getTileClassName() == "BORDER"){
-                                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                                    for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
                                         if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
@@ -484,15 +486,16 @@ public class GameState extends Canvas implements State {
             System.out.println("Down Pressed!!!!!!");
             if (options == null) {
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
-                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()){
                     if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
                         boolean moved = false;
                         Tile groundTile = tileMap.get("GROUND");
-                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                        for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                             if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, -32, 0, 0)){
                                 //Swap Render Coordinates on adjacent tiles
-                                String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, 32);
-                                String newGroundCoordinate = playerCoordinates;
+                                //String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, 32);
+                                Coordinate newPlayerCoordinate = tGround.getValue();
+                                Coordinate newGroundCoordinate = tPlayer.getValue();
 
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
@@ -521,7 +524,7 @@ public class GameState extends Canvas implements State {
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
                                         || t.getValue().getTileClassName() == "BORDER"){
-                                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                                    for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
                                         if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
@@ -547,15 +550,16 @@ public class GameState extends Canvas implements State {
             System.out.println("Left Pressed!!!!!!");
             if (options == null) {
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
-                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()){
                     if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
                         boolean moved = false;
                         Tile groundTile = tileMap.get("GROUND");
-                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                        for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                             if (coordinateCompare(tGround.getValue(), playerCoordinates, 32, 0, 0, 0)){
                                 //Swap Render Coordinates on adjacent tiles
-                                String newPlayerCoordinate = coordinateMod(playerCoordinates, -32, 0);
-                                String newGroundCoordinate = playerCoordinates;
+                                //String newPlayerCoordinate = coordinateMod(playerCoordinates, -32, 0);
+                                Coordinate newPlayerCoordinate = tGround.getValue();
+                                Coordinate newGroundCoordinate = tPlayer.getValue();
 
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
@@ -584,7 +588,7 @@ public class GameState extends Canvas implements State {
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
                                         || t.getValue().getTileClassName() == "BORDER"){
-                                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                                    for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
                                         if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
@@ -610,15 +614,16 @@ public class GameState extends Canvas implements State {
             System.out.println("Right Pressed!!!!!!");
             if(options == null) {
                 Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
-                for (HashMap.Entry<String, String> tPlayer : playerTile.getCoordinates().entrySet()){
+                for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()){
                     if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
                         boolean moved = false;
                         Tile groundTile = tileMap.get("GROUND");
-                        for (HashMap.Entry<String, String> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
+                        for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                             if (coordinateCompare(tGround.getValue(), playerCoordinates, -32, 0, 0, 0)){
                                 //Swap Render Coordinates on adjacent tiles
-                                String newPlayerCoordinate = coordinateMod(playerCoordinates, 32, 0);
-                                String newGroundCoordinate = playerCoordinates;
+                                //String newPlayerCoordinate = coordinateMod(playerCoordinates, 32, 0);
+                                Coordinate newPlayerCoordinate = tGround.getValue();
+                                Coordinate newGroundCoordinate = tPlayer.getValue();
 
                                 playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
                                 groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
@@ -647,7 +652,7 @@ public class GameState extends Canvas implements State {
                                 if (t.getValue().getTileClassName() == "FIGHTER"
                                         || t.getValue().getTileClassName() == "TRAP"
                                         || t.getValue().getTileClassName() == "BORDER"){
-                                    for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
+                                    for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
                                         if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
                                                 || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
@@ -728,7 +733,6 @@ public class GameState extends Canvas implements State {
 
     @Override
     public void render(Graphics graphics) {
-
         Texture background = new Texture("background/3", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);
 
@@ -775,7 +779,7 @@ public class GameState extends Canvas implements State {
         return possible[random];
     }
 
-    public void setDefender(String id){
+    public void setDefender(Coordinate id){
         defender = null;
         for (Fighter f : fighters) {
             if (f.getMobileID() == id)
@@ -783,7 +787,7 @@ public class GameState extends Canvas implements State {
         }
     }
 
-    private void collision(String coordinate, String tileClassName, Tile tile){
+    private void collision(Coordinate coordinate, String tileClassName, Tile tile){
         System.out.println(tileClassName);
         switch (tileClassName){
             case "FIGHTER":
@@ -849,8 +853,8 @@ public class GameState extends Canvas implements State {
 
         for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
             if (t.getValue().getFigtherClassName().equalsIgnoreCase(fighter.getPlayerClassName())){
-                for (HashMap.Entry<String, String> tObject : t.getValue().getCoordinates().entrySet()){
-                    if (tObject.getValue().equalsIgnoreCase(fighter.getMobileID())) {
+                for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
+                    if (tObject.getValue() == fighter.getMobileID()) {
                         t.getValue().removeCoordinate(tObject.getKey());
                         break ;
                     }

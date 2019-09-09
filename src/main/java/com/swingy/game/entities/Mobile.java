@@ -1,5 +1,6 @@
 package com.swingy.game.entities;
 
+import com.swingy.metrics.Coordinate;
 import com.swingy.rendering.textures.Animation;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.states.State;
@@ -11,7 +12,7 @@ public abstract class Mobile extends Entity {
     protected double dx, dy;
     protected Animation animation;
     protected boolean moving = false;
-    private String mobileID;
+    private Coordinate mobileID;
 
     public Mobile(Texture sprite, double x, double y, State state, Animation animation) {
         super(sprite, x, y, state);
@@ -46,16 +47,12 @@ public abstract class Mobile extends Entity {
         dy = 0;
     }
 
-    public void setMobileID(String id) {
+    public void setMobileID(Coordinate id) {
         this.mobileID = id;
     }
 
-    public String getMobileID() {
+    public Coordinate getMobileID() {
         return mobileID;
-    }
-
-    public String[] getMobileIDArray(){
-        return mobileID.split("\\|");
     }
 
     public double getX(){

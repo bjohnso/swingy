@@ -29,10 +29,6 @@ public class Window extends Canvas {
 
         Graphics graphics = bufferStrategy.getDrawGraphics();
 
-        //Background
-        graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, WIDTH, HEIGHT);
-
         //MenuState
         stateManager.render(graphics);
 

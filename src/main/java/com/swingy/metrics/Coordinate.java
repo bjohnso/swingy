@@ -4,31 +4,31 @@ package com.swingy.metrics;
 
 public class Coordinate {
 
-    private int _axis_x;
-    private int _axis_y;
+    private float _axis_x;
+    private float _axis_y;
 
     public Coordinate(){
 
     }
 
-    public Coordinate(int axis_x, int axis_y){
+    public Coordinate(float axis_x, float axis_y){
         _axis_x = axis_x;
         _axis_y = axis_y;
     }
 
-    public int getAxisX(){
+    public float getAxisX(){
         return _axis_x;
     }
 
-    public int getAxisY(){
+    public float getAxisY(){
         return _axis_y;
     }
 
-    public void setAxisX(int axis_x){
+    public void setAxisX(float axis_x){
         _axis_x = axis_x;
     }
 
-    public void setAxisY(int axis_y){
+    public void setAxisY(float axis_y){
         _axis_y = axis_y;
     }
 

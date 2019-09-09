@@ -1,5 +1,6 @@
 package com.swingy.map;
 
+import com.swingy.metrics.Coordinate;
 import com.swingy.rendering.ui.Window;
 import com.swingy.id.IDAssigner;
 import com.swingy.game.entities.Fighter;
@@ -15,7 +16,7 @@ public class TileMapGenerator {
 
     private Fighter fighter;
 
-    private String playerCoordinate;
+    private Coordinate playerCoordinate;
 
     private HashMap<String, Tile> TILES;
 
@@ -106,47 +107,48 @@ public class TileMapGenerator {
                 entity = null;
                 if (map[i][j] == "P") {
                     System.out.println("PLAYER GENERATED");
-                    TILES.get(fighter.getPlayerClassName().toUpperCase()).addCoordinate("PLAYER", x, y);
-                    playerCoordinate = x + "|" + y;
+                    Coordinate coordinate = new Coordinate(x, y);
+                    TILES.get(fighter.getPlayerClassName().toUpperCase()).addCoordinate("PLAYER", coordinate);
+                    playerCoordinate = coordinate;
                 }
                 else if (map[i][j] == "p") {
-                    TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), x, y);
+                    TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), new Coordinate(x, y));
                     map[i][j] = "*";
                 }
                 else if (map[i][j] != "!" && map[i][j] != "p"){
                         if (i == 0) {
                             if (j == 0) {
-                                TILES.get("BORDER-CORNER-NE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                TILES.get("BORDER-CORNER-NE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                 map[i][j] = "-";
                             }
                             else if (j == MAP_SIZE - 1) {
-                                TILES.get("BORDER-CORNER-NW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                TILES.get("BORDER-CORNER-NW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                 map[i][j] = "-";
                             }
                             else {
-                                TILES.get("BORDER-N").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                TILES.get("BORDER-N").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                 map[i][j] = "-";
                             }
                         } else if (i == MAP_SIZE - 1) {
                             if (j == 0) {
-                                TILES.get("BORDER-CORNER-SE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                TILES.get("BORDER-CORNER-SE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                 map[i][j] = "-";
                             }
                             else if (j == MAP_SIZE - 1) {
-                                TILES.get("BORDER-CORNER-SW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                TILES.get("BORDER-CORNER-SW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                 map[i][j] = "-";
                             }
                             else {
-                                TILES.get("BORDER-S").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                TILES.get("BORDER-S").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                 map[i][j] = "-";
                             }
                         } else {
                             if (j == 0) {
-                                TILES.get("BORDER-E").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                TILES.get("BORDER-E").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                 map[i][j] = "|";
                             }
                             else if (j == MAP_SIZE - 1) {
-                                TILES.get("BORDER-W").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                TILES.get("BORDER-W").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                 map[i][j] = "|";
                             }
                             else {
@@ -156,7 +158,7 @@ public class TileMapGenerator {
                                         if (i + 2 < MAP_SIZE - 1 && j + 2 < MAP_SIZE - 1 && !checkNineByNine("!", j, i))
                                             generateNineByNine("LAVA", j, i, x, y);
                                         else {
-                                            TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), x, y);
+                                            TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), new Coordinate(x, y));
                                             map[i][j] = "*";
                                         }
                                         break;
@@ -164,32 +166,32 @@ public class TileMapGenerator {
                                         if (i + 2 < MAP_SIZE - 1 && j + 2 < MAP_SIZE - 1 && !checkNineByNine("!", j, i))
                                             generateNineByNine("PIT", j, i, x, y);
                                         else {
-                                            TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), x, y);
+                                            TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), new Coordinate(x, y));
                                             map[i][j] = "*";
                                         }
                                         break;
                                     case "MUSHROOM":
-                                        TILES.get("MUSHROOM").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        TILES.get("MUSHROOM").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                         map[i][j] = "$";
                                         break;
                                     case "DINO":
-                                        TILES.get("DINO").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        TILES.get("DINO").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                         map[i][j] = "D";
                                         break;
                                     case "ROBO":
-                                        TILES.get("ROBO").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        TILES.get("ROBO").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                         map[i][j] = "R";
                                         break;
                                     case "ZOMBO":
-                                        TILES.get("ZOMBO").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        TILES.get("ZOMBO").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                         map[i][j] = "Z";
                                         break;
                                     case "NINJA":
-                                        TILES.get("NINJA").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), x, y);
+                                        TILES.get("NINJA").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(x, y));
                                         map[i][j] = "N";
                                         break;
                                     default:
-                                        TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), x, y);
+                                        TILES.get("GROUND").addCoordinate("GROUND-" + groundIDAssigner.next(), new Coordinate(x, y));
                                         map[i][j] = "*";
                                 }
                             }
@@ -230,25 +232,25 @@ public class TileMapGenerator {
                 map[i][j] = "!";
                 if (i == y) {
                     if (j == x)
-                        TILES.get(type.toUpperCase() + "-CORNER-NE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), padX, padY);
+                        TILES.get(type.toUpperCase() + "-CORNER-NE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(padX, padY));
                     else if (j == x + 2)
-                        TILES.get(type.toUpperCase() + "-CORNER-NW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), padX, padY);
+                        TILES.get(type.toUpperCase() + "-CORNER-NW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(padX, padY));
                     else
-                        TILES.get(type.toUpperCase() + "-N").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), padX, padY);
+                        TILES.get(type.toUpperCase() + "-N").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(padX, padY));
                 } else if (i == y + 2) {
                     if (j == x)
-                        TILES.get(type.toUpperCase() + "-CORNER-SE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), padX, padY);
+                        TILES.get(type.toUpperCase() + "-CORNER-SE").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(padX, padY));
                     else if (j == x + 2)
-                        TILES.get(type.toUpperCase() + "-CORNER-SW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), padX, padY);
+                        TILES.get(type.toUpperCase() + "-CORNER-SW").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(padX, padY));
                     else
-                        TILES.get(type.toUpperCase() + "-S").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), padX, padY);
+                        TILES.get(type.toUpperCase() + "-S").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(padX, padY));
                 } else {
                     if (j == x)
-                        TILES.get(type.toUpperCase() + "-E").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), padX, padY);
+                        TILES.get(type.toUpperCase() + "-E").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(padX, padY));
                     else if (j == x + 2)
-                        TILES.get(type.toUpperCase() + "-W").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), padX, padY);
+                        TILES.get(type.toUpperCase() + "-W").addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(padX, padY));
                     else
-                        TILES.get(type.toUpperCase()).addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), padX, padY);
+                        TILES.get(type.toUpperCase()).addCoordinate("NON-PLAYER-" + nonPlayeridAssigner.next(), new Coordinate(padX, padY));
                 }
                 padX += 32;
             }
@@ -279,7 +281,7 @@ public class TileMapGenerator {
         return MAP_SIZE;
     }
 
-    public String getPlayerCoordinate() {
+    public Coordinate getPlayerCoordinate() {
         return playerCoordinate;
     }
 }

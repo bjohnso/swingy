@@ -266,8 +266,6 @@ public class CharacterCreationState implements State {
 
     @Override
     public void render(Graphics graphics) {
-        graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, Window.WIDTH, Window.HEIGHT);
 
         Texture background = new Texture("background/2", Window.WIDTH, Window.HEIGHT, false);
         background.render(graphics, 0, 0);

@@ -1,6 +1,7 @@
 package com.swingy.map;
 
 import com.swingy.id.ID;
+import com.swingy.metrics.Coordinate;
 import com.swingy.rendering.textures.Texture;
 import com.swingy.states.GameState;
 
@@ -10,7 +11,7 @@ import com.swingy.rendering.ui.Window;
 
 public class Tile {
 
-    HashMap<String, String> coordinates = new HashMap<>();
+    HashMap<String, Coordinate> coordinates = new HashMap<>();
     protected Texture sprite;
     protected boolean solid;
     protected ID tileClass;
@@ -27,23 +28,17 @@ public class Tile {
         setTileClassName();
     }
 
-    public void addCoordinate(String key, float x, float y){
-        coordinates.put(key, x + "|" + y);
-    }
-
-    public void addCoordinate(String key, String coordinate){
+    public void addCoordinate(String key, Coordinate coordinate){
         coordinates.put(key, coordinate);
     }
 
-    public void replaceCoordinate(String key, String cooridinate ){
-        coordinates.replace(key, cooridinate);
-    }
+    public void replaceCoordinate(String key, Coordinate cooridinate){ coordinates.replace(key, cooridinate); }
 
     public void removeCoordinate(String key){
         coordinates.remove(key);
     }
 
-    public HashMap<String, String> getCoordinates() {
+    public HashMap<String, Coordinate> getCoordinates() {
         return coordinates;
     }
 
@@ -64,19 +59,17 @@ public class Tile {
         float pY = cY;
 
         if (GameState.playerCoordinates != null) {
-            parts = GameState.playerCoordinates.split("\\|");
-            pX = (float) Double.parseDouble(parts[0]);
-            pY = (float) Double.parseDouble(parts[1]);
+            pX = GameState.playerCoordinates.getAxisX();
+            pY = GameState.playerCoordinates.getAxisY();
         }
 
         boolean hiddenMap = false;
         if (mapSize * 32 > Window.WIDTH || mapSize * 32 > Window.HEIGHT)
             hiddenMap = true;
 
-        for (HashMap.Entry<String, String> s : coordinates.entrySet()) {
-            parts = s.getValue().split("\\|");
-            float x = (float) Double.parseDouble(parts[0]);
-            float y = (float) Double.parseDouble(parts[1]);
+        for (HashMap.Entry<String, Coordinate> s : coordinates.entrySet()) {
+            float x = s.getValue().getAxisX();
+            float y = s.getValue().getAxisY();
 
             //Check if cordinate is in bounds of window and render
             if (!hiddenMap) {
