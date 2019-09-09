@@ -8,6 +8,7 @@ import com.swingy.id.MobileIDAssigner;
 import com.swingy.game.entities.Entity;
 import com.swingy.game.entities.Fighter;
 import com.swingy.id.ID;
+import com.swingy.input.InputTimer;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.map.TileMapGenerator;
@@ -52,13 +53,11 @@ public class GameState extends Canvas implements State {
     protected static Fighter player;
     protected static Fighter defender;
 
-    private ExecutorService executorService;
-    private Future<Long> futureInsert;
-    private Future<ResultSet> futureFetch;
-
     public static Coordinate playerCoordinates;
 
     private StateManager stateManager = null;
+
+    private int cooldown;
 
     private String[] artifacts = {
             "HELM",
@@ -186,7 +185,6 @@ public class GameState extends Canvas implements State {
                                     for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                                         if (coordinateCompare(tGround.getValue(), tObject.getValue(), 0, 32, 0, 0)){
                                             //Swap Render Coordinates on adjacent tiles
-                                            //Coordinate newPlayerCoordinate = coordinateMod(tObject.getValue(), 0, -32);
                                             Coordinate newPlayerCoordinate = tGround.getValue();
                                             Coordinate newGroundCoordinate = tObject.getValue();
 
@@ -208,7 +206,6 @@ public class GameState extends Canvas implements State {
                                     for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                                         if (coordinateCompare(tGround.getValue(), tObject.getValue(), 0, -32, 0, 0)){
                                             //Swap Render Coordinates on adjacent tiles
-                                            //Coordinate newPlayerCoordinate = coordinateMod(tObject.getValue(), 0, 32);
                                             Coordinate newPlayerCoordinate = tGround.getValue();
                                             Coordinate newGroundCoordinate = tObject.getValue();
 
@@ -230,7 +227,6 @@ public class GameState extends Canvas implements State {
                                     for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                                         if (coordinateCompare(tGround.getValue(), tObject.getValue(), 32, 0, 0, 0)){
                                             //Swap Render Coordinates on adjacent tiles
-                                            //Coordinate newPlayerCoordinate = coordinateMod(tObject.getValue(), -32, 0);
                                             Coordinate newPlayerCoordinate = tGround.getValue();
                                             Coordinate newGroundCoordinate = tObject.getValue();
 
@@ -252,7 +248,6 @@ public class GameState extends Canvas implements State {
                                     for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
                                         if (coordinateCompare(tGround.getValue(), tObject.getValue(), -32, 0, 0, 0)){
                                             //Swap Render Coordinates on adjacent tiles
-                                            //Coordinate newPlayerCoordinate = coordinateMod(tObject.getValue(), 32, 0);
                                             Coordinate newPlayerCoordinate = tGround.getValue();
                                             Coordinate newGroundCoordinate = tObject.getValue();
 
@@ -338,13 +333,6 @@ public class GameState extends Canvas implements State {
         return false;
     }
 
-    /*private Coordinate coordinateMod(String str1, float modX, float modY){
-        double x1 = Double.parseDouble(str1.split("\\|")[0]) + modX;
-        double y1 = Double.parseDouble(str1.split("\\|")[1]) + modY;
-
-        return x1 + "|" + y1;
-    }*/
-
     private void swapCharMapIndices(String coordinate1, String coordinate2){
         //index = (pixelLength - pixelPadding) \ 32
 
@@ -381,7 +369,6 @@ public class GameState extends Canvas implements State {
 
     @Override
     public void tick(StateManager stateManager) {
-
         String userInput = null;
         try {
             userInput = console.tick();
@@ -413,268 +400,265 @@ public class GameState extends Canvas implements State {
             }
         }
 
-
         if (options != null && userInput != "0") {
             currentSelection = Integer.parseInt(userInput) - 1;
             select(stateManager);
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W) || userInput.equalsIgnoreCase("1")){
-            System.out.println("Up Pressed!!!!!!");
-            if (options == null) {
-                boolean moved = false;
-                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
-                for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()){
-                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
-                        Tile groundTile = tileMap.get("GROUND");
-                        for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
-                            if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, 32, 0, 0)){
-                                //Swap Render Coordinates on adjacent tiles
-                                //String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, -32);
-                                Coordinate newPlayerCoordinate = tGround.getValue();
-                                Coordinate newGroundCoordinate = tPlayer.getValue();
+        cooldown--;
+        if (cooldown <= 0){
+            if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)) {
+                cooldown = 100;
+                System.out.println("Up Pressed!!!!!!");
+                if (options == null) {
+                    boolean moved = false;
+                    Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                    for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()) {
+                        if (tPlayer.getKey().equalsIgnoreCase("PLAYER")) {
+                            Tile groundTile = tileMap.get("GROUND");
+                            for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()) {
+                                if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, 32, 0, 0)) {
+                                    //Swap Render Coordinates on adjacent tiles
+                                    //String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, -32);
+                                    Coordinate newPlayerCoordinate = tGround.getValue();
+                                    Coordinate newGroundCoordinate = tPlayer.getValue();
 
-                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
-                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
+                                    playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                    groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                    //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
-                                player.setMobileID(newPlayerCoordinate);
-                                playerCoordinates = newPlayerCoordinate;
+                                    player.setMobileID(newPlayerCoordinate);
+                                    playerCoordinates = newPlayerCoordinate;
 
-                                if (item()){
-                                    String temp = calculateArtifact();
-                                    addArtifact(temp);
+                                    if (item()) {
+                                        String temp = calculateArtifact();
+                                        addArtifact(temp);
+                                    }
+
+                                    moved = true;
+                                    //enemyMove();
+
+                                    break;
                                 }
-
-                                moved = true;
-                                //enemyMove();
-
-                                break ;
                             }
-                        }
 
-                        if (moved){
-                            System.out.println("Moved UP!!!!!!");
-                            //printCharMap();
-                            for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
-                                if (t.getValue().getTileClassName() == "FIGHTER"
-                                        || t.getValue().getTileClassName() == "TRAP"
-                                        || t.getValue().getTileClassName() == "BORDER"){
-                                    for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
-                                        if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
-                                            collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
+                            if (moved) {
+                                System.out.println("Moved UP!!!!!!");
+                                //printCharMap();
+                                for (HashMap.Entry<String, Tile> t : tileMap.entrySet()) {
+                                    if (t.getValue().getTileClassName() == "FIGHTER"
+                                            || t.getValue().getTileClassName() == "TRAP"
+                                            || t.getValue().getTileClassName() == "BORDER") {
+                                        for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()) {
+                                            if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
+                                                collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
+                                        }
                                     }
                                 }
                             }
+                            break;
                         }
-                        break ;
+                    }
+                } else {
+                    currentSelection++;
+                    if (currentSelection > options.length - 1) {
+                        currentSelection = 0;
                     }
                 }
-            }
-            else {
-                currentSelection++;
-                if (currentSelection > options.length - 1){
-                    currentSelection = 0;
-                }
-            }
-        }
-        else if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S) || userInput.equalsIgnoreCase("2")){
-            System.out.println("Down Pressed!!!!!!");
-            if (options == null) {
-                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
-                for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()){
-                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
-                        boolean moved = false;
-                        Tile groundTile = tileMap.get("GROUND");
-                        for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
-                            if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, -32, 0, 0)){
-                                //Swap Render Coordinates on adjacent tiles
-                                //String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, 32);
-                                Coordinate newPlayerCoordinate = tGround.getValue();
-                                Coordinate newGroundCoordinate = tPlayer.getValue();
+            } else if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)) {
+                cooldown = 100;
+                System.out.println("Down Pressed!!!!!!");
+                if (options == null) {
+                    Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                    for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()) {
+                        if (tPlayer.getKey().equalsIgnoreCase("PLAYER")) {
+                            boolean moved = false;
+                            Tile groundTile = tileMap.get("GROUND");
+                            for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()) {
+                                if (coordinateCompare(tGround.getValue(), playerCoordinates, 0, -32, 0, 0)) {
+                                    //Swap Render Coordinates on adjacent tiles
+                                    //String newPlayerCoordinate = coordinateMod(playerCoordinates, 0, 32);
+                                    Coordinate newPlayerCoordinate = tGround.getValue();
+                                    Coordinate newGroundCoordinate = tPlayer.getValue();
 
-                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
-                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
+                                    playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                    groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                    //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
-                                player.setMobileID(newPlayerCoordinate);
-                                playerCoordinates = newPlayerCoordinate;
+                                    player.setMobileID(newPlayerCoordinate);
+                                    playerCoordinates = newPlayerCoordinate;
 
-                                if (item()){
-                                    String temp = calculateArtifact();
-                                    addArtifact(temp);
+                                    if (item()) {
+                                        String temp = calculateArtifact();
+                                        addArtifact(temp);
+                                    }
+
+                                    moved = true;
+                                    //enemyMove();
+
+                                    break;
                                 }
-
-                                moved = true;
-                                //enemyMove();
-
-                                break ;
                             }
-                        }
 
-                        if (moved){
-                            System.out.println("Moved Down!!!!!!");
-                            //printCharMap();
-                            for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
-                                if (t.getValue().getTileClassName() == "FIGHTER"
-                                        || t.getValue().getTileClassName() == "TRAP"
-                                        || t.getValue().getTileClassName() == "BORDER"){
-                                    for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
-                                        if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
-                                            collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
+                            if (moved) {
+                                System.out.println("Moved Down!!!!!!");
+                                //printCharMap();
+                                for (HashMap.Entry<String, Tile> t : tileMap.entrySet()) {
+                                    if (t.getValue().getTileClassName() == "FIGHTER"
+                                            || t.getValue().getTileClassName() == "TRAP"
+                                            || t.getValue().getTileClassName() == "BORDER") {
+                                        for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()) {
+                                            if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
+                                                collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
+                                        }
                                     }
                                 }
                             }
+                            break;
                         }
-                        break ;
+                    }
+                } else {
+                    currentSelection--;
+                    if (currentSelection < 0) {
+                        currentSelection = options.length - 1;
                     }
                 }
-            }
-            else {
-                currentSelection--;
-                if (currentSelection < 0){
-                    currentSelection = options.length - 1;
-                }
-            }
-        }
+            } else if (KeyInput.wasPressed(KeyEvent.VK_LEFT) || KeyInput.wasPressed(KeyEvent.VK_A)) {
+                cooldown = 100;
+                System.out.println("Left Pressed!!!!!!");
+                if (options == null) {
+                    Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                    for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()) {
+                        if (tPlayer.getKey().equalsIgnoreCase("PLAYER")) {
+                            boolean moved = false;
+                            Tile groundTile = tileMap.get("GROUND");
+                            for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()) {
+                                if (coordinateCompare(tGround.getValue(), playerCoordinates, 32, 0, 0, 0)) {
+                                    //Swap Render Coordinates on adjacent tiles
+                                    //String newPlayerCoordinate = coordinateMod(playerCoordinates, -32, 0);
+                                    Coordinate newPlayerCoordinate = tGround.getValue();
+                                    Coordinate newGroundCoordinate = tPlayer.getValue();
 
-        else if (KeyInput.wasPressed(KeyEvent.VK_LEFT) || KeyInput.wasPressed(KeyEvent.VK_A) || userInput.equalsIgnoreCase("3")){
-            System.out.println("Left Pressed!!!!!!");
-            if (options == null) {
-                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
-                for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()){
-                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
-                        boolean moved = false;
-                        Tile groundTile = tileMap.get("GROUND");
-                        for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
-                            if (coordinateCompare(tGround.getValue(), playerCoordinates, 32, 0, 0, 0)){
-                                //Swap Render Coordinates on adjacent tiles
-                                //String newPlayerCoordinate = coordinateMod(playerCoordinates, -32, 0);
-                                Coordinate newPlayerCoordinate = tGround.getValue();
-                                Coordinate newGroundCoordinate = tPlayer.getValue();
+                                    playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                    groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
-                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
+                                    //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
-                                //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                    player.setMobileID(newPlayerCoordinate);
+                                    playerCoordinates = newPlayerCoordinate;
 
-                                player.setMobileID(newPlayerCoordinate);
-                                playerCoordinates = newPlayerCoordinate;
+                                    if (item()) {
+                                        String temp = calculateArtifact();
+                                        addArtifact(temp);
+                                    }
 
-                                if (item()){
-                                    String temp = calculateArtifact();
-                                    addArtifact(temp);
+                                    moved = true;
+                                    //enemyMove();
+
+                                    break;
                                 }
-
-                                moved = true;
-                                //enemyMove();
-
-                                break ;
                             }
-                        }
 
-                        if (moved){
-                            System.out.println("Moved Left!!!!!!");
-                            //printCharMap();
-                            for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
-                                if (t.getValue().getTileClassName() == "FIGHTER"
-                                        || t.getValue().getTileClassName() == "TRAP"
-                                        || t.getValue().getTileClassName() == "BORDER"){
-                                    for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
-                                        if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
-                                            collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
+                            if (moved) {
+                                System.out.println("Moved Left!!!!!!");
+                                //printCharMap();
+                                for (HashMap.Entry<String, Tile> t : tileMap.entrySet()) {
+                                    if (t.getValue().getTileClassName() == "FIGHTER"
+                                            || t.getValue().getTileClassName() == "TRAP"
+                                            || t.getValue().getTileClassName() == "BORDER") {
+                                        for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()) {
+                                            if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
+                                                collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
+                                        }
                                     }
                                 }
                             }
+                            break;
                         }
-                        break ;
+                    }
+                } else {
+                    currentSelection--;
+                    if (currentSelection < 0) {
+                        currentSelection = options.length - 1;
                     }
                 }
-            }
-            else {
-                currentSelection--;
-                if (currentSelection < 0){
-                    currentSelection = options.length - 1;
-                }
-            }
-        }
+            } else if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) || KeyInput.wasPressed(KeyEvent.VK_D)) {
+                cooldown = 100;
+                System.out.println("Right Pressed!!!!!!");
+                if (options == null) {
+                    Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
+                    for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()) {
+                        if (tPlayer.getKey().equalsIgnoreCase("PLAYER")) {
+                            boolean moved = false;
+                            Tile groundTile = tileMap.get("GROUND");
+                            for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()) {
+                                if (coordinateCompare(tGround.getValue(), playerCoordinates, -32, 0, 0, 0)) {
+                                    //Swap Render Coordinates on adjacent tiles
+                                    //String newPlayerCoordinate = coordinateMod(playerCoordinates, 32, 0);
+                                    Coordinate newPlayerCoordinate = tGround.getValue();
+                                    Coordinate newGroundCoordinate = tPlayer.getValue();
 
-        else if (KeyInput.wasPressed(KeyEvent.VK_RIGHT) || KeyInput.wasPressed(KeyEvent.VK_D) || userInput.equalsIgnoreCase("4")){
-            System.out.println("Right Pressed!!!!!!");
-            if(options == null) {
-                Tile playerTile = tileMap.get(player.getPlayerClassName().toUpperCase());
-                for (HashMap.Entry<String, Coordinate> tPlayer : playerTile.getCoordinates().entrySet()){
-                    if (tPlayer.getKey().equalsIgnoreCase("PLAYER")){
-                        boolean moved = false;
-                        Tile groundTile = tileMap.get("GROUND");
-                        for (HashMap.Entry<String, Coordinate> tGround : tileMap.get("GROUND").getCoordinates().entrySet()){
-                            if (coordinateCompare(tGround.getValue(), playerCoordinates, -32, 0, 0, 0)){
-                                //Swap Render Coordinates on adjacent tiles
-                                //String newPlayerCoordinate = coordinateMod(playerCoordinates, 32, 0);
-                                Coordinate newPlayerCoordinate = tGround.getValue();
-                                Coordinate newGroundCoordinate = tPlayer.getValue();
+                                    playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
+                                    groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
 
-                                playerTile.replaceCoordinate("PLAYER", newPlayerCoordinate);
-                                groundTile.replaceCoordinate(tGround.getKey(), newGroundCoordinate);
+                                    //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
 
-                                //swapCharMapIndices(newPlayerCoordinate, newGroundCoordinate);
+                                    player.setMobileID(newPlayerCoordinate);
+                                    playerCoordinates = newPlayerCoordinate;
 
-                                player.setMobileID(newPlayerCoordinate);
-                                playerCoordinates = newPlayerCoordinate;
+                                    if (item()) {
+                                        String temp = calculateArtifact();
+                                        addArtifact(temp);
+                                    }
 
-                                if (item()){
-                                    String temp = calculateArtifact();
-                                    addArtifact(temp);
+                                    moved = true;
+                                    //enemyMove();
+
+                                    break;
                                 }
-
-                                moved = true;
-                                //enemyMove();
-
-                                break ;
                             }
-                        }
 
-                        if (moved){
-                            System.out.println("Moved Right!!!!!!");
-                            //printCharMap();
-                            for (HashMap.Entry<String, Tile> t : tileMap.entrySet()){
-                                if (t.getValue().getTileClassName() == "FIGHTER"
-                                        || t.getValue().getTileClassName() == "TRAP"
-                                        || t.getValue().getTileClassName() == "BORDER"){
-                                    for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()){
-                                        if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
-                                                || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
-                                            collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
+                            if (moved) {
+                                System.out.println("Moved Right!!!!!!");
+                                //printCharMap();
+                                for (HashMap.Entry<String, Tile> t : tileMap.entrySet()) {
+                                    if (t.getValue().getTileClassName() == "FIGHTER"
+                                            || t.getValue().getTileClassName() == "TRAP"
+                                            || t.getValue().getTileClassName() == "BORDER") {
+                                        for (HashMap.Entry<String, Coordinate> tObject : t.getValue().getCoordinates().entrySet()) {
+                                            if (coordinateCompare(tObject.getValue(), playerCoordinates, 0, -32, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, 0, 32, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, -32, 0, 0, 0)
+                                                    || coordinateCompare(tObject.getValue(), playerCoordinates, 32, 0, 0, 0))
+                                                collision(tObject.getValue(), t.getValue().getTileClassName(), t.getValue());
+                                        }
                                     }
                                 }
                             }
+                            break;
                         }
-                        break ;
+                    }
+                } else {
+                    currentSelection++;
+                    if (currentSelection > options.length - 1) {
+                        currentSelection = 0;
                     }
                 }
             }
-            else {
-                currentSelection++;
-                if (currentSelection > options.length - 1){
-                    currentSelection = 0;
-                }
-            }
-        }
 
-        else if (KeyInput.wasPressed(KeyEvent.VK_Q) || userInput.equalsIgnoreCase("5")){
+        }
+        if (KeyInput.wasPressed(KeyEvent.VK_Q)){
             quitMap();
         }
 
@@ -692,8 +676,8 @@ public class GameState extends Canvas implements State {
         if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER) && options != null)
             select(stateManager);
 
-        for (Fighter f : fighters)
-            f.tick();
+        /*for (Fighter f : fighters)
+            f.tick();*/
     }
 
     private void select(StateManager stateManager){

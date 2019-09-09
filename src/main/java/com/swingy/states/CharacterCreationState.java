@@ -4,6 +4,7 @@ import com.swingy.battle.FighterMetrics;
 import com.swingy.game.entities.Entity;
 import com.swingy.game.entities.Fighter;
 import com.swingy.id.ID;
+import com.swingy.input.InputTimer;
 import com.swingy.input.KeyInput;
 import com.swingy.input.MouseInput;
 import com.swingy.rendering.textures.Texture;
@@ -22,6 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.swingy.rendering.ui.Button;
+import org.apache.derby.impl.sql.catalog.SYSCOLUMNSRowFactory;
 
 import static com.swingy.console.Console.console;
 import static com.swingy.database.SwingyDB.swingyDB;
@@ -53,11 +55,13 @@ public class CharacterCreationState implements State {
     private int imageHeight = Window.HEIGHT / 100 * 20;
 
     ExecutorService executorService;
+    ExecutorService timerService;
     Future<Long> future;
+
+    private int cooldown;
 
     @Override
     public void init() {
-
         userInput = null;
         currentCharacterSelection = 0;
 
@@ -184,17 +188,25 @@ public class CharacterCreationState implements State {
             }
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
-            currentButtonSelection--;
-            if (currentButtonSelection < 0){
-                currentButtonSelection = options.length - 1;
-            }
-        }
+        cooldown--;
 
-        if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)){
-            currentButtonSelection++;
-            if (currentButtonSelection > options.length - 1){
-                currentButtonSelection = 0;
+        if (cooldown <= 0) {
+            if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)) {
+                cooldown = 10;
+                System.out.println("UP KEY PRESSED!!!");
+                currentButtonSelection--;
+                if (currentButtonSelection < 0) {
+                    currentButtonSelection = options.length - 1;
+                }
+            }
+
+            else if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)) {
+                cooldown = 10;
+                System.out.println("DOWN KEY PRESSED!!!");
+                currentButtonSelection++;
+                if (currentButtonSelection > options.length - 1) {
+                    currentButtonSelection = 0;
+                }
             }
         }
 
