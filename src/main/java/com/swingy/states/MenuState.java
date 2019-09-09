@@ -41,6 +41,7 @@ public class MenuState implements State {
 
     private ExecutorService executorService;
     private Future<Void> future;
+    private int cooldown;
 
     @Override
     public void init() {
@@ -90,6 +91,7 @@ public class MenuState implements State {
     @Override
     public State enterState(StateManager stateManager, State callingState) {
         this.stateManager = stateManager;
+        cooldown = 50;
         init();
         stateManager.setTick(true);
         return this;
@@ -102,17 +104,53 @@ public class MenuState implements State {
     @Override
     public void tick(StateManager stateManager) {
 
-        if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
-            currentSelection--;
-            if (currentSelection < 0){
-                currentSelection = options.length - 1;
-            }
+        String userInput = null;
+        try {
+            userInput = console.tick();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)){
-            currentSelection++;
-            if (currentSelection > options.length - 1){
-                currentSelection = 0;
+        cooldown--;
+        if (cooldown <= 0) {
+            if (userInput != null){
+                cooldown = 50;
+                if (userInput.equalsIgnoreCase("gui")) {
+                    swingy.setGui(true);
+                    stateManager.setTick(false);
+                    stateManager.setState("menu", this);
+                }
+                else{
+                    try {
+                        int userOption = Integer.parseInt(userInput);
+                        if (userOption > 0 && userOption < 5) {
+                            currentSelection = Integer.parseInt(userInput) - 1;
+                            select(stateManager);
+                        }
+                        else
+                            System.out.println("INVALID INPUT...");
+                    }catch (NumberFormatException e){
+                        System.out.println("INVALID INPUT...");
+                    }
+                }
+            }
+
+            if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)) {
+                cooldown = 50;
+                currentSelection--;
+                if (currentSelection < 0) {
+                    currentSelection = options.length - 1;
+                }
+            }
+
+            else if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)) {
+                cooldown = 50;
+                currentSelection++;
+                if (currentSelection > options.length - 1) {
+                    currentSelection = 0;
+                }
             }
         }
 
@@ -127,36 +165,6 @@ public class MenuState implements State {
 
         if (clicked || KeyInput.wasPressed(KeyEvent.VK_ENTER))
             select(stateManager);
-
-        String userInput = null;
-        try {
-            userInput = console.tick();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (userInput != null){
-            if (userInput.equalsIgnoreCase("gui")) {
-                swingy.setGui(true);
-                stateManager.setTick(false);
-                stateManager.setState("menu", this);
-            }
-            else{
-                try {
-                    int userOption = Integer.parseInt(userInput);
-                    if (userOption > 0 && userOption < 5) {
-                        currentSelection = Integer.parseInt(userInput) - 1;
-                        select(stateManager);
-                    }
-                    else
-                        System.out.println("INVALID INPUT...");
-                }catch (NumberFormatException e){
-                    System.out.println("INVALID INPUT...");
-                }
-            }
-        }
     }
 
     private void select(StateManager stateManager){

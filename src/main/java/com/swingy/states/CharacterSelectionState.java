@@ -56,6 +56,7 @@ public class CharacterSelectionState implements State {
 
     ExecutorService executorService;
     Future<Object> future;
+    private int cooldown;
 
     @Override
     public void init() {
@@ -137,6 +138,7 @@ public class CharacterSelectionState implements State {
     @Override
     public State enterState(StateManager stateManager, State callingState) {
         this.stateManager = stateManager;
+        cooldown = 50;
         try {
             resultSet = swingyDB.queryAll();
         } catch (SQLException e) {
@@ -185,43 +187,49 @@ public class CharacterSelectionState implements State {
             e.printStackTrace();
         }
 
-        if (userInput != null){
-            if (userInput.equalsIgnoreCase("gui")) {
-                swingy.setGui(true);
-                stateManager.setTick(false);
-                stateManager.setState("character-load", this);
-            }
-            else{
-                try {
-                    int userOption = Integer.parseInt(userInput);
-                    if (userOption > 0 && userOption < 5) {
-                        currentButtonSelection = Integer.parseInt(userInput) - 1;
-                        select(stateManager);
-                    }
-                    else
-                        System.out.println("INVALID INPUT...");
-                }catch (NumberFormatException e){
-                    System.out.println("INVALID INPUT...");
-                }
-            }
-        }
-
         if(numSaves <= 0) {
             this.stateManager.setTick(false);
             stateManager.setState("menu", this);
         }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
-            currentButtonSelection--;
-            if (currentButtonSelection < 0){
-                currentButtonSelection = options.length - 1;
+        cooldown--;
+        if (cooldown <= 0) {
+            if (userInput != null){
+                cooldown = 50;
+                if (userInput.equalsIgnoreCase("gui")) {
+                    swingy.setGui(true);
+                    stateManager.setTick(false);
+                    stateManager.setState("character-load", this);
+                }
+                else{
+                    try {
+                        int userOption = Integer.parseInt(userInput);
+                        if (userOption > 0 && userOption < 5) {
+                            currentButtonSelection = Integer.parseInt(userInput) - 1;
+                            select(stateManager);
+                        }
+                        else
+                            System.out.println("INVALID INPUT...");
+                    }catch (NumberFormatException e){
+                        System.out.println("INVALID INPUT...");
+                    }
+                }
             }
-        }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)){
-            currentButtonSelection++;
-            if (currentButtonSelection > options.length - 1){
-                currentButtonSelection = 0;
+            if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)) {
+                cooldown = 50;
+                currentButtonSelection--;
+                if (currentButtonSelection < 0) {
+                    currentButtonSelection = options.length - 1;
+                }
+            }
+
+            else if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)) {
+                cooldown = 50;
+                currentButtonSelection++;
+                if (currentButtonSelection > options.length - 1) {
+                    currentButtonSelection = 0;
+                }
             }
         }
 

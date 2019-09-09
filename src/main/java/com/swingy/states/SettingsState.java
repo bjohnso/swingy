@@ -32,6 +32,8 @@ public class SettingsState implements State {
     private int fontBold = Window.HEIGHT / 100 * 6;
     private int fontTitle = Window.HEIGHT / 100 * 10;
 
+    private int cooldown;
+
     @Override
     public void init() {
         currentButtonSelection = 0;
@@ -64,6 +66,7 @@ public class SettingsState implements State {
     @Override
     public State enterState(StateManager stateManager, State callingState) {
         this.stateManager = stateManager;
+        cooldown = 50;
         init();
         stateManager.setTick(true);
         return this;
@@ -92,39 +95,46 @@ public class SettingsState implements State {
             e.printStackTrace();
         }
 
-        if (userInput != null){
-            if (userInput.equalsIgnoreCase("gui")) {
-                swingy.setGui(true);
-                stateManager.setTick(false);
-                stateManager.setState("settings", this);
-            }
-            else{
-                try {
-                    int userOption = Integer.parseInt(userInput);
-                    if (userOption > 0 && userOption < 5) {
-                        currentButtonSelection = Integer.parseInt(userInput) - 1;
-                        select(stateManager);
-                    }
-                    else
+        cooldown--;
+
+        if (cooldown <= 0) {
+
+            if (userInput != null){
+                cooldown = 50;
+                if (userInput.equalsIgnoreCase("gui")) {
+                    swingy.setGui(true);
+                    stateManager.setTick(false);
+                    stateManager.setState("settings", this);
+                }
+                else{
+                    try {
+                        int userOption = Integer.parseInt(userInput);
+                        if (userOption > 0 && userOption < 5) {
+                            currentButtonSelection = Integer.parseInt(userInput) - 1;
+                            select(stateManager);
+                        }
+                        else
+                            System.out.println("INVALID INPUT...");
+                    }catch (NumberFormatException e){
                         System.out.println("INVALID INPUT...");
-                }catch (NumberFormatException e){
-                    System.out.println("INVALID INPUT...");
+                    }
                 }
             }
-        }
 
-
-        if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)){
-            currentButtonSelection--;
-            if (currentButtonSelection < 0){
-                currentButtonSelection = options.length - 1;
+            if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)) {
+                cooldown = 50;
+                currentButtonSelection--;
+                if (currentButtonSelection < 0) {
+                    currentButtonSelection = options.length - 1;
+                }
             }
-        }
 
-        if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)){
-            currentButtonSelection++;
-            if (currentButtonSelection > options.length - 1){
-                currentButtonSelection = 0;
+            if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)) {
+                cooldown = 50;
+                currentButtonSelection++;
+                if (currentButtonSelection > options.length - 1) {
+                    currentButtonSelection = 0;
+                }
             }
         }
 

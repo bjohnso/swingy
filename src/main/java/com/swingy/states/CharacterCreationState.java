@@ -55,7 +55,6 @@ public class CharacterCreationState implements State {
     private int imageHeight = Window.HEIGHT / 100 * 20;
 
     ExecutorService executorService;
-    ExecutorService timerService;
     Future<Long> future;
 
     private int cooldown;
@@ -130,6 +129,7 @@ public class CharacterCreationState implements State {
     @Override
     public State enterState(StateManager stateManager, State callingState) {
         this.stateManager = stateManager;
+        cooldown = 50;
         init();
         stateManager.setTick(true);
         return this;
@@ -167,32 +167,34 @@ public class CharacterCreationState implements State {
             e.printStackTrace();
         }
 
-        if (userInput != null){
-            if (userInput.equalsIgnoreCase("gui")) {
-                swingy.setGui(true);
-                stateManager.setTick(false);
-                stateManager.setState("character-new", this);
-            }
-            else{
-                try {
-                    int userOption = Integer.parseInt(userInput);
-                    if (userOption > 0 && userOption < 4) {
-                        currentButtonSelection = Integer.parseInt(userInput) - 1;
-                        select(stateManager);
-                    }
-                    else
-                        System.out.println("INVALID INPUT...");
-                }catch (NumberFormatException e){
-                    System.out.println("INVALID INPUT...");
-                }
-            }
-        }
-
         cooldown--;
 
         if (cooldown <= 0) {
+
+            if (userInput != null){
+                cooldown = 50;
+                if (userInput.equalsIgnoreCase("gui")) {
+                    swingy.setGui(true);
+                    stateManager.setTick(false);
+                    stateManager.setState("character-new", this);
+                }
+                else{
+                    try {
+                        int userOption = Integer.parseInt(userInput);
+                        if (userOption > 0 && userOption < 4) {
+                            currentButtonSelection = Integer.parseInt(userInput) - 1;
+                            select(stateManager);
+                        }
+                        else
+                            System.out.println("INVALID INPUT...");
+                    }catch (NumberFormatException e){
+                        System.out.println("INVALID INPUT...");
+                    }
+                }
+            }
+
             if (KeyInput.wasPressed(KeyEvent.VK_UP) || KeyInput.wasPressed(KeyEvent.VK_W)) {
-                cooldown = 10;
+                cooldown = 50;
                 System.out.println("UP KEY PRESSED!!!");
                 currentButtonSelection--;
                 if (currentButtonSelection < 0) {
@@ -201,7 +203,7 @@ public class CharacterCreationState implements State {
             }
 
             else if (KeyInput.wasPressed(KeyEvent.VK_DOWN) || KeyInput.wasPressed(KeyEvent.VK_S)) {
-                cooldown = 10;
+                cooldown = 50;
                 System.out.println("DOWN KEY PRESSED!!!");
                 currentButtonSelection++;
                 if (currentButtonSelection > options.length - 1) {
