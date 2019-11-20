@@ -17,6 +17,8 @@ public class Console {
     private ConsoleInputListener consoleInputListener;
     private ExecutorService executorService;
     private Future<String> future;
+    private String response;
+    private int cooldown;
 
     static { console = new Console(); }
 
@@ -24,15 +26,20 @@ public class Console {
         consoleInputListener = new ConsoleInputListener();
         executorService = Executors.newSingleThreadExecutor();
         future = executorService.submit(consoleInputListener);
+        response = null;
     }
 
     public String tick() throws ExecutionException, InterruptedException {
-        String toReturn = null;
-        if (future.isDone()){
-            toReturn = future.get();
-            future = executorService.submit(consoleInputListener);
+        cooldown--;
+        if (cooldown <= 0) {
+            cooldown = 4;
+            response = null;
+            if (future.isDone()) {
+                response = future.get();
+                future = executorService.submit(consoleInputListener);
+            }
         }
-        return toReturn;
+        return response;
     }
 
     public void userSelection(State state){
